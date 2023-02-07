@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: 백로그에 등록될 이슈를 추가합니다.
-title: 'prefix: 구현할 기능'
+title: 'feat: 구현할 기능'
 labels: ''
 assignees: ''
 
