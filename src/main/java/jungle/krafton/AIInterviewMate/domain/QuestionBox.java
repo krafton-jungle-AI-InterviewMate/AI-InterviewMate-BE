@@ -9,23 +9,28 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "member")
-public class Member {
+@Table(name = "question_box")
+public class QuestionBox {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     private Long idx;
 
-    @Column(nullable = false)
-    private String nickname;
+    @ManyToOne
+    @JoinColumn(name="member_idx")
+    private Member member;
 
     @Column(nullable = false)
-    private String email;
+    private String boxName;
+
+    @Column(nullable = false)
+    private int questionNum;
 
     @Builder
-    public Member(Long idx, String nickname, String email) {
+    public QuestionBox(Long idx, Member member, String boxName, int questionNum) {
         this.idx = idx;
-        this.nickname = nickname;
-        this.email = email;
+        this.member = member;
+        this.boxName = boxName;
+        this.questionNum = questionNum;
     }
 }
