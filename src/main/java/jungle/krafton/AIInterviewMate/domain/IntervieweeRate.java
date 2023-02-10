@@ -37,8 +37,7 @@ public class IntervieweeRate {
 
 
     @Builder
-    public IntervieweeRate(Long idx, Long viewerIdx, Long vieweeIdx, RoomType roomType, Integer eyesRate, Integer attitudeRate, Integer answerRate) {
-        this.idx = idx;
+    public IntervieweeRate(Long viewerIdx, Long vieweeIdx, RoomType roomType, Integer eyesRate, Integer attitudeRate, Integer answerRate) {
         this.viewerIdx = viewerIdx;
         this.vieweeIdx = vieweeIdx;
         this.roomType = roomType;

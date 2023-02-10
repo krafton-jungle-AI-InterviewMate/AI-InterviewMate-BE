@@ -29,8 +29,7 @@ public class InterviewerRating {
     private Long roomIdx;
 
     @Builder
-    public InterviewerRating(Long idx, Long viewerIdx, Long vieweeIdx, Integer rating, Long roomIdx) {
-        this.idx = idx;
+    public InterviewerRating(Long viewerIdx, Long vieweeIdx, Integer rating, Long roomIdx) {
         this.viewerIdx = viewerIdx;
         this.vieweeIdx = vieweeIdx;
         this.rating = rating;

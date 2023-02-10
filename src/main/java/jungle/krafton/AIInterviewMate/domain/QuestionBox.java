@@ -5,30 +5,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Member {
-    @OneToMany(mappedBy = "member")
-    private final List<InterviewRoom> interviewRoomList = new ArrayList<>();
-
+public class QuestionBox {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     private Long idx;
 
-    @Column(nullable = false)
-    private String nickname;
+    @ManyToOne
+    @JoinColumn(name = "member_idx")
+    private Member member;
 
     @Column(nullable = false)
-    private String email;
+    private String boxName;
+
+    @Column(nullable = false)
+    private Integer questionNum;
 
     @Builder
-    public Member(String nickname, String email) {
-        this.nickname = nickname;
-        this.email = email;
+    public QuestionBox(Member member, String boxName, int questionNum) {
+        this.member = member;
+        this.boxName = boxName;
+        this.questionNum = questionNum;
     }
 }
