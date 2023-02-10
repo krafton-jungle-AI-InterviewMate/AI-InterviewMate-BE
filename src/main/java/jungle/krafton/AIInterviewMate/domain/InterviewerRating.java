@@ -10,31 +10,30 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "InterviewerRating")
-        public class InterviewerRating {
+public class InterviewerRating {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     private Long idx;
 
     @Column(nullable = false)
-    private Long viewer_idx;
+    private Long viewerIdx;
 
     @Column(nullable = false)
-    private Long viewee_idx;
+    private Long vieweeIdx;
 
     @Column(nullable = false)
     private Integer rating;
 
     @Column(nullable = false)
-    private Long room_idx;
+    private Long roomIdx;
 
     @Builder
-    public InterviewerRating(Long idx, Long viewer_idx, Long viewee_idx, Integer rating, Long room_idx) {
+    public InterviewerRating(Long idx, Long viewerIdx, Long vieweeIdx, Integer rating, Long roomIdx) {
         this.idx = idx;
-        this.viewer_idx = viewer_idx;
-        this.viewee_idx = viewee_idx;
+        this.viewerIdx = viewerIdx;
+        this.vieweeIdx = vieweeIdx;
         this.rating = rating;
-        this.room_idx = room_idx;
+        this.roomIdx = roomIdx;
     }
 }

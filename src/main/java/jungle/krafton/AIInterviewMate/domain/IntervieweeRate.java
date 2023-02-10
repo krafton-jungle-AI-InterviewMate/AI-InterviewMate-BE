@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "IntervieweeRate")
 public class IntervieweeRate {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,35 +17,34 @@ public class IntervieweeRate {
     private Long idx;
 
     @Column(nullable = false)
-    private Long viewer_idx;
+    private Long viewerIdx;
 
     @Column(nullable = false)
-    private Long viewee_idx;
+    private Long vieweeIdx;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RoomType room_type;
-
-    @Column(nullable = false)
-    private Integer eyes_rate;
+    private RoomType roomType;
 
     @Column(nullable = false)
-    private Integer attitude_rate;
+    private Integer eyesRate;
 
     @Column(nullable = false)
-    private Integer answer_rate;
+    private Integer attitudeRate;
+
+    @Column(nullable = false)
+    private Integer answerRate;
 
 
     @Builder
-    public IntervieweeRate(Long idx, Long viewer_idx, Long viewee_idx, String room_type, Integer eyes_rate, Integer attitude_rate, Integer answer_rate) {
+    public IntervieweeRate(Long idx, Long viewerIdx, Long vieweeIdx, RoomType roomType, Integer eyesRate, Integer attitudeRate, Integer answerRate) {
         this.idx = idx;
-        this.viewer_idx = viewer_idx;
-        this.viewee_idx = viewee_idx;
-        this.room_type = room_type;
-        this.eyes_rate = eyes_rate;
-        this.attitude_rate = attitude_rate;
-        this.answer_rate = answer_rate;
+        this.viewerIdx = viewerIdx;
+        this.vieweeIdx = vieweeIdx;
+        this.roomType = roomType;
+        this.eyesRate = eyesRate;
+        this.attitudeRate = attitudeRate;
+        this.answerRate = answerRate;
     }
-
 }
 
