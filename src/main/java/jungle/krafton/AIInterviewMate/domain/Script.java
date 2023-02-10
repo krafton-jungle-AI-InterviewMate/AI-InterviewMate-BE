@@ -22,10 +22,10 @@ public class Script {
     @JoinColumn(name = "interviewRoom_idx", nullable = false)
     private InterviewRoom interviewRoom;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Long memberIdx;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Long questionIdx;
 
     @Column(nullable = false, length = 1000)
