@@ -24,7 +24,7 @@ public class QuestionBox {
     private String boxName;
 
     @Column(nullable = false)
-    private int questionNum;
+    private Integer questionNum;
 
     @Builder
     public QuestionBox(Long idx, Member member, String boxName, int questionNum) {
