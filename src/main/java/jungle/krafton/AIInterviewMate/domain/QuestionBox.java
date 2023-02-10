@@ -26,8 +26,7 @@ public class QuestionBox {
     private Integer questionNum;
 
     @Builder
-    public QuestionBox(Long idx, Member member, String boxName, int questionNum) {
-        this.idx = idx;
+    public QuestionBox(Member member, String boxName, int questionNum) {
         this.member = member;
         this.boxName = boxName;
         this.questionNum = questionNum;

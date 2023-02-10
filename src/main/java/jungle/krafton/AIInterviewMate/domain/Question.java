@@ -38,8 +38,7 @@ public class Question {
     private String questionTitle;
 
     @Builder
-    public Question(Long idx, QuestionBox questionBox, String keyword1, String keyword2, String keyword3, String keyword4, String keyword5, String questionTitle) {
-        this.idx = idx;
+    public Question(QuestionBox questionBox, String keyword1, String keyword2, String keyword3, String keyword4, String keyword5, String questionTitle) {
         this.questionBox = questionBox;
         this.keyword1 = keyword1;
         this.keyword2 = keyword2;
