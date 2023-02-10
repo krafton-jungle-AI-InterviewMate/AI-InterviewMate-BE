@@ -40,7 +40,7 @@ public class InterviewRoom extends Timestamped {
     @Column(name = "question_num")
     private Integer roomQuestionNum;
 
-    @Column(nullable = false, unique = true, name = "question_box_idx")
+    @Column(nullable = false, name = "question_box_idx")
     private Long roomQuestionBoxIdx;
 
     @Column()
