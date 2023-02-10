@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "question")
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,7 +16,7 @@ public class Question {
     private Long idx;
 
     @ManyToOne
-    @JoinColumn(name="questionbox_idx")
+    @JoinColumn(name = "questionbox_idx")
     private QuestionBox questionBox;
 
     @Column(nullable = false)
