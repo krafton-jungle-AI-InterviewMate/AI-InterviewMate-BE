@@ -22,12 +22,16 @@ public class Question {
     @Column(nullable = false)
     private String keyword1;
 
+    @Column()
     private String keyword2;
 
+    @Column()
     private String keyword3;
 
+    @Column()
     private String keyword4;
 
+    @Column()
     private String keyword5;
 
     @Column(nullable = false)
