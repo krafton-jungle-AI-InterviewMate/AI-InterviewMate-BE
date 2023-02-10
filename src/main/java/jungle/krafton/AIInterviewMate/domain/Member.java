@@ -5,11 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 
 @Entity
 @Getter
 @NoArgsConstructor
 public class Member {
+    @OneToMany(mappedBy = "member")
+    private final List<InterviewRoom> interviewRoomList = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
