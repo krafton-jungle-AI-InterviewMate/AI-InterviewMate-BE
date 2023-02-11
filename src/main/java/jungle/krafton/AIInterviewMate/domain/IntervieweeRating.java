@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class IntervieweeRate {
+public class IntervieweeRating {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
@@ -27,23 +27,23 @@ public class IntervieweeRate {
     private RoomType roomType;
 
     @Column(nullable = false)
-    private Integer eyesRate;
+    private Integer eyesRating;
 
     @Column(nullable = false)
-    private Integer attitudeRate;
+    private Integer attitudeRating;
 
     @Column(nullable = false)
-    private Integer answerRate;
+    private Integer answerRating;
 
 
     @Builder
-    public IntervieweeRate(Long viewerIdx, Long vieweeIdx, RoomType roomType, Integer eyesRate, Integer attitudeRate, Integer answerRate) {
+    public IntervieweeRating(Long viewerIdx, Long vieweeIdx, RoomType roomType, Integer eyesRating, Integer attitudeRating, Integer answerRating) {
         this.viewerIdx = viewerIdx;
         this.vieweeIdx = vieweeIdx;
         this.roomType = roomType;
-        this.eyesRate = eyesRate;
-        this.attitudeRate = attitudeRate;
-        this.answerRate = answerRate;
+        this.eyesRating = eyesRating;
+        this.attitudeRating = attitudeRating;
+        this.answerRating = answerRating;
     }
 }
 
