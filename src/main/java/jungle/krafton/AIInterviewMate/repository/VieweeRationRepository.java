@@ -1,4 +1,4 @@
 package jungle.krafton.AIInterviewMate.repository;
 
-public class ScriptsRepository {
+public interface VieweeRationRepository {
 }

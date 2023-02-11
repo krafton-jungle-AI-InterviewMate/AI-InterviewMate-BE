@@ -32,7 +32,7 @@ public class InterviewRoom extends Timestamped {
     private String roomPassword;
 
     @Column(nullable = false)
-    private boolean isPrivate;
+    private Boolean isPrivate;
 
     @Column()
     private Integer roomTime;
@@ -47,20 +47,20 @@ public class InterviewRoom extends Timestamped {
     private Integer roomPeopleNum;
 
     @Column(name = "interviewer_1_idx")
-    private Long roomInterviewer1Idx;
+    private Long roomViewer1Idx;
 
     @Column(name = "interviewer_2_idx")
-    private Long roomInterviewer2Idx;
+    private Long roomViewer2Idx;
 
     @Column(name = "interviewer_3_idx")
-    private Long roomInterviewer3Idx;
+    private Long roomViewer3Idx;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private RoomStatus roomStatus;
 
     @Builder
-    public InterviewRoom(Member member, RoomType roomType, String roomName, String roomPassword, boolean isPrivate, Integer roomTime, Integer roomQuestionNum, Long roomQuestionBoxIdx, Integer roomPeopleNum) {
+    public InterviewRoom(Member member, RoomType roomType, String roomName, String roomPassword, Boolean isPrivate, Integer roomTime, Integer roomQuestionNum, Long roomQuestionBoxIdx, Integer roomPeopleNum) {
         this.member = member;
         this.roomType = roomType;
         this.roomName = roomName;

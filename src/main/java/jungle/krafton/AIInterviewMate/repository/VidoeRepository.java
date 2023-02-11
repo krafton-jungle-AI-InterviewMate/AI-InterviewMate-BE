@@ -1,4 +1,4 @@
 package jungle.krafton.AIInterviewMate.repository;
 
-public class LoginRepository {
+public interface VidoeRepository {
 }

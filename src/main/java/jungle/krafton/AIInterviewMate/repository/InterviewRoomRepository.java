@@ -1,4 +1,4 @@
 package jungle.krafton.AIInterviewMate.repository;
 
-public class InterviewRepository {
+public interface InterviewRoomRepository {
 }

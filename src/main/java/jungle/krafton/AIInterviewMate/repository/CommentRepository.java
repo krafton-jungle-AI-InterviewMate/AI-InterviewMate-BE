@@ -1,4 +1,4 @@
 package jungle.krafton.AIInterviewMate.repository;
 
-public class QuestionBoxesRepository {
+public interface CommentRepository {
 }

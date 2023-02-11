@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class InterviewerRating {
+public class ViewerRating {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
@@ -29,7 +29,7 @@ public class InterviewerRating {
     private Long roomIdx;
 
     @Builder
-    public InterviewerRating(Long viewerIdx, Long vieweeIdx, Integer rating, Long roomIdx) {
+    public ViewerRating(Long viewerIdx, Long vieweeIdx, Integer rating, Long roomIdx) {
         this.viewerIdx = viewerIdx;
         this.vieweeIdx = vieweeIdx;
         this.rating = rating;
