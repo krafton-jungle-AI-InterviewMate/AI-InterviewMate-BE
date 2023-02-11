@@ -1,6 +1,7 @@
 package jungle.krafton.AIInterviewMate.domain;
 
 
+import jungle.krafton.AIInterviewMate.dto.rating.RatingInterviewDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,6 +45,15 @@ public class VieweeRating {
         this.eyesRating = eyesRating;
         this.attitudeRating = attitudeRating;
         this.answerRating = answerRating;
+    }
+
+    public VieweeRating(RatingInterviewDto ratingInterviewDto) {
+        this.viewerIdx = ratingInterviewDto.getViewerIdx();
+        this.answerRating = ratingInterviewDto.getAnswerRating();
+        this.eyesRating = ratingInterviewDto.getEyesRating();
+        this.attitudeRating = ratingInterviewDto.getAttitudeRating();
+        this.vieweeIdx = 1L;
+        this.roomType = viewerIdx == 79797979 ? RoomType.AI : RoomType.USER;
     }
 }
 
