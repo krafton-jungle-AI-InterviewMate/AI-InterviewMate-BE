@@ -1,6 +1,7 @@
 package jungle.krafton.AIInterviewMate.domain;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class VieweeRating {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -34,16 +37,5 @@ public class VieweeRating {
 
     @Column(nullable = false)
     private Integer answerRating;
-
-
-    @Builder
-    public VieweeRating(Long viewerIdx, Long vieweeIdx, RoomType roomType, Integer eyesRating, Integer attitudeRating, Integer answerRating) {
-        this.viewerIdx = viewerIdx;
-        this.vieweeIdx = vieweeIdx;
-        this.roomType = roomType;
-        this.eyesRating = eyesRating;
-        this.attitudeRating = attitudeRating;
-        this.answerRating = answerRating;
-    }
 }
 
