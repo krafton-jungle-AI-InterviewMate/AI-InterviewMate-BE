@@ -1,9 +1,6 @@
 package jungle.krafton.AIInterviewMate.service;
 
-import jungle.krafton.AIInterviewMate.domain.Comment;
-import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
-import jungle.krafton.AIInterviewMate.domain.RoomStatus;
-import jungle.krafton.AIInterviewMate.domain.VieweeRating;
+import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.rating.CommentsRequestDto;
 import jungle.krafton.AIInterviewMate.dto.rating.RatingHistoryDto;
 import jungle.krafton.AIInterviewMate.dto.rating.RatingInterviewDto;
@@ -48,8 +45,7 @@ public class RatingService {
     }
 
     public void saveRating(int roomIdx, RatingInterviewDto ratingInterviewDto) {
-        VieweeRating vieweeRating = new VieweeRating(ratingInterviewDto);
-        vieweeRatingRepository.save(vieweeRating);
+        vieweeRatingRepository.save(convertVieweeRation(ratingInterviewDto));
 
         InterviewRoom interviewRoom = interviewRoomRepository.findById((long) roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
@@ -59,9 +55,29 @@ public class RatingService {
                     || commentsRequestDto.getComment().trim().length() == 0) {
                 continue;
             }
-            Comment comment = new Comment(interviewRoom, commentsRequestDto);
 
-            commentRepository.save(comment);
+            commentRepository.save(convertComment(interviewRoom, commentsRequestDto));
         }
+    }
+
+    private VieweeRating convertVieweeRation(RatingInterviewDto ratingInterviewDto) {
+        return VieweeRating.builder()
+                .viewerIdx(ratingInterviewDto.getViewerIdx())
+                .vieweeIdx(1L) //Login Data 가 없어서 현재는 임시방편으로 처리함
+                .roomType(ratingInterviewDto.getViewerIdx() == 79797979 ? RoomType.AI : RoomType.USER)
+                .answerRating(ratingInterviewDto.getAnswerRating())
+                .eyesRating(ratingInterviewDto.getEyesRating())
+                .attitudeRating(ratingInterviewDto.getAttitudeRating())
+                .build();
+    }
+
+    private Comment convertComment(InterviewRoom interviewRoom, CommentsRequestDto commentsRequestDto) {
+        return Comment.builder()
+                .interviewRoom(interviewRoom)
+                .vieweeIdx(interviewRoom.getMember().getIdx())
+                .viewerIdx(commentsRequestDto.getViewerIdx())
+                .questionTitle(commentsRequestDto.getQuestionTitle())
+                .comment(commentsRequestDto.getComment())
+                .build();
     }
 }
