@@ -16,8 +16,8 @@ public class ScriptsController {
         this.scriptsService = scriptsService;
     }
 
-    @PostMapping(value = "/{roomIdx}")
-    public ResponseEntity<PrivateResponseBody> saveRating(@RequestParam("idx") Long questionIdx, @PathVariable Long roomIdx, @RequestBody String script) {
+    @PostMapping("/{roomIdx}")
+    public ResponseEntity<PrivateResponseBody> saveScript(@RequestParam("idx") Long questionIdx, @PathVariable Long roomIdx, @RequestBody String script) {
         scriptsService.saveScript(questionIdx, roomIdx, script);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
