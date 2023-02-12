@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class InterviewService {
@@ -29,11 +30,20 @@ public class InterviewService {
     public InterviewRoomInfoDto getRoomInfo(long roomIdx) {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
         String memberNickname = interviewRoom.getMember().getNickname();
+
         long questionBoxIdx = interviewRoom.getRoomQuestionBoxIdx();
+        int questionNum = interviewRoom.getRoomQuestionNum();
+
         List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
+
         List<InterviewQuestionDto> interviewQuestions = new ArrayList<>();
-        for (Question question : questions) {
-            interviewQuestions.add(new InterviewQuestionDto(question));
+
+        Random random = new Random();
+        random.setSeed(System.currentTimeMillis());
+
+        for (int i = 0; i < questionNum; i++) {
+            int questionIdx = random.nextInt(questions.size());
+            interviewQuestions.add(new InterviewQuestionDto(questions.get(questionIdx)));
         }
 
         return new InterviewRoomInfoDto(interviewRoom, interviewQuestions, memberNickname);
