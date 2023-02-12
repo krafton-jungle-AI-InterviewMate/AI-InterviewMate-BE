@@ -37,5 +37,8 @@ public class VieweeRating {
 
     @Column(nullable = false)
     private Integer answerRating;
+
+    @Column(nullable = false)
+    private Long roomIdx;
 }
 
