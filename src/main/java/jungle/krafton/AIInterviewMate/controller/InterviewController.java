@@ -26,6 +26,7 @@ public class InterviewController {
     @GetMapping("/rooms/{roomIdx}")
     public ResponseEntity<PrivateResponseBody> getRoomInfo(@PathVariable("roomIdx") Long roomIdx) {
         InterviewRoomInfoDto interviewRoomInfo = interviewService.getRoomInfo(roomIdx);
+
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, interviewRoomInfo), HttpStatus.OK);
     }
 }
