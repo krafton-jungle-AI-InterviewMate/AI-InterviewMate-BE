@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface InterviewRoomRepository extends JpaRepository<InterviewRoom, Long> {
     List<InterviewRoom> findAllByMemberIdx(Long memberIdx);
+
+    InterviewRoom findByIdx(Long roomIdx);
 }
