@@ -27,7 +27,7 @@ public class InterviewService {
         this.memberRepository = memberRepository;
     }
 
-    public InterviewRoomInfoDto getRoomInfo(long roomIdx) {
+    public InterviewRoomInfoDto getRoomInfo(Long roomIdx) {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
         String memberNickname = interviewRoom.getMember().getNickname();
 
