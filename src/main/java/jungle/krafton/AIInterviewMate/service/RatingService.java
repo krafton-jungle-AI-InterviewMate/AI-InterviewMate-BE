@@ -44,10 +44,10 @@ public class RatingService {
         return ratingHistoryDtos;
     }
 
-    public void saveRating(int roomIdx, RatingInterviewDto ratingInterviewDto) {
+    public void saveRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) {
         vieweeRatingRepository.save(convertVieweeRating(ratingInterviewDto));
 
-        InterviewRoom interviewRoom = interviewRoomRepository.findById((long) roomIdx)
+        InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
         for (CommentsRequestDto commentsRequestDto : ratingInterviewDto.getCommentsRequestDtos()) {

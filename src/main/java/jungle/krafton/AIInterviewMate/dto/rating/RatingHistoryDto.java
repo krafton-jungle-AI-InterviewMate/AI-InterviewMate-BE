@@ -9,8 +9,8 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
-@Getter
 @Builder
+@Getter
 public class RatingHistoryDto {
     private String roomName;
     private LocalDateTime createdAt;
