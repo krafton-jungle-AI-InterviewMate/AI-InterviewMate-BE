@@ -28,6 +28,6 @@ public class Script {
     @Column(nullable = false)
     private Long questionIdx;
 
-    @Column(nullable = false, length = 1000)
+    @Column(length = 1000)
     private String script;
 }
