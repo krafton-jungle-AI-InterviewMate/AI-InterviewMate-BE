@@ -9,6 +9,8 @@ import jungle.krafton.AIInterviewMate.repository.ScriptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+
 @Service
 public class ScriptsService {
     private final ScriptRepository scriptRepository;
@@ -21,9 +23,10 @@ public class ScriptsService {
     }
 
 
-    public void saveScript(Long questionIdx, Long roomIdx, String script) {
-        InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
-        scriptRepository.save(convertScript(questionIdx, interviewRoom, script));
+    public void saveScript(Long questionIdx, Long roomIdx, HashMap<String, Object> script) {
+        InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
+        scriptRepository.save(convertScript(questionIdx, interviewRoom, String.valueOf(script.get("script"))));
     }
 
     private Script convertScript(Long questionIdx, InterviewRoom interviewRoom, String script) {
