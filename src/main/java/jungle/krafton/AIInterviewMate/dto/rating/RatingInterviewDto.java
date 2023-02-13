@@ -15,5 +15,6 @@ public class RatingInterviewDto {
     private Integer attitudeRating;
     private Integer answerRating;
     private List<CommentsRequestDto> commentsRequestDtos;
+    private List<ScriptSaveDto> scriptRequestsDtos;
 }
 

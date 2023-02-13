@@ -19,11 +19,13 @@ public class RatingService {
     private final VieweeRatingRepository vieweeRatingRepository;
     private final CommentRepository commentRepository;
     private final ScriptRepository scriptRepository;
+
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
 
     @Autowired
     public RatingService(InterviewRoomRepository interviewRoomRepository, VieweeRatingRepository vieweeRatingRepository, CommentRepository commentRepository, ScriptRepository scriptRepository, QuestionRepository questionRepository, MemberRepository memberRepository) {
+
         this.interviewRoomRepository = interviewRoomRepository;
         this.vieweeRatingRepository = vieweeRatingRepository;
         this.commentRepository = commentRepository;
@@ -47,22 +49,38 @@ public class RatingService {
     }
 
     public void saveRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) {
-        vieweeRatingRepository.save(convertVieweeRating(ratingInterviewDto));
+        vieweeRatingRepository.save(convertVieweeRating(roomIdx, ratingInterviewDto));
 
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
-        for (CommentsRequestDto commentsRequestDto : ratingInterviewDto.getCommentsRequestDtos()) {
-            if (commentsRequestDto.getQuestionTitle().trim().length() == 0
-                    || commentsRequestDto.getComment().trim().length() == 0) {
-                continue;
+        if (interviewRoom.getRoomType().equals(RoomType.USER)) {
+            for (CommentsRequestDto commentsRequestDto : ratingInterviewDto.getCommentsRequestDtos()) {
+                if (commentsRequestDto.getQuestionTitle().trim().length() == 0
+                        || commentsRequestDto.getComment().trim().length() == 0) {
+                    continue;
+                }
+                commentRepository.save(convertComment(interviewRoom, commentsRequestDto));
             }
-
-            commentRepository.save(convertComment(interviewRoom, commentsRequestDto));
+        }
+        if (interviewRoom.getRoomType().equals(RoomType.AI)) {
+            for (ScriptSaveDto scriptSaveDto : ratingInterviewDto.getScriptRequestsDtos()) {
+                scriptRepository.save(convertScript(scriptSaveDto, interviewRoom));
+            }
         }
     }
 
-    private VieweeRating convertVieweeRating(RatingInterviewDto ratingInterviewDto) {
+    private Script convertScript(ScriptSaveDto scriptSaveDto, InterviewRoom interviewRoom) {
+        return Script.builder()
+                .interviewRoom(interviewRoom)
+                .memberIdx(interviewRoom.getMember().getIdx())
+                .questionIdx(scriptSaveDto.getQuestionIdx())
+                .script(scriptSaveDto.getScript())
+                .build();
+    }
+
+
+    private VieweeRating convertVieweeRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) {
         return VieweeRating.builder()
                 .viewerIdx(ratingInterviewDto.getViewerIdx())
                 .vieweeIdx(1L) //Login Data 가 없어서 현재는 임시방편으로 처리함
@@ -70,6 +88,7 @@ public class RatingService {
                 .answerRating(ratingInterviewDto.getAnswerRating())
                 .eyesRating(ratingInterviewDto.getEyesRating())
                 .attitudeRating(ratingInterviewDto.getAttitudeRating())
+                .roomIdx(roomIdx)
                 .build();
     }
 
