@@ -1,16 +1,10 @@
 package jungle.krafton.AIInterviewMate.service;
 
 import jungle.krafton.AIInterviewMate.domain.*;
-import jungle.krafton.AIInterviewMate.dto.rating.CommentsRequestDto;
-import jungle.krafton.AIInterviewMate.dto.rating.RatingHistoryDto;
-import jungle.krafton.AIInterviewMate.dto.rating.RatingInterviewDto;
-import jungle.krafton.AIInterviewMate.dto.rating.ScriptSaveDto;
+import jungle.krafton.AIInterviewMate.dto.rating.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
-import jungle.krafton.AIInterviewMate.repository.CommentRepository;
-import jungle.krafton.AIInterviewMate.repository.InterviewRoomRepository;
-import jungle.krafton.AIInterviewMate.repository.ScriptRepository;
-import jungle.krafton.AIInterviewMate.repository.VieweeRatingRepository;
+import jungle.krafton.AIInterviewMate.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +20,18 @@ public class RatingService {
     private final CommentRepository commentRepository;
     private final ScriptRepository scriptRepository;
 
+    private final QuestionRepository questionRepository;
+    private final MemberRepository memberRepository;
+
     @Autowired
-    public RatingService(InterviewRoomRepository interviewRoomRepository, VieweeRatingRepository vieweeRatingRepository, CommentRepository commentRepository, ScriptRepository scriptRepository) {
+    public RatingService(InterviewRoomRepository interviewRoomRepository, VieweeRatingRepository vieweeRatingRepository, CommentRepository commentRepository, ScriptRepository scriptRepository, QuestionRepository questionRepository, MemberRepository memberRepository) {
+
         this.interviewRoomRepository = interviewRoomRepository;
         this.vieweeRatingRepository = vieweeRatingRepository;
         this.commentRepository = commentRepository;
         this.scriptRepository = scriptRepository;
+        this.questionRepository = questionRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<RatingHistoryDto> getRatingHistory() {
@@ -100,5 +100,97 @@ public class RatingService {
                 .questionTitle(commentsRequestDto.getQuestionTitle())
                 .comment(commentsRequestDto.getComment())
                 .build();
+    }
+
+    public RatingUserResponseDto getUserRatingList(Long roomIdx) {
+
+        List<RatingUserListDto> ratingList = new ArrayList<>();
+        List<VieweeRating> vieweeRatingList = vieweeRatingRepository.findAllByRoomIdx(roomIdx);
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+        for (VieweeRating vieweeRating : vieweeRatingList) {
+            Long viewerIdx = vieweeRating.getViewerIdx();
+            String nickname = "BOT";
+            if (viewerIdx != 79797979) {
+                nickname = memberRepository.findByIdx(viewerIdx).getNickname();
+            }
+            List<RatingUserCommentDto> commentList = new ArrayList<>();
+            List<Comment> comments = commentRepository.findAllByInterviewRoomIdxAndViewerIdx(roomIdx, viewerIdx);
+            for (Comment comment : comments) {
+                commentList.add(new RatingUserCommentDto(comment));
+            }
+            ratingList.add(new RatingUserListDto(nickname, vieweeRating, commentList));
+        }
+
+        return new RatingUserResponseDto(interviewRoom, ratingList);
+    }
+
+    public RatingAiResponseDto getAiRatingList(Long roomIdx) {
+        List<RatingAiScriptListDto> scriptList = new ArrayList<>();
+        List<Script> scripts = scriptRepository.findAllByInterviewRoomIdx(roomIdx);
+
+        for (Script script : scripts) {
+            String pureScript = script.getScript();
+            Long questionIdx = script.getQuestionIdx();
+            Question question = questionRepository.findByIdx(questionIdx);
+            List<String> keywords = new ArrayList<>();
+
+            keywords.add(question.getKeyword1());
+            keywords.add(question.getKeyword2());
+            keywords.add(question.getKeyword3());
+            keywords.add(question.getKeyword4());
+            keywords.add(question.getKeyword5());
+
+            ScriptRating converter = convertScript(pureScript, keywords);
+            String newScript = converter.getScript();
+            int score = converter.getScore();
+            Script updateQuery = scriptRepository.findByInterviewRoomIdxAndQuestionIdx(roomIdx, questionIdx);
+            updateQuery.setRating(score);
+            updateQuery.setScript(newScript);
+            scriptRepository.save(updateQuery);
+
+            scriptList.add(new RatingAiScriptListDto(question, updateQuery));
+        }
+
+        VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx);
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+
+        return new RatingAiResponseDto(vieweeRating, interviewRoom, scriptList);
+    }
+
+    private ScriptRating convertScript(String script, List<String> keywords) {
+        int matchCnt = 0;
+        int totalCnt = 5;
+        int score = 100;
+        for (String keyword : keywords) {
+            if (keyword == null) {
+                totalCnt--;
+                continue;
+            }
+            if (!script.contains(keyword)) {
+                continue;
+            }
+            matchCnt++;
+            script = script.replace(keyword, "<" + matchCnt + ">" + keyword + "</" + matchCnt + ">");
+        }
+        score = (score / totalCnt) * matchCnt;
+        return new ScriptRating(script, score);
+    }
+
+    private class ScriptRating {
+        private final String script;
+        private final int score;
+
+        public ScriptRating(String script, int score) {
+            this.script = script;
+            this.score = score;
+        }
+
+        public String getScript() {
+            return script;
+        }
+
+        public int getScore() {
+            return score;
+        }
     }
 }

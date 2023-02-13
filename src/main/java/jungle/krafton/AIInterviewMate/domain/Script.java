@@ -30,4 +30,15 @@ public class Script {
 
     @Column(length = 1000)
     private String script;
+
+    @Column()
+    private Integer rating;
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
+    }
 }
