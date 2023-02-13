@@ -37,4 +37,8 @@ public class Script {
     public void setRating(Integer rating) {
         this.rating = rating;
     }
+
+    public void setScript(String script) {
+        this.script = script;
+    }
 }

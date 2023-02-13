@@ -96,7 +96,6 @@ public class RatingService {
             }
             List<RatingUserCommentDto> commentList = new ArrayList<>();
             List<Comment> comments = commentRepository.findAllByInterviewRoomIdxAndViewerIdx(roomIdx, viewerIdx);
-            System.out.println(comments);
             for (Comment comment : comments) {
                 commentList.add(new RatingUserCommentDto(comment));
             }
@@ -127,9 +126,10 @@ public class RatingService {
             int score = converter.getScore();
             Script updateQuery = scriptRepository.findByInterviewRoomIdxAndQuestionIdx(roomIdx, questionIdx);
             updateQuery.setRating(score);
+            updateQuery.setScript(newScript);
             scriptRepository.save(updateQuery);
 
-            scriptList.add(new RatingAiScriptListDto(question, newScript));
+            scriptList.add(new RatingAiScriptListDto(question, updateQuery));
         }
 
         VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx);

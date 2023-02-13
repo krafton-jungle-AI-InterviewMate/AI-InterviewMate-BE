@@ -10,8 +10,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jungle.krafton.AIInterviewMate.dto.rating.RatingHistoryDto;
 import jungle.krafton.AIInterviewMate.domain.RoomType;
+import jungle.krafton.AIInterviewMate.dto.rating.RatingAiResponseDto;
+import jungle.krafton.AIInterviewMate.dto.rating.RatingHistoryDto;
 import jungle.krafton.AIInterviewMate.dto.rating.RatingInterviewDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
@@ -54,6 +55,14 @@ public class RatingController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
+    @Operation(summary = "면접 결과 상세 보기")
+    @Parameters({
+            @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1"),
+            @Parameter(in = ParameterIn.QUERY, name = "type", description = "방 타입", example = "AI")
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = RatingAiResponseDto.class)))
+    })
     @GetMapping("/{roomIdx}")
     public ResponseEntity<PrivateResponseBody> getRatingList(@PathVariable Long roomIdx, @RequestParam(name = "type") RoomType roomType) {
         if (roomType.equals(RoomType.AI)) {

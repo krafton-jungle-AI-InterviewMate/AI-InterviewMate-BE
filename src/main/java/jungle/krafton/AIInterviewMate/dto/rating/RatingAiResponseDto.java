@@ -17,7 +17,6 @@ import java.util.List;
 public class RatingAiResponseDto {
     private int eyesRating;
     private int attitudeRating;
-    private int answerRating;
     private List<RatingAiScriptListDto> scriptList;
     private String roomName;
     private LocalDateTime createdAt;
@@ -26,7 +25,6 @@ public class RatingAiResponseDto {
     public RatingAiResponseDto(VieweeRating vieweeRating, InterviewRoom interviewRoom, List<RatingAiScriptListDto> scriptList) {
         this.eyesRating = vieweeRating.getEyesRating();
         this.attitudeRating = vieweeRating.getAttitudeRating();
-        this.answerRating = vieweeRating.getAnswerRating();
         this.roomName = interviewRoom.getRoomName();
         this.createdAt = interviewRoom.getCreatedAt();
         this.roomQuestionNum = interviewRoom.getRoomQuestionNum();
