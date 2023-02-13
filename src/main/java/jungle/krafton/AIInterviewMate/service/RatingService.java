@@ -4,10 +4,12 @@ import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.rating.CommentsRequestDto;
 import jungle.krafton.AIInterviewMate.dto.rating.RatingHistoryDto;
 import jungle.krafton.AIInterviewMate.dto.rating.RatingInterviewDto;
+import jungle.krafton.AIInterviewMate.dto.rating.ScriptSaveDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.CommentRepository;
 import jungle.krafton.AIInterviewMate.repository.InterviewRoomRepository;
+import jungle.krafton.AIInterviewMate.repository.ScriptRepository;
 import jungle.krafton.AIInterviewMate.repository.VieweeRatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +24,14 @@ public class RatingService {
     private final InterviewRoomRepository interviewRoomRepository;
     private final VieweeRatingRepository vieweeRatingRepository;
     private final CommentRepository commentRepository;
+    private final ScriptRepository scriptRepository;
 
     @Autowired
-    public RatingService(InterviewRoomRepository interviewRoomRepository, VieweeRatingRepository vieweeRatingRepository, CommentRepository commentRepository) {
+    public RatingService(InterviewRoomRepository interviewRoomRepository, VieweeRatingRepository vieweeRatingRepository, CommentRepository commentRepository, ScriptRepository scriptRepository) {
         this.interviewRoomRepository = interviewRoomRepository;
         this.vieweeRatingRepository = vieweeRatingRepository;
         this.commentRepository = commentRepository;
+        this.scriptRepository = scriptRepository;
     }
 
     public List<RatingHistoryDto> getRatingHistory() {
@@ -50,15 +54,31 @@ public class RatingService {
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
-        for (CommentsRequestDto commentsRequestDto : ratingInterviewDto.getCommentsRequestDtos()) {
-            if (commentsRequestDto.getQuestionTitle().trim().length() == 0
-                    || commentsRequestDto.getComment().trim().length() == 0) {
-                continue;
+        if (interviewRoom.getRoomType().equals(RoomType.USER)) {
+            for (CommentsRequestDto commentsRequestDto : ratingInterviewDto.getCommentsRequestDtos()) {
+                if (commentsRequestDto.getQuestionTitle().trim().length() == 0
+                        || commentsRequestDto.getComment().trim().length() == 0) {
+                    continue;
+                }
+                commentRepository.save(convertComment(interviewRoom, commentsRequestDto));
             }
-
-            commentRepository.save(convertComment(interviewRoom, commentsRequestDto));
+        }
+        if (interviewRoom.getRoomType().equals(RoomType.AI)) {
+            for (ScriptSaveDto scriptSaveDto : ratingInterviewDto.getScriptRequestsDtos()) {
+                scriptRepository.save(convertScript(scriptSaveDto, interviewRoom));
+            }
         }
     }
+
+    private Script convertScript(ScriptSaveDto scriptSaveDto, InterviewRoom interviewRoom) {
+        return Script.builder()
+                .interviewRoom(interviewRoom)
+                .memberIdx(interviewRoom.getMember().getIdx())
+                .questionIdx(scriptSaveDto.getQuestionIdx())
+                .script(scriptSaveDto.getScript())
+                .build();
+    }
+
 
     private VieweeRating convertVieweeRating(RatingInterviewDto ratingInterviewDto) {
         return VieweeRating.builder()
