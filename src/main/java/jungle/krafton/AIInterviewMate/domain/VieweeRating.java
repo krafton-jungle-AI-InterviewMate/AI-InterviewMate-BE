@@ -35,7 +35,7 @@ public class VieweeRating {
     @Column(nullable = false)
     private Integer attitudeRating;
 
-    @Column(nullable = false)
+    @Column()
     private Integer answerRating;
 
     @Column(nullable = false)

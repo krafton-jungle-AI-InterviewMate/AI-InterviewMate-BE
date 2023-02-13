@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ScriptRepository extends JpaRepository<Script, Long> {
     List<Script> findAllByInterviewRoomIdx(Long roomIdx);
+
+    Script findByInterviewRoomIdxAndQuestionIdx(Long roomIdx, Long questionIdx);
 }
