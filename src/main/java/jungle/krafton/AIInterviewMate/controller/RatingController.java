@@ -48,7 +48,7 @@ public class RatingController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
     })
     @PostMapping(value = "/{roomIdx}/viewee")
-    public ResponseEntity<PrivateResponseBody> saveRating(@PathVariable int roomIdx, @RequestBody RatingInterviewDto ratingInterviewDto) {
+    public ResponseEntity<PrivateResponseBody> saveRating(@PathVariable Long roomIdx, @RequestBody RatingInterviewDto ratingInterviewDto) {
         ratingService.saveRating(roomIdx, ratingInterviewDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }

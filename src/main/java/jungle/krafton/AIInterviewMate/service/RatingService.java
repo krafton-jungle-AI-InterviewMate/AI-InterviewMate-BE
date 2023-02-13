@@ -44,10 +44,10 @@ public class RatingService {
         return ratingHistoryDtos;
     }
 
-    public void saveRating(int roomIdx, RatingInterviewDto ratingInterviewDto) {
-        vieweeRatingRepository.save(convertVieweeRation(ratingInterviewDto));
+    public void saveRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) {
+        vieweeRatingRepository.save(convertVieweeRating(ratingInterviewDto));
 
-        InterviewRoom interviewRoom = interviewRoomRepository.findById((long) roomIdx)
+        InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
         for (CommentsRequestDto commentsRequestDto : ratingInterviewDto.getCommentsRequestDtos()) {
@@ -60,7 +60,7 @@ public class RatingService {
         }
     }
 
-    private VieweeRating convertVieweeRation(RatingInterviewDto ratingInterviewDto) {
+    private VieweeRating convertVieweeRating(RatingInterviewDto ratingInterviewDto) {
         return VieweeRating.builder()
                 .viewerIdx(ratingInterviewDto.getViewerIdx())
                 .vieweeIdx(1L) //Login Data 가 없어서 현재는 임시방편으로 처리함
