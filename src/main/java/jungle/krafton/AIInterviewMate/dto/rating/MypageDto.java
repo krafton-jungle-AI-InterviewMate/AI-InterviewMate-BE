@@ -8,7 +8,6 @@ import lombok.Getter;
 @Builder
 @Getter
 public class MypageDto {
-
     private String nickname;
     private String email;
 }

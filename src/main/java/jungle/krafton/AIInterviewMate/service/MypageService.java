@@ -19,12 +19,12 @@ public class MypageService {
     }
 
 
-    public void updateNickname(MypageDto mypageNicknameDto) {
+    public void updateNickname(MypageDto mypageDto) {
 
-        Member member = memberRepository.findByEmail(mypageNicknameDto.getEmail())
+        Member member = memberRepository.findByEmail(mypageDto.getEmail())
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
 
-        member.setNickname(mypageNicknameDto.getNickname());
+        member.setNickname(mypageDto.getNickname());
 
         memberRepository.save(member);
     }
