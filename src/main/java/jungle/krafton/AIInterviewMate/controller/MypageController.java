@@ -28,7 +28,7 @@ public class MypageController {
         this.mypageService = mypageService;
     }
 
-    @Operation(summary = "마이페이지 수정하기")
+    @Operation(summary = "닉네임 수정하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
