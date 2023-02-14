@@ -72,7 +72,7 @@ public class InterviewService {
         List<InterviewRoomListDto> proceedRoomList = new ArrayList<>();
         List<InterviewRoomListDto> roomList = new ArrayList<>();
 
-        List<InterviewRoom> allRoom = interviewRoomRepository.findAllOrderByCreatedAtDesc();
+        List<InterviewRoom> allRoom = interviewRoomRepository.findAllByOrderByCreatedAtDesc();
         for (InterviewRoom room : allRoom) {
             int cnt = 1;
             if (room.getRoomViewer1Idx() != null) {
