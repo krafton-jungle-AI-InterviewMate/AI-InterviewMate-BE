@@ -16,7 +16,7 @@ import java.util.List;
 public class RatingUserResponseDto {
     private String roomName;
     private LocalDateTime createdAt;
-    private int roomTime;
+    private Integer roomTime;
     private List<RatingUserListDto> ratingList;
 
     public RatingUserResponseDto(InterviewRoom interviewRoom, List<RatingUserListDto> ratingList) {
