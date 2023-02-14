@@ -152,7 +152,7 @@ public class RatingService {
             String newScript = converter.getScript();
             int score = converter.getScore();
 
-            Script updateQuery = scriptRepository.findByInterviewRoomIdx(roomIdx);
+            Script updateQuery = scriptRepository.findByInterviewRoomIdxAndQuestionIdx(roomIdx, questionIdx);
 
             updateQuery.setRating(score);
             updateQuery.setScript(pureScript);
