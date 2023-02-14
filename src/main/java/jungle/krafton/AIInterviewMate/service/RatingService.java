@@ -35,7 +35,7 @@ public class RatingService {
     }
 
     public List<RatingHistoryDto> getRatingHistory() {
-        List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdx(MEMBER_IDX);
+        List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdxOrderByCreatedAtDesc(MEMBER_IDX);
 
         List<RatingHistoryDto> ratingHistoryDtos = new ArrayList<>();
 

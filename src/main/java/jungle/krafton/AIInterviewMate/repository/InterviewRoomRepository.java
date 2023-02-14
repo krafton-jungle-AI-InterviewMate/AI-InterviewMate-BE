@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface InterviewRoomRepository extends JpaRepository<InterviewRoom, Long> {
-    List<InterviewRoom> findAllByMemberIdx(Long memberIdx);
+    List<InterviewRoom> findAllByMemberIdxOrderByCreatedAtDesc(Long memberIdx);
 
     InterviewRoom findByIdx(Long roomIdx);
 }
