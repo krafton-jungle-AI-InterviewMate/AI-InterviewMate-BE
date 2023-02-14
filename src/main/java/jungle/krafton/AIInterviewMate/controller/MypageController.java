@@ -2,11 +2,9 @@ package jungle.krafton.AIInterviewMate.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomInfoAiDto;
 import jungle.krafton.AIInterviewMate.dto.rating.MypageDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
@@ -32,7 +30,7 @@ public class MypageController {
 
     @Operation(summary = "마이페이지 수정하기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InterviewRoomInfoAiDto.class)))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
     @PutMapping("/nickname")
     public ResponseEntity<PrivateResponseBody> updateMypage(@RequestBody MypageDto mypageDto) {
