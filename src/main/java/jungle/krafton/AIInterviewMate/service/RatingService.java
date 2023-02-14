@@ -145,9 +145,9 @@ public class RatingService {
             int score = converter.getScore();
             Script updateQuery = scriptRepository.findByInterviewRoomIdxAndQuestionIdx(roomIdx, questionIdx);
             updateQuery.setRating(score);
-            updateQuery.setScript(newScript);
+            updateQuery.setScript(pureScript);
             scriptRepository.save(updateQuery);
-
+            updateQuery.setScript(newScript);
             scriptList.add(new RatingAiScriptListDto(question, updateQuery));
         }
 
