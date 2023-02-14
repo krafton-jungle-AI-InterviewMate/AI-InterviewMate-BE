@@ -26,4 +26,8 @@ public class Member {
         this.nickname = nickname;
         this.email = email;
     }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
