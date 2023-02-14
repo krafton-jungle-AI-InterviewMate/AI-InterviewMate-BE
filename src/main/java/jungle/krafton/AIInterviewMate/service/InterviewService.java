@@ -8,7 +8,6 @@ import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.InterviewRoomRepository;
-import jungle.krafton.AIInterviewMate.repository.MemberRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class InterviewService {
     private final QuestionRepository questionRepository;
 
     @Autowired
-    public InterviewService(InterviewRoomRepository interviewRoomRepository, QuestionRepository questionRepository, MemberRepository memberRepository) {
+    public InterviewService(InterviewRoomRepository interviewRoomRepository, QuestionRepository questionRepository) {
         this.interviewRoomRepository = interviewRoomRepository;
         this.questionRepository = questionRepository;
     }
@@ -68,12 +67,12 @@ public class InterviewService {
     }
 
     public List<InterviewRoomListDto> getRoomList() {
-        List<InterviewRoomListDto> createRoomList = new ArrayList<>();
-        List<InterviewRoomListDto> proceedRoomList = new ArrayList<>();
         List<InterviewRoomListDto> roomList = new ArrayList<>();
 
-        List<InterviewRoom> allRoom = interviewRoomRepository.findAllByOrderByCreatedAtDesc();
+        List<InterviewRoom> allRoom = interviewRoomRepository
+                .findAllByRoomStatusOrRoomStatusOrderByCreatedAtDescRoomStatus(RoomStatus.CREATE, RoomStatus.PROCEED);
         for (InterviewRoom room : allRoom) {
+
             int cnt = 1;
             if (room.getRoomViewer1Idx() != null) {
                 cnt++;
@@ -84,16 +83,8 @@ public class InterviewService {
             if (room.getRoomViewer3Idx() != null) {
                 cnt++;
             }
-            if (room.getRoomStatus() == RoomStatus.CREATE) {
-                createRoomList.add(convertCreateRoom(cnt, room));
-                continue;
-            }
-            if (room.getRoomStatus() == RoomStatus.PROCEED) {
-                proceedRoomList.add(convertCreateRoom(cnt, room));
-            }
+            roomList.add(convertCreateRoom(cnt, room));
         }
-        roomList.addAll(createRoomList);
-        roomList.addAll(proceedRoomList);
 
         return roomList;
     }

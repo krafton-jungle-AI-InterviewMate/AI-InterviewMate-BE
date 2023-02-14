@@ -1,6 +1,7 @@
 package jungle.krafton.AIInterviewMate.repository;
 
 import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
+import jungle.krafton.AIInterviewMate.domain.RoomStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -10,5 +11,5 @@ public interface InterviewRoomRepository extends JpaRepository<InterviewRoom, Lo
 
     InterviewRoom findByIdx(Long roomIdx);
 
-    List<InterviewRoom> findAllByOrderByCreatedAtDesc();
+    List<InterviewRoom> findAllByRoomStatusOrRoomStatusOrderByCreatedAtDescRoomStatus(RoomStatus create, RoomStatus proceed);
 }
