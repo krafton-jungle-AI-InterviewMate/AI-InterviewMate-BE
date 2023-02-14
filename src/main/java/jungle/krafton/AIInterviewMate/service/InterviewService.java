@@ -2,11 +2,9 @@ package jungle.krafton.AIInterviewMate.service;
 
 import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
 import jungle.krafton.AIInterviewMate.domain.Question;
+import jungle.krafton.AIInterviewMate.domain.RoomStatus;
 import jungle.krafton.AIInterviewMate.domain.RoomType;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewQuestionDto;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomInfoAiDto;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomInfoDto;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomInfoUserDto;
+import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.InterviewRoomRepository;
@@ -21,13 +19,11 @@ import java.util.*;
 public class InterviewService {
     private final InterviewRoomRepository interviewRoomRepository;
     private final QuestionRepository questionRepository;
-    private final MemberRepository memberRepository;
 
     @Autowired
     public InterviewService(InterviewRoomRepository interviewRoomRepository, QuestionRepository questionRepository, MemberRepository memberRepository) {
         this.interviewRoomRepository = interviewRoomRepository;
         this.questionRepository = questionRepository;
-        this.memberRepository = memberRepository;
     }
 
     public InterviewRoomInfoDto getRoomInfo(Long roomIdx) { // AI 대인에 따른 예외처리, QuestionBox의 길이가 0인 경우 예외처리
@@ -70,4 +66,52 @@ public class InterviewService {
 
         return new InterviewRoomInfoAiDto(interviewRoom, memberNickname, interviewQuestions);
     }
+
+    public List<InterviewRoomListDto> getRoomList() {
+        List<InterviewRoomListDto> createRoomList = new ArrayList<>();
+        List<InterviewRoomListDto> proceedRoomList = new ArrayList<>();
+        List<InterviewRoomListDto> roomList = new ArrayList<>();
+
+        List<InterviewRoom> allRoom = interviewRoomRepository.findAllOrderByCreatedAtDesc();
+        for (InterviewRoom room : allRoom) {
+            int cnt = 1;
+            if (room.getRoomViewer1Idx() != null) {
+                cnt++;
+            }
+            if (room.getRoomViewer2Idx() != null) {
+                cnt++;
+            }
+            if (room.getRoomViewer3Idx() != null) {
+                cnt++;
+            }
+            if (room.getRoomStatus() == RoomStatus.CREATE) {
+                createRoomList.add(convertCreateRoom(cnt, room));
+                continue;
+            }
+            if (room.getRoomStatus() == RoomStatus.PROCEED) {
+                proceedRoomList.add(convertCreateRoom(cnt, room));
+            }
+        }
+        roomList.addAll(createRoomList);
+        roomList.addAll(proceedRoomList);
+
+        return roomList;
+    }
+
+    private InterviewRoomListDto convertCreateRoom(Integer cnt, InterviewRoom interviewRoom) {
+        return InterviewRoomListDto.builder()
+                .roomStatus(interviewRoom.getRoomStatus())
+                .roomType(interviewRoom.getRoomType())
+                .roomName(interviewRoom.getRoomName())
+                .nickname(interviewRoom.getMember().getNickname())
+                .roomPeopleNum(interviewRoom.getRoomPeopleNum())
+                .roomPeopleNow(cnt)
+                .roomTime(interviewRoom.getRoomTime())
+                .roomIsPrivate(interviewRoom.getIsPrivate())
+                .createdAt(interviewRoom.getCreatedAt())
+                .build();
+    }
 }
+
+
+
