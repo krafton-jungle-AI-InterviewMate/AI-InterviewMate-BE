@@ -49,10 +49,16 @@ public class RatingService {
     }
 
     public void saveRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) {
-        vieweeRatingRepository.save(convertVieweeRating(roomIdx, ratingInterviewDto));
-
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
+
+        VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdxAndViewerIdx(roomIdx, ratingInterviewDto.getViewerIdx());
+        if (vieweeRating == null) {
+            vieweeRatingRepository.save(convertVieweeRating(roomIdx, ratingInterviewDto));
+        } else {
+            vieweeRatingRepository.delete(vieweeRating);
+            vieweeRatingRepository.save(convertVieweeRating(roomIdx, ratingInterviewDto));
+        }
 
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
             for (CommentsRequestDto commentsRequestDto : ratingInterviewDto.getCommentsRequestDtos()) {
@@ -62,14 +68,11 @@ public class RatingService {
                 }
                 commentRepository.save(convertComment(interviewRoom, commentsRequestDto));
             }
-        }
-        if (interviewRoom.getRoomType().equals(RoomType.AI)) {
+        } else {
+            scriptRepository.deleteAllByInterviewRoom_Idx(roomIdx);
             for (ScriptSaveDto scriptSaveDto : ratingInterviewDto.getScriptRequestsDtos()) {
-                if (scriptRepository.findByInterviewRoomIdxAndQuestionIdx(roomIdx, scriptSaveDto.getQuestionIdx()) == null) {
-                    scriptRepository.save(convertScript(scriptSaveDto, interviewRoom));
-                } else {
-                    throw new PrivateException(StatusCode.NOT_ACCESS_DATA_DUPLICATE);
-                }
+                scriptRepository.save(convertScript(scriptSaveDto, interviewRoom));
+
             }
         }
     }
@@ -149,7 +152,7 @@ public class RatingService {
             String newScript = converter.getScript();
             int score = converter.getScore();
 
-            Script updateQuery = scriptRepository.findByInterviewRoomIdxAndQuestionIdx(roomIdx, questionIdx);
+            Script updateQuery = scriptRepository.findByInterviewRoomIdx(roomIdx);
 
             updateQuery.setRating(score);
             updateQuery.setScript(pureScript);
