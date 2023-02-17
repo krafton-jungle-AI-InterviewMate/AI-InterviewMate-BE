@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "questiionBoxes", description = "질문 관련 ")
+@Tag(name = "questionBoxes", description = "질문 관련 ")
 @RestController
 @RequestMapping("/questionBoxes")
 public class QuestionBoxesController {
