@@ -17,7 +17,7 @@ public class QuestionBoxesService {
         this.questionRepository = questionBoxRepository;
     }
 
-    public List<Question> questionsList(Long questionBoxIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+    public List<Question> createQuestionList(Long questionBoxIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
         return questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
     }
 }
