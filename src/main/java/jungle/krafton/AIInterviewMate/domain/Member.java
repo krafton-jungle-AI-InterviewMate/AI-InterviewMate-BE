@@ -26,4 +26,9 @@ public class Member {
         this.nickname = nickname;
         this.email = email;
     }
+
+    public Member update(String nickname) {
+        this.nickname = nickname;
+        return this;
+    }
 }

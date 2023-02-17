@@ -1,61 +1,60 @@
 package jungle.krafton.AIInterviewMate.service;
 
-import jungle.krafton.AIInterviewMate.dto.login.LoginConstant;
-import jungle.krafton.AIInterviewMate.exception.PrivateException;
-import jungle.krafton.AIInterviewMate.exception.StatusCode;
-import jungle.krafton.AIInterviewMate.util.GoogleOauth;
+import jungle.krafton.AIInterviewMate.domain.Member;
+import jungle.krafton.AIInterviewMate.dto.login.OAuthAttributeDto;
+import jungle.krafton.AIInterviewMate.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import javax.servlet.http.HttpSession;
+import java.util.Collections;
 
 @Service
-public class LoginService {
-    private final GoogleOauth googleOauth;
-    private final HttpServletResponse response;
+public class LoginService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+
+    private final MemberRepository memberRepository;
+    private final HttpSession httpSession;
 
     @Autowired
-    public LoginService(GoogleOauth googleOauth, HttpServletResponse response) {
-        this.googleOauth = googleOauth;
-        this.response = response;
+    public LoginService(MemberRepository memberRepository, HttpSession httpSession) {
+
+        this.memberRepository = memberRepository;
+        this.httpSession = httpSession;
     }
 
-    public void socialLoginRequest(LoginConstant socialLoginType) throws IOException {
-        String redirectURL;
-        switch (socialLoginType) {
-            case GOOGLE: {
-                //각 소셜 로그인을 요청하면 소셜로그인 페이지로 리다이렉트 해주는 프로세스이다.
-                redirectURL = googleOauth.getOauthRedirectURL();
-            }
-            break;
-            default: {
-                throw new PrivateException(StatusCode.NOT_FOUND_SOCIAL_LOGIN_TYPE);
-            }
 
-        }
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
+        OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        response.sendRedirect(redirectURL);
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+
+        OAuthAttributeDto attributes = OAuthAttributeDto.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+
+        Member user = saveOrUpdate(attributes);
+        httpSession.setAttribute("user", user);
+
+        return new DefaultOAuth2User(
+                Collections.singleton(new SimpleGrantedAuthority("USER")),
+                attributes.getAttributes(),
+                attributes.getNameAttributeKey()
+        );
     }
 
-//    public LoginGetSocialAuthRes oAuthLogin(LoginConstant socialLoginType, String code) throws IOException {
-//
-//        switch (socialLoginType) {
-//            case GOOGLE: {
-//                //구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답객체를 받아옴
-//                ResponseEntity<String> accessTokenResponse = googleOauth.requestAccessToken(code);
-//                //응답 객체가 JSON형식으로 되어 있으므로, 이를 deserialization해서 자바 객체에 담을 것이다.
-//                LoginGoogleAuthToken oAuthToken = googleOauth.getAccessToken(accessTokenResponse);
-//
-//                //액세스 토큰을 다시 구글로 보내 구글에 저장된 사용자 정보가 담긴 응답 객체를 받아온다.
-//                ResponseEntity<String> userInfoResponse = googleOauth.requestUserInfo(oAuthToken);
-//                //다시 JSON 형식의 응답 객체를 자바 객체로 역직렬화한다.
-//                LoginUser googleUser = googleOauth.getUserInfo(userInfoResponse);
-//
-//            }
-//            default: {
-//                throw new PrivateException(StatusCode.NOT_FOUND_SOCIAL_LOGIN_TYPE);
-//            }
-//        }
-//    }
+    private Member saveOrUpdate(OAuthAttributeDto attributes) {
+        Member user = memberRepository.findByEmail(attributes.getEmail())
+                .map(entity -> entity.update(attributes.getName()))
+                .orElse(attributes.toEntity());
+
+        return memberRepository.save(user);
+    }
 }
