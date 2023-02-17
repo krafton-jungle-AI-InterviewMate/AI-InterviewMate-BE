@@ -1,4 +1,8 @@
 package jungle.krafton.AIInterviewMate.repository;
 
-public interface QuestionBoxRepository {
+import jungle.krafton.AIInterviewMate.domain.QuestionBox;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface QuestionBoxRepository extends JpaRepository<QuestionBox, Long> {
+
 }
