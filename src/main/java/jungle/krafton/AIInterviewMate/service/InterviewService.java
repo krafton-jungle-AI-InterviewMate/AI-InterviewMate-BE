@@ -91,11 +91,11 @@ public class InterviewService {
     }
 
     public InterviewRoomCreateResponseDto createRoom(InterviewRoomCreateRequestDto requestDto) {
-        Member memberIdx = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
+        Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
 
-        InterviewRoom createdRoom = interviewRoomRepository.save(createRequestRoom(requestDto, memberIdx));
+        InterviewRoom createdRoom = interviewRoomRepository.save(createRequestRoom(requestDto, member));
 
-        return ResponseRoomDto(createdRoom, memberIdx);
+        return ResponseRoomDto(createdRoom, member);
     }
 
 
