@@ -98,6 +98,23 @@ public class InterviewService {
         return ResponseRoomDto(createdRoom, member);
     }
 
+    public void updateRoomStatus(Long roomIdx) {
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+        if (interviewRoom == null) throw new PrivateException(StatusCode.NOT_FOUND_ROOM);
+
+        RoomStatus roomStatus = interviewRoom.getRoomStatus();
+        if (roomStatus.equals(RoomStatus.CREATE)) {
+            roomStatus = RoomStatus.PROCEED;
+        } else if (roomStatus.equals(RoomStatus.PROCEED)) {
+            roomStatus = RoomStatus.EXIT;
+        } else {
+            throw new PrivateException(StatusCode.NOT_UPDATE_EXIT_ROOM);
+        }
+
+        interviewRoom.setRoomStatus(roomStatus);
+
+        interviewRoomRepository.save(interviewRoom);
+    }
 
     private InterviewRoomListDto convertCreateAndProceedRoom(Integer cnt, InterviewRoom interviewRoom) {
         return InterviewRoomListDto.builder()
