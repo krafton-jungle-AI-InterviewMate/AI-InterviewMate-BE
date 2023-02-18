@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jungle.krafton.AIInterviewMate.domain.Question;
-import jungle.krafton.AIInterviewMate.domain.QuestionBox;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxListDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.service.QuestionBoxesService;
@@ -44,11 +44,11 @@ public class QuestionBoxesController {
 
     @Operation(summary = "질문 꾸러미 가져오기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBox.class))))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxListDto.class))))
     })
     @GetMapping
     public ResponseEntity<PrivateResponseBody> createQuestionBox(@RequestBody HashMap<String, Object> email) {
-        List<QuestionBox> returnQuestionBoxList = questionBoxesService.createQuestionBox((String) email.get("email"));
+        List<QuestionBoxListDto> returnQuestionBoxList = questionBoxesService.createQuestionBox((String) email.get("email"));
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, returnQuestionBoxList), HttpStatus.OK);
     }
 }

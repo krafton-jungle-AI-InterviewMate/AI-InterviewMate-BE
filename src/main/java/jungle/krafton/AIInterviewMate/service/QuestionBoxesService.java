@@ -3,6 +3,7 @@ package jungle.krafton.AIInterviewMate.service;
 import jungle.krafton.AIInterviewMate.domain.Member;
 import jungle.krafton.AIInterviewMate.domain.Question;
 import jungle.krafton.AIInterviewMate.domain.QuestionBox;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxListDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
@@ -11,6 +12,7 @@ import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,8 +33,23 @@ public class QuestionBoxesService {
         return questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
     }
 
-    public List<QuestionBox> createQuestionBox(String email) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+    public List<QuestionBoxListDto> createQuestionBox(String email) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
         Member memberIdx = memberRepository.findByEmail(email).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
-        return questionBoxRepository.findAllByMember(memberIdx);
+        List<QuestionBox> questionBoxList = questionBoxRepository.findAllByMember(memberIdx);
+        List<QuestionBoxListDto> returnQuestionBox = new ArrayList<>();
+        for (QuestionBox questionbox : questionBoxList) {
+            returnQuestionBox.add(convertQuestionBox(questionbox));
+        }
+
+        return returnQuestionBox;
+    }
+
+
+    public QuestionBoxListDto convertQuestionBox(QuestionBox questionBox) {
+        return QuestionBoxListDto.builder()
+                .idx(questionBox.getIdx())
+                .boxName(questionBox.getBoxName())
+                .questionNum(questionBox.getQuestionNum())
+                .build();
     }
 }
