@@ -1,5 +1,7 @@
 package jungle.krafton.AIInterviewMate.jwt;
 
+import jungle.krafton.AIInterviewMate.exception.PrivateException;
+import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +42,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
-            logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURL);
+            throw new PrivateException(StatusCode.NOT_FOUND_JWT_TOKEN);
         }
         chain.doFilter(request, response);
     }

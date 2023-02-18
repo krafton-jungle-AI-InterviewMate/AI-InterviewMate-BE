@@ -58,7 +58,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .setSubject(userId)
                 .claim(AUTHORITIES_KEY, role)
-                .setIssuer("debrains")
+                .setIssuer("IM")
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .compact();
@@ -70,7 +70,7 @@ public class JwtTokenProvider {
 
         String refreshToken = Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
-                .setIssuer("debrains")
+                .setIssuer("IM")
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .compact();
@@ -81,7 +81,7 @@ public class JwtTokenProvider {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Lax")
-                .maxAge(REFRESH_TOKEN_EXPIRE_LENGTH)
+                .maxAge(REFRESH_TOKEN_EXPIRE_LENGTH / 1000)
                 .path("/")
                 .build();
 
