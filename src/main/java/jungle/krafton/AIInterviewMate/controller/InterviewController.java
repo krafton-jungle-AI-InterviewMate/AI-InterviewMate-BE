@@ -45,6 +45,19 @@ public class InterviewController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, interviewRoomInfo), HttpStatus.OK);
     }
 
+    @Operation(summary = "면접 방 상태 변경", description = "Create -> Proceed , Proceed -> Exit 으로 변경")
+    @Parameters({
+            @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
+    })
+    @PutMapping("/rooms/{roomIdx}")
+    public ResponseEntity<PrivateResponseBody> updateRoomStatus(@PathVariable("roomIdx") Long roomIdx) {
+        interviewService.updateRoomStatus(roomIdx);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
+    }
+
     @Operation(summary = "방 리스트 전체 가져오기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InterviewRoomListDto.class)))
