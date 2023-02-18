@@ -11,6 +11,7 @@ import jungle.krafton.AIInterviewMate.domain.Question;
 import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxListDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
+import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
 import jungle.krafton.AIInterviewMate.service.QuestionBoxesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class QuestionBoxesController {
     private final QuestionBoxesService questionBoxesService;
 
     @Autowired
-    public QuestionBoxesController(QuestionBoxesService questionBoxesService) {
+    public QuestionBoxesController(QuestionBoxesService questionBoxesService, QuestionRepository questionRepository) {
         this.questionBoxesService = questionBoxesService;
     }
 
@@ -61,4 +62,15 @@ public class QuestionBoxesController {
         questionBoxesService.clearQuestionBox(questionBoxIdx);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
+
+    @Operation(summary = "질문 꾸러미의 질문 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
+    })
+    @DeleteMapping("/{questionBoxIdx}/{questionIdx}")
+    public ResponseEntity<PrivateResponseBody> deleteQuestion(@PathVariable("questionIdx") Long questionIdx) { //TODO : JWT토근이 완성되면 Path Member 식별 예외처리
+        questionBoxesService.deleteQuestion(questionIdx);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
+    }
+
 }
