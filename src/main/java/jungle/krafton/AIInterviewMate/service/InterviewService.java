@@ -84,7 +84,7 @@ public class InterviewService {
             if (room.getRoomViewer3Idx() != null) {
                 cnt++;
             }
-            roomList.add(convertRunnigRoom(cnt, room));
+            roomList.add(convertCreateAndProceedRoom(cnt, room));
         }
 
         return roomList;
@@ -99,8 +99,9 @@ public class InterviewService {
     }
 
 
-    private InterviewRoomListDto convertRunnigRoom(Integer cnt, InterviewRoom interviewRoom) {
+    private InterviewRoomListDto convertCreateAndProceedRoom(Integer cnt, InterviewRoom interviewRoom) {
         return InterviewRoomListDto.builder()
+                .Idx(interviewRoom.getIdx())
                 .roomStatus(interviewRoom.getRoomStatus())
                 .roomType(interviewRoom.getRoomType())
                 .roomName(interviewRoom.getRoomName())
