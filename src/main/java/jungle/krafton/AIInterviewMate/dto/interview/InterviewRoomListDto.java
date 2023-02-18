@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InterviewRoomListDto {
+
+    private Long Idx;
     private String roomName;
     private String nickname;
     private Integer roomPeopleNum;

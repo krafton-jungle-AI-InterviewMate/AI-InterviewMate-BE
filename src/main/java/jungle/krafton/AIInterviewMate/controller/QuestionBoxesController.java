@@ -57,8 +57,8 @@ public class QuestionBoxesController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
     @DeleteMapping("/{questionBoxIdx}")
-    public ResponseEntity<PrivateResponseBody> deleteQuestionList(@PathVariable("questionBoxIdx") Long questionBoxIdx) {
-        questionBoxesService.deleteQuestionList(questionBoxIdx);
+    public ResponseEntity<PrivateResponseBody> clearQuestionBox(@PathVariable("questionBoxIdx") Long questionBoxIdx) {
+        questionBoxesService.clearQuestionBox(questionBoxIdx);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 }
