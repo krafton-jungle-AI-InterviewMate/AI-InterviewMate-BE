@@ -1,22 +1,44 @@
 package jungle.krafton.AIInterviewMate.config;
 
-import jungle.krafton.AIInterviewMate.service.LoginService;
+import jungle.krafton.AIInterviewMate.jwt.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig {
-    private final LoginService loginService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository;
+    private final OAuth2AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler authenticationFailureHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    public SecurityConfig(LoginService loginService) {
-        this.loginService = loginService;
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
+                          CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository,
+                          OAuth2AuthenticationSuccessHandler authenticationSuccessHandler,
+                          OAuth2AuthenticationFailureHandler authenticationFailureHandler,
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
+                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+                          JwtAccessDeniedHandler jwtAccessDeniedHandler) {
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.cookieAuthorizationRequestRepository = cookieAuthorizationRequestRepository;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.authenticationFailureHandler = authenticationFailureHandler;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
     }
+
 
     @Bean
     public BCryptPasswordEncoder encoder() {
@@ -27,14 +49,36 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
-                .antMatchers("/api/user").permitAll()
+                .antMatchers("/login").permitAll()
+                .anyRequest().authenticated();
+
+        http
+                .oauth2Login()
+                .authorizationEndpoint()
+                .authorizationRequestRepository(cookieAuthorizationRequestRepository)
                 .and()
-                .oauth2Login().userInfoEndpoint().userService(loginService);
+                .userInfoEndpoint().userService(customOAuth2UserService)
+                .and()
+                .successHandler(authenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler);
+
+        http
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler);
+
+        http
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.logout()
+                .deleteCookies("JSESSIONID");
+
         return http.build();
     }
 }
