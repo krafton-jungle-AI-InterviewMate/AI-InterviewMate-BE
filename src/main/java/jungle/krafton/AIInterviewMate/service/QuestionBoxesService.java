@@ -59,4 +59,9 @@ public class QuestionBoxesService {
                 .questionNum(questionBox.getQuestionNum())
                 .build();
     }
+
+    @Transactional
+    public void clearQuestion(Long questionIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+        questionRepository.deleteByIdx(questionIdx);
+    }
 }
