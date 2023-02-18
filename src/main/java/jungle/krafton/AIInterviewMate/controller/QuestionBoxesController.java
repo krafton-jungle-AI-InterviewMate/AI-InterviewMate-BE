@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jungle.krafton.AIInterviewMate.domain.Question;
 import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxListDto;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionKeywordDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
@@ -63,13 +64,23 @@ public class QuestionBoxesController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
-    @Operation(summary = "질문 꾸러미의 질문 삭제")
+    @Operation(summary = "질문 꾸러미의 질문 삭제하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
     @DeleteMapping("/{questionBoxIdx}/{questionIdx}")
     public ResponseEntity<PrivateResponseBody> deleteQuestion(@PathVariable("questionIdx") Long questionIdx) { //TODO : JWT토근이 완성되면 Path Member 식별 예외처리
         questionBoxesService.deleteQuestion(questionIdx);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
+    }
+
+    @Operation(summary = "질문 키워드 수정하기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
+    })
+    @PutMapping("/{qestionBoxIdx}/{questionIdx}")
+    public ResponseEntity<PrivateResponseBody> updateKeyword(@PathVariable("questionIdx") Long questionIdx, @RequestBody QuestionKeywordDto questionKeywordDto) { //TODO : JWT토근이 완성되면 Path Member 식별 예외처리
+        questionBoxesService.updateKeyword(questionIdx, questionKeywordDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 

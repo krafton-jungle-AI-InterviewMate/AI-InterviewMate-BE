@@ -4,6 +4,7 @@ import jungle.krafton.AIInterviewMate.domain.Member;
 import jungle.krafton.AIInterviewMate.domain.Question;
 import jungle.krafton.AIInterviewMate.domain.QuestionBox;
 import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxListDto;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionKeywordDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
@@ -51,6 +52,17 @@ public class QuestionBoxesService {
         questionRepository.deleteAllByQuestionBoxIdx(questionBoxIdx);
     }
 
+    public void updateKeyword(Long questionIdx, QuestionKeywordDto questionKeywordDto) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+        Question question = questionRepository.findByIdx(questionIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
+        question.setKeyword(questionKeywordDto);
+        questionRepository.save(question);
+    }
+
+
+    @Transactional
+    public void deleteQuestion(Long questionIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+        questionRepository.deleteByIdx(questionIdx);
+    }
 
     public QuestionBoxListDto convertQuestionBox(QuestionBox questionBox) {
         return QuestionBoxListDto.builder()
@@ -58,10 +70,5 @@ public class QuestionBoxesService {
                 .boxName(questionBox.getBoxName())
                 .questionNum(questionBox.getQuestionNum())
                 .build();
-    }
-
-    @Transactional
-    public void deleteQuestion(Long questionIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
-        questionRepository.deleteByIdx(questionIdx);
     }
 }
