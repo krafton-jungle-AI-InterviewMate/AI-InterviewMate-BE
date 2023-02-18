@@ -17,7 +17,7 @@ public class InterviewRoomListDto {
 
     private Long Idx;
     private String roomName;
-    private String nickname;
+    private String nickName;
     private Integer roomPeopleNum;
     private Integer roomPeopleNow;
     private Integer roomTime;
