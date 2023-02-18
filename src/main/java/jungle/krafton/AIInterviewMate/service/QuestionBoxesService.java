@@ -61,7 +61,7 @@ public class QuestionBoxesService {
     }
 
     @Transactional
-    public void clearQuestion(Long questionIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+    public void deleteQuestion(Long questionIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
         questionRepository.deleteByIdx(questionIdx);
     }
 }

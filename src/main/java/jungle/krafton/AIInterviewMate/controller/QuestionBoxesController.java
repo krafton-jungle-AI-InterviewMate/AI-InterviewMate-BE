@@ -68,8 +68,8 @@ public class QuestionBoxesController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
     @DeleteMapping("/{questionBoxIdx}/{questionIdx}")
-    public ResponseEntity<PrivateResponseBody> clearQuestion(@PathVariable("questionIdx") Long questionIdx) {
-        questionBoxesService.clearQuestion(questionIdx);
+    public ResponseEntity<PrivateResponseBody> deleteQuestion(@PathVariable("questionIdx") Long questionIdx) { //TODO : JWT토근이 완성되면 Path Member 식별 예외처리
+        questionBoxesService.deleteQuestion(questionIdx);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
