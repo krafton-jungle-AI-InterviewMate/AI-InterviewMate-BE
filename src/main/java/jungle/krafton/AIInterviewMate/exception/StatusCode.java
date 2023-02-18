@@ -23,7 +23,7 @@ public enum StatusCode {
 
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "130", "해당 회원을 찾을 수 없습니다"),
     NOT_FOUND_ROOM(HttpStatus.BAD_REQUEST, "131", "방을 찾을 수 없습니다."),
-    NOT_FOUND_QUESTION(HttpStatus.BAD_REQUEST, "132", "문제를 찾을 수 없습니다."),
+    NOT_FOUND_QUESTION(HttpStatus.BAD_REQUEST, "132", "질문을 찾을 수 없습니다."),
     NOT_FOUND_QUESTIONBOX(HttpStatus.BAD_REQUEST, "133", "꾸러미를 찾을 수 없습니다."),
 
     NOT_UPDATE_EXIT_ROOM(HttpStatus.BAD_REQUEST, "140", "종료된 방의 상태를 수정할 수 없습니다."),
