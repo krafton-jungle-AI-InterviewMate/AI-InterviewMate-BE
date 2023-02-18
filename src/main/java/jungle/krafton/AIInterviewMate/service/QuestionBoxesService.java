@@ -11,6 +11,7 @@ import jungle.krafton.AIInterviewMate.repository.QuestionBoxRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class QuestionBoxesService {
         return questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
     }
 
+
     public List<QuestionBoxListDto> createQuestionBox(String email) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
         Member memberIdx = memberRepository.findByEmail(email).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
         List<QuestionBox> questionBoxList = questionBoxRepository.findAllByMember(memberIdx);
@@ -42,6 +44,11 @@ public class QuestionBoxesService {
         }
 
         return returnQuestionBox;
+    }
+
+    @Transactional
+    public void deleteQuestionList(Long questionBoxIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+        questionRepository.deleteAllByQuestionBoxIdx(questionBoxIdx);
     }
 
 

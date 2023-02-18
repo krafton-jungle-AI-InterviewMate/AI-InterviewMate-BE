@@ -51,4 +51,14 @@ public class QuestionBoxesController {
         List<QuestionBoxListDto> returnQuestionBoxList = questionBoxesService.createQuestionBox((String) email.get("email"));
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, returnQuestionBoxList), HttpStatus.OK);
     }
+
+    @Operation(summary = "질문 꾸러미의 질문 비우기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
+    })
+    @DeleteMapping("/{questionBoxIdx}")
+    public ResponseEntity<PrivateResponseBody> deleteQuestionList(@PathVariable("questionBoxIdx") Long questionBoxIdx) {
+        questionBoxesService.deleteQuestionList(questionBoxIdx);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
+    }
 }
