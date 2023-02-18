@@ -34,6 +34,16 @@ public class QuestionBoxesController {
         this.questionBoxesService = questionBoxesService;
     }
 
+    @Operation(summary = "질문 꾸러미 가져오기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxListDto.class))))
+    })
+    @GetMapping
+    public ResponseEntity<PrivateResponseBody> createQuestionBox(@RequestBody HashMap<String, Object> email) {
+        List<QuestionBoxListDto> returnQuestionBoxList = questionBoxesService.createQuestionBox((String) email.get("email"));
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, returnQuestionBoxList), HttpStatus.OK);
+    }
+
     @Operation(summary = "질문 리스트와 키워드 가져오기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Question.class))))
@@ -44,15 +54,16 @@ public class QuestionBoxesController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, returnQuestionList), HttpStatus.OK);
     }
 
-    @Operation(summary = "질문 꾸러미 가져오기")
+    @Operation(summary = "질문 꾸러미에 질문 추가하기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxListDto.class))))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
-    @GetMapping
-    public ResponseEntity<PrivateResponseBody> createQuestionBox(@RequestBody HashMap<String, Object> email) {
-        List<QuestionBoxListDto> returnQuestionBoxList = questionBoxesService.createQuestionBox((String) email.get("email"));
-        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, returnQuestionBoxList), HttpStatus.OK);
+    @PostMapping("/{questionBoxIdx}")
+    public ResponseEntity<PrivateResponseBody> createQuestion(@PathVariable("questionBoxIdx") Long questionBoxIdx, @RequestBody QuestionKeywordDto questionKeywordDto) {
+        questionBoxesService.createQuestion(questionBoxIdx, questionKeywordDto);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
+
 
     @Operation(summary = "질문 꾸러미의 질문 비우기")
     @ApiResponses(value = {
