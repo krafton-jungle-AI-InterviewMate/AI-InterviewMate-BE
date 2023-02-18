@@ -4,6 +4,7 @@ import jungle.krafton.AIInterviewMate.domain.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findAllByQuestionBoxIdx(Long questionBoxIdx);
@@ -12,5 +13,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     void deleteByIdx(Long idx);
 
-    Question findByIdx(Long idx);
+    Optional<Question> findByIdx(Long idx);
+
 }

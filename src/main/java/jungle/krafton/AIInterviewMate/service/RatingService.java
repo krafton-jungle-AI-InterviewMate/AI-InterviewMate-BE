@@ -131,7 +131,7 @@ public class RatingService {
         for (Script script : scripts) {
             String pureScript = script.getScript();
             Long questionIdx = script.getQuestionIdx();
-            Question question = questionRepository.findByIdx(questionIdx);
+            Question question = questionRepository.findByIdx(questionIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
             List<String> keywords = new ArrayList<>();
 
             keywords.add(question.getKeyword1());
