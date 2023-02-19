@@ -1,6 +1,7 @@
 package jungle.krafton.AIInterviewMate.jwt;
 
 import io.jsonwebtoken.*;
+import jungle.krafton.AIInterviewMate.domain.Member;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
@@ -105,7 +106,8 @@ public class JwtTokenProvider {
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         Long memberIdx = Long.valueOf(claims.getSubject());
-        String memberEmail = memberRepository.findByIdx(memberIdx).getEmail();
+        Member member = memberRepository.findByIdx(memberIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
+        String memberEmail = member.getEmail();
         CustomUserDetails principal = new CustomUserDetails(memberIdx, memberEmail, authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
