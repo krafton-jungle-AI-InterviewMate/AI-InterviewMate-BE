@@ -41,4 +41,7 @@ out/
 
 ### application ###
 *.yml
-application.properties
+*.properties
+
+### LogBack ###
+logs/
