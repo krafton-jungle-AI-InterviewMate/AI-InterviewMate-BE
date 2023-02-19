@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Tag(name = "questionBoxes", description = "질문 관련 ")
@@ -38,10 +37,10 @@ public class QuestionBoxesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxListDto.class))))
     })
-    @GetMapping
-    public ResponseEntity<PrivateResponseBody> createQuestionBox(@RequestBody HashMap<String, Object> email) {
-        List<QuestionBoxListDto> returnQuestionBoxList = questionBoxesService.createQuestionBox((String) email.get("email"));
-        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, returnQuestionBoxList), HttpStatus.OK);
+    @GetMapping("/temp/{memberIdx}") //TODO: 임시로 만들어둠 추후에 JWT 구현 후 내용 변경 필요
+    public ResponseEntity<PrivateResponseBody> getQuestionBoxes(@PathVariable Long memberIdx) {
+        List<QuestionBoxListDto> questionBoxList = questionBoxesService.getQuestionBoxes(memberIdx);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, questionBoxList), HttpStatus.OK);
     }
 
     @Operation(summary = "질문 리스트와 키워드 가져오기")
