@@ -1,7 +1,5 @@
 package jungle.krafton.AIInterviewMate.jwt;
 
-import jungle.krafton.AIInterviewMate.exception.PrivateException;
-import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,20 +7,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class JwtAuthenticationFilter extends GenericFilterBean {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     public final String AUTHORIZATION_HEADER;
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final JwtTokenProvider jwtTokenProvider;
 
     public JwtAuthenticationFilter(
@@ -33,18 +30,20 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String jwt = resolveToken(httpServletRequest);
-        String requestURL = httpServletRequest.getRequestURI();
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String jwt = resolveToken(request);
 
         if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            System.out.println(customUserDetails.getName());
+            System.out.println(authentication.getName());
+            log.info(authentication.getName() + "의 인증정보 저장");
         } else {
-            throw new PrivateException(StatusCode.NOT_FOUND_JWT_TOKEN);
+            log.info("유효한 JWT 토큰이 없습니다.");
         }
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 
     private String resolveToken(HttpServletRequest request) {

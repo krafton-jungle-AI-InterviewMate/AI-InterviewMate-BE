@@ -16,14 +16,4 @@ public class LoginController {
     public LoginController(LoginService loginService) {
         this.loginService = loginService;
     }
-
-//    @GetMapping("/auth/{socialLoginType}/callback")
-//    public ResponseEntity<PrivateResponseBody> callback(
-//            @PathVariable() String socialLoginType,
-//            @RequestParam(name = "code") String code) throws IOException {
-//        System.out.println(">> 소셜 로그인 API 서버로부터 받은 code :" + code);
-//        LoginConstant loginConstant = LoginConstant.valueOf(socialLoginType.toUpperCase());
-//        LoginGetSocialAuthRes getSocialOAuthRes = loginService.oAuthLogin(loginConstant, code);
-//        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, getSocialOAuthRes), HttpStatus.OK);
-//    }
 }

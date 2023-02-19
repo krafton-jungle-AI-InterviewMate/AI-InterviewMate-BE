@@ -1,10 +1,9 @@
 package jungle.krafton.AIInterviewMate.jwt;
 
 import io.jsonwebtoken.*;
-import jungle.krafton.AIInterviewMate.exception.PrivateException;
-import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,9 +18,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-@Log4j2
 @Component
 public class JwtTokenProvider {
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final String SECRET_KEY;
     private final String COOKIE_REFRESH_TOKEN_KEY;
     private final long ACCESS_TOKEN_EXPIRE_LENGTH;       // 1hour
@@ -112,15 +111,14 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            throw new PrivateException(StatusCode.LOGIN_WRONG_SIGNATURE_JWT_TOKEN);
         } catch (ExpiredJwtException e) {
-            throw new PrivateException(StatusCode.LOGIN_EXPIRED_JWT_TOKEN);
+            log.info("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
-            throw new PrivateException(StatusCode.LOGIN_NOT_SUPPORTED_JWT_TOKEN);
-        } catch (IllegalArgumentException e) {
-            throw new PrivateException(StatusCode.LOGIN_WRONG_FORM_JWT_TOKEN);
+            log.info("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalStateException e) {
+            log.info("JWT 토큰이 잘못되었습니다");
         }
+        return false;
     }
 
     // Access Token 만료시 갱신때 사용할 정보를 얻기 위해 Claim 리턴

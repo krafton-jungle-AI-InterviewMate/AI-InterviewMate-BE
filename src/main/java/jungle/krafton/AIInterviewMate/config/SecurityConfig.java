@@ -49,16 +49,20 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
-                .anyRequest().authenticated();
+//                .anyRequest().permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
 
-        http
+                .and()
                 .oauth2Login()
                 .authorizationEndpoint()
                 .authorizationRequestRepository(cookieAuthorizationRequestRepository)
@@ -67,11 +71,6 @@ public class SecurityConfig {
                 .and()
                 .successHandler(authenticationSuccessHandler)
                 .failureHandler(authenticationFailureHandler);
-
-        http
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler);
 
         http
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
