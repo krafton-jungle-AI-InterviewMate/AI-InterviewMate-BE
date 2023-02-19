@@ -45,3 +45,4 @@ out/
 
 ### LogBack ###
 logs/
+*.log

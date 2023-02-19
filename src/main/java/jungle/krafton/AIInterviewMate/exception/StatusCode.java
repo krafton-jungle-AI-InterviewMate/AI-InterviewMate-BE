@@ -17,6 +17,9 @@ public enum StatusCode {
     LOGIN_NOT_SUPPORTED_JWT_TOKEN(HttpStatus.BAD_REQUEST, "113", "지원되지 않는 JWT 토큰입니다."),
     LOGIN_WRONG_FORM_JWT_TOKEN(HttpStatus.BAD_REQUEST, "114", "JWT 토큰이 잘못되었습니다."),
     NOT_FOUND_SOCIAL_LOGIN_TYPE(HttpStatus.NOT_FOUND, "115", "알 수 없는 소셜 로그인 형식입니다."),
+    NOT_FOUND_REFRESH_TOKEN_COOKIE(HttpStatus.BAD_REQUEST, "116", "REFRESH_TOKEN 쿠키를 찾을 수 없습니다."),
+    NOT_VALIDATED_REFRESH_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "117", "잘못된 REFRESH 토큰입니다."),
+    NOT_MATCHED_REFRESH_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "118", "잘못된 REFRESH_TOKEN 서명입니다."),
 
     PAGING_ERROR(HttpStatus.BAD_REQUEST, "120", "페이지 요청에는 모든 요소가 필요합니다"),
     PAGING_NUM_ERROR(HttpStatus.BAD_REQUEST, "121", "페이지는 1부터 시작됩니다"),

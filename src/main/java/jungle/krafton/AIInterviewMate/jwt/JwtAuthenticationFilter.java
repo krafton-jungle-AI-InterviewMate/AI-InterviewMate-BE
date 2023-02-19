@@ -17,15 +17,14 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
     public final String AUTHORIZATION_HEADER;
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final JwtTokenProvider jwtTokenProvider;
 
     public JwtAuthenticationFilter(
-            JwtTokenProvider jwtTokenProvider,
-            @Value("${jwt.header}") String header) {
-        this.AUTHORIZATION_HEADER = header;
+            @Value("${jwt.header}") String authorizationHeader,
+            JwtTokenProvider jwtTokenProvider) {
+        AUTHORIZATION_HEADER = authorizationHeader;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -37,11 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-            System.out.println(customUserDetails.getName());
-            System.out.println(authentication.getName());
-            log.info(authentication.getName() + "의 인증정보 저장");
+            log.info(customUserDetails.getName() + "의 인증정보 저장");
         } else {
-            log.info("유효한 JWT 토큰이 없습니다.");
+            log.info("JWT 이 존재하지 않습니다.");
         }
         filterChain.doFilter(request, response);
     }
