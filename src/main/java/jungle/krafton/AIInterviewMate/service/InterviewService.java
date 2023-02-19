@@ -1,12 +1,7 @@
 package jungle.krafton.AIInterviewMate.service;
 
-import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
-import jungle.krafton.AIInterviewMate.domain.Question;
-import jungle.krafton.AIInterviewMate.domain.RoomType;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewQuestionDto;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomInfoAiDto;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomInfoDto;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomInfoUserDto;
+import jungle.krafton.AIInterviewMate.domain.*;
+import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.InterviewRoomRepository;
@@ -22,6 +17,7 @@ public class InterviewService {
     private final InterviewRoomRepository interviewRoomRepository;
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+
 
     @Autowired
     public InterviewService(InterviewRoomRepository interviewRoomRepository, QuestionRepository questionRepository, MemberRepository memberRepository) {
@@ -70,4 +66,102 @@ public class InterviewService {
 
         return new InterviewRoomInfoAiDto(interviewRoom, memberNickname, interviewQuestions);
     }
+
+    public List<InterviewRoomListDto> getRoomList() {
+        List<InterviewRoomListDto> roomList = new ArrayList<>();
+
+        List<InterviewRoom> allRoom = interviewRoomRepository
+                .findAllByRoomStatusOrRoomStatusOrderByCreatedAtDescRoomStatus(RoomStatus.CREATE, RoomStatus.PROCEED);
+        for (InterviewRoom room : allRoom) {
+
+            int cnt = 1;
+            if (room.getRoomViewer1Idx() != null) {
+                cnt++;
+            }
+            if (room.getRoomViewer2Idx() != null) {
+                cnt++;
+            }
+            if (room.getRoomViewer3Idx() != null) {
+                cnt++;
+            }
+            roomList.add(convertCreateAndProceedRoom(cnt, room));
+        }
+
+        return roomList;
+    }
+
+    public InterviewRoomCreateResponseDto createRoom(InterviewRoomCreateRequestDto requestDto) {
+        Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
+
+        InterviewRoom createdRoom = interviewRoomRepository.save(createRequestRoom(requestDto, member));
+
+        return ResponseRoomDto(createdRoom, member);
+    }
+
+    public void updateRoomStatus(Long roomIdx) {
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+        if (interviewRoom == null) throw new PrivateException(StatusCode.NOT_FOUND_ROOM);
+
+        RoomStatus roomStatus = interviewRoom.getRoomStatus();
+        if (roomStatus.equals(RoomStatus.CREATE)) {
+            roomStatus = RoomStatus.PROCEED;
+        } else if (roomStatus.equals(RoomStatus.PROCEED)) {
+            roomStatus = RoomStatus.EXIT;
+        } else {
+            throw new PrivateException(StatusCode.NOT_UPDATE_EXIT_ROOM);
+        }
+
+        interviewRoom.setRoomStatus(roomStatus);
+
+        interviewRoomRepository.save(interviewRoom);
+    }
+
+    private InterviewRoomListDto convertCreateAndProceedRoom(Integer cnt, InterviewRoom interviewRoom) {
+        return InterviewRoomListDto.builder()
+                .idx(interviewRoom.getIdx())
+                .roomStatus(interviewRoom.getRoomStatus())
+                .roomType(interviewRoom.getRoomType())
+                .roomName(interviewRoom.getRoomName())
+                .nickname(interviewRoom.getMember().getNickname())
+                .roomPeopleNum(interviewRoom.getRoomPeopleNum())
+                .roomPeopleNow(cnt)
+                .roomTime(interviewRoom.getRoomTime())
+                .roomIsPrivate(interviewRoom.getIsPrivate())
+                .createdAt(interviewRoom.getCreatedAt())
+                .build();
+    }
+
+
+    private InterviewRoom createRequestRoom(InterviewRoomCreateRequestDto requestDto, Member member) {
+        return InterviewRoom.builder()
+                .member(member)
+                .roomType(requestDto.getRoomType())
+                .roomName(requestDto.getRoomName())
+                .roomPassword(requestDto.getRoomPassword())
+                .isPrivate(requestDto.getIsPrivate())
+                .roomTime(requestDto.getRoomTime())
+                .roomQuestionNum(requestDto.getRoomQuestionNum())
+                .roomQuestionBoxIdx(requestDto.getRoomQuestionBoxIdx())
+                .roomPeopleNum(requestDto.getRoomPeopleNum())
+                .build();
+    }
+
+    private InterviewRoomCreateResponseDto ResponseRoomDto(InterviewRoom interviewRoom, Member member) {
+        return InterviewRoomCreateResponseDto.builder()
+                .roomIdx(interviewRoom.getIdx())
+                .roomName(interviewRoom.getRoomName())
+                .roomPeopleNum(interviewRoom.getRoomPeopleNum())
+                .roomPassword(interviewRoom.getRoomPassword())
+                .roomType(interviewRoom.getRoomType())
+                .nickname(member.getNickname())
+                .roomTime(interviewRoom.getRoomTime())
+                .roomQuestionBoxIdx(interviewRoom.getRoomQuestionBoxIdx())
+                .roomQuestionNum(interviewRoom.getRoomQuestionNum())
+                .createdAt(interviewRoom.getCreatedAt())
+                .roomStatus(interviewRoom.getRoomStatus())
+                .build();
+    }
 }
+
+
+

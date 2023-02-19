@@ -1,7 +1,6 @@
 package jungle.krafton.AIInterviewMate.dto.rating;
 
 import jungle.krafton.AIInterviewMate.domain.Question;
-import jungle.krafton.AIInterviewMate.domain.Script;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,9 +15,9 @@ public class RatingAiScriptListDto {
     private String script;
     private Integer rating;
 
-    public RatingAiScriptListDto(Question question, Script script) {
+    public RatingAiScriptListDto(Question question, String script, Integer rating) {
         this.questionTitle = question.getQuestionTitle();
-        this.script = script.getScript();
-        this.rating = script.getRating();
+        this.script = script;
+        this.rating = rating;
     }
 }

@@ -43,4 +43,8 @@ public class Member {
         this.nickname = nickname;
         return this;
     }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

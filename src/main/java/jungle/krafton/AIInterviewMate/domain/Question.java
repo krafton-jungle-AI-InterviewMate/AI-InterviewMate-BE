@@ -1,5 +1,6 @@
 package jungle.krafton.AIInterviewMate.domain;
 
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionKeywordDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,5 +47,14 @@ public class Question {
         this.keyword4 = keyword4;
         this.keyword5 = keyword5;
         this.questionTitle = questionTitle;
+    }
+
+    public void setKeyword(QuestionKeywordDto questionKeywordDto) {
+        this.keyword1 = questionKeywordDto.getKeyword1();
+        this.keyword2 = questionKeywordDto.getKeyword2();
+        this.keyword3 = questionKeywordDto.getKeyword3();
+        this.keyword4 = questionKeywordDto.getKeyword4();
+        this.keyword5 = questionKeywordDto.getKeyword5();
+        this.questionTitle = questionKeywordDto.getQuestionTitle();
     }
 }

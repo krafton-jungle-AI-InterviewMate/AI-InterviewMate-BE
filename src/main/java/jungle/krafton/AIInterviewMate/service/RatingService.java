@@ -35,7 +35,7 @@ public class RatingService {
     }
 
     public List<RatingHistoryDto> getRatingHistory() {
-        List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdx(MEMBER_IDX);
+        List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdxOrderByCreatedAtDesc(MEMBER_IDX);
 
         List<RatingHistoryDto> ratingHistoryDtos = new ArrayList<>();
 
@@ -111,7 +111,8 @@ public class RatingService {
             Long viewerIdx = vieweeRating.getViewerIdx();
             String nickname = "BOT";
             if (viewerIdx != 79797979) {
-                nickname = memberRepository.findByIdx(viewerIdx).getNickname();
+                Member member = memberRepository.findByIdx(viewerIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
+                nickname = member.getNickname();
             }
             List<RatingUserCommentDto> commentList = new ArrayList<>();
             List<Comment> comments = commentRepository.findAllByInterviewRoomIdxAndViewerIdx(roomIdx, viewerIdx);
@@ -131,7 +132,7 @@ public class RatingService {
         for (Script script : scripts) {
             String pureScript = script.getScript();
             Long questionIdx = script.getQuestionIdx();
-            Question question = questionRepository.findByIdx(questionIdx);
+            Question question = questionRepository.findByIdx(questionIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
             List<String> keywords = new ArrayList<>();
 
             keywords.add(question.getKeyword1());
@@ -141,14 +142,17 @@ public class RatingService {
             keywords.add(question.getKeyword5());
 
             ScriptRating converter = convertScript(pureScript, keywords);
+
             String newScript = converter.getScript();
             int score = converter.getScore();
+
             Script updateQuery = scriptRepository.findByInterviewRoomIdxAndQuestionIdx(roomIdx, questionIdx);
+
             updateQuery.setRating(score);
             updateQuery.setScript(pureScript);
             scriptRepository.save(updateQuery);
-            updateQuery.setScript(newScript);
-            scriptList.add(new RatingAiScriptListDto(question, updateQuery));
+
+            scriptList.add(new RatingAiScriptListDto(question, newScript, score));
         }
 
         VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx);
