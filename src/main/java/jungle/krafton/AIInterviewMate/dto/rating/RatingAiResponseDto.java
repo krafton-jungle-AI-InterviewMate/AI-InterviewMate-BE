@@ -15,12 +15,12 @@ import java.util.List;
 @Builder
 @ToString
 public class RatingAiResponseDto {
-    private int eyesRating;
-    private int attitudeRating;
+    private Integer eyesRating;
+    private Integer attitudeRating;
     private List<RatingAiScriptListDto> scriptList;
     private String roomName;
     private LocalDateTime createdAt;
-    private int roomQuestionNum;
+    private Integer roomQuestionNum;
 
     public RatingAiResponseDto(VieweeRating vieweeRating, InterviewRoom interviewRoom, List<RatingAiScriptListDto> scriptList) {
         this.eyesRating = vieweeRating.getEyesRating();

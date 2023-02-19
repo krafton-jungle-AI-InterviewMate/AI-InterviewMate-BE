@@ -18,7 +18,6 @@ public class MypageService {
         this.memberRepository = memberRepository;
     }
 
-
     public void updateNickname(MypageDto mypageDto) {
 
         Member member = memberRepository.findByEmail(mypageDto.getEmail())

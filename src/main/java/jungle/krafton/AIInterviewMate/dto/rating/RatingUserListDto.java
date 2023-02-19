@@ -14,9 +14,9 @@ import java.util.List;
 @ToString
 public class RatingUserListDto {
     private String viewerName;
-    private int eyesRating;
-    private int attitudeRating;
-    private int answerRating;
+    private Integer eyesRating;
+    private Integer attitudeRating;
+    private Integer answerRating;
     private List<RatingUserCommentDto> commentList;
 
     public RatingUserListDto(String nickname, VieweeRating vieweeRating, List<RatingUserCommentDto> commentList) {
