@@ -22,7 +22,7 @@ public class InterviewRoomCreateResponseDto {
     private String nickname;
     private Integer roomTime;
     private Integer roomQuestionNum;
-    private Long roomQuestionboxIdx;
+    private Long roomQuestionBoxIdx;
     private LocalDateTime createdAt;
     private RoomStatus roomStatus;
 }

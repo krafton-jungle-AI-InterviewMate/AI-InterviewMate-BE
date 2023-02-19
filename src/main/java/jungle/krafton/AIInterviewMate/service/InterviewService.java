@@ -118,7 +118,7 @@ public class InterviewService {
 
     private InterviewRoomListDto convertCreateAndProceedRoom(Integer cnt, InterviewRoom interviewRoom) {
         return InterviewRoomListDto.builder()
-                .Idx(interviewRoom.getIdx())
+                .idx(interviewRoom.getIdx())
                 .roomStatus(interviewRoom.getRoomStatus())
                 .roomType(interviewRoom.getRoomType())
                 .roomName(interviewRoom.getRoomName())
@@ -141,7 +141,7 @@ public class InterviewService {
                 .isPrivate(requestDto.getIsPrivate())
                 .roomTime(requestDto.getRoomTime())
                 .roomQuestionNum(requestDto.getRoomQuestionNum())
-                .roomQuestionBoxIdx(requestDto.getRoomQuestionboxIdx())
+                .roomQuestionBoxIdx(requestDto.getRoomQuestionBoxIdx())
                 .roomPeopleNum(requestDto.getRoomPeopleNum())
                 .build();
     }
@@ -155,14 +155,12 @@ public class InterviewService {
                 .roomType(interviewRoom.getRoomType())
                 .nickname(member.getNickname())
                 .roomTime(interviewRoom.getRoomTime())
-                .roomQuestionboxIdx(interviewRoom.getRoomQuestionBoxIdx())
+                .roomQuestionBoxIdx(interviewRoom.getRoomQuestionBoxIdx())
                 .roomQuestionNum(interviewRoom.getRoomQuestionNum())
                 .createdAt(interviewRoom.getCreatedAt())
                 .roomStatus(interviewRoom.getRoomStatus())
                 .build();
     }
-
-
 }
 
 

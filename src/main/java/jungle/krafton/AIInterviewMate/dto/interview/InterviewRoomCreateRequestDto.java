@@ -18,7 +18,7 @@ public class InterviewRoomCreateRequestDto {
     private String roomPassword;
     private Boolean isPrivate;
     private RoomType roomType;
-    private Long roomQuestionboxIdx;
+    private Long roomQuestionBoxIdx;
     private Integer roomQuestionNum;
     private Integer roomTime;
 
