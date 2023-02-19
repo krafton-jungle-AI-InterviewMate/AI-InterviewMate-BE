@@ -142,14 +142,17 @@ public class RatingService {
             keywords.add(question.getKeyword5());
 
             ScriptRating converter = convertScript(pureScript, keywords);
+
             String newScript = converter.getScript();
             int score = converter.getScore();
+
             Script updateQuery = scriptRepository.findByInterviewRoomIdxAndQuestionIdx(roomIdx, questionIdx);
+
             updateQuery.setRating(score);
-            updateQuery.setScript(newScript);
+            updateQuery.setScript(pureScript);
             scriptRepository.save(updateQuery);
 
-            scriptList.add(new RatingAiScriptListDto(question, updateQuery));
+            scriptList.add(new RatingAiScriptListDto(question, newScript, score));
         }
 
         VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx);
