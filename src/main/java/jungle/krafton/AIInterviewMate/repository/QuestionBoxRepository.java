@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface QuestionBoxRepository extends JpaRepository<QuestionBox, Long> {
-    List<QuestionBox> findAllByMember(Member memberIdx);
+    List<QuestionBox> findAllByMember(Member member);
 
     Optional<QuestionBox> findByIdx(Long Idx);
 }

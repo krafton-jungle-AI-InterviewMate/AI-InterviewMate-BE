@@ -153,7 +153,7 @@ public class InterviewService {
                 .roomPeopleNum(interviewRoom.getRoomPeopleNum())
                 .roomPassword(interviewRoom.getRoomPassword())
                 .roomType(interviewRoom.getRoomType())
-                .nickName(member.getNickname())
+                .nickname(member.getNickname())
                 .roomTime(interviewRoom.getRoomTime())
                 .roomQuestionboxIdx(interviewRoom.getRoomQuestionBoxIdx())
                 .roomQuestionNum(interviewRoom.getRoomQuestionNum())

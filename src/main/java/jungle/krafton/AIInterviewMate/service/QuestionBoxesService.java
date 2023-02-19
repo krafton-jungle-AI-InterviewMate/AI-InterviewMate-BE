@@ -41,13 +41,17 @@ public class QuestionBoxesService {
     }
 
 
-    public List<QuestionBoxListDto> createQuestionBox(String email) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
-        Member memberIdx = memberRepository.findByEmail(email).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
-        List<QuestionBox> questionBoxList = questionBoxRepository.findAllByMember(memberIdx);
+    public List<QuestionBoxListDto> getQuestionBoxes(Long memberIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+        Member member = memberRepository.findByIdx(memberIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
+
+        List<QuestionBox> questionBoxList = questionBoxRepository.findAllByMember(member);
+
         List<QuestionBoxListDto> returnQuestionBox = new ArrayList<>();
+
         for (QuestionBox questionbox : questionBoxList) {
             returnQuestionBox.add(convertQuestionBox(questionbox));
         }
+        
         return returnQuestionBox;
     }
 

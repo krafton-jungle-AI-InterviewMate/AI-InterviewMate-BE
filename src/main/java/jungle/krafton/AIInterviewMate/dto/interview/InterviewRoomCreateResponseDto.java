@@ -19,7 +19,7 @@ public class InterviewRoomCreateResponseDto {
     private Integer roomPeopleNum;
     private String roomPassword;
     private RoomType roomType;
-    private String nickName;
+    private String nickname;
     private Integer roomTime;
     private Integer roomQuestionNum;
     private Long roomQuestionboxIdx;
