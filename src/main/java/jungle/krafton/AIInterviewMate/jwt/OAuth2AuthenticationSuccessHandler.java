@@ -3,7 +3,8 @@ package jungle.krafton.AIInterviewMate.jwt;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -20,13 +21,13 @@ import java.util.Optional;
 
 import static jungle.krafton.AIInterviewMate.jwt.CookieAuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
-@Log4j2
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtTokenProvider tokenProvider;
     private final CookieAuthorizationRequestRepository authorizationRequestRepository;
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     @Value("${jwt.authorizedRedirectUri}")
     private String redirectUri;
 

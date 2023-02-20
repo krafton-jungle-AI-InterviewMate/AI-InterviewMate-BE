@@ -8,10 +8,7 @@ import jungle.krafton.AIInterviewMate.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,5 +29,10 @@ public class LoginController {
     @PostMapping("/refresh")
     public ResponseEntity<PrivateResponseBody> refreshToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, authService.refreshToken(request, response, accessToken)), HttpStatus.OK);
+    }
+
+    @GetMapping("/oauth2/authorization/{social}")
+    public ResponseEntity<PrivateResponseBody> doSocialLogin(@PathVariable("social") String social) {
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 }
