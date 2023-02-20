@@ -119,11 +119,43 @@ public class InterviewService {
             return dto;
         }
 
+        Map<String, Object> params = createParams(interviewRoom, member);
+        Session session = createOpenViduSession(params);
+        Connection connection = createOpenViduConnection(session, params);
+
+        dto.setConnectionToken(connection.getToken());
+
+        return dto;
+    }
+
+    private Connection createOpenViduConnection(Session session, Map<String, Object> params) {
+        ConnectionProperties connectionProperties = ConnectionProperties.fromJson(params).build();
+
+        Connection connection;
+        try {
+            connection = session.createConnection(connectionProperties);
+        } catch (OpenViduJavaClientException e) {
+            e.printStackTrace();
+            throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
+        } catch (OpenViduHttpException e) {
+            e.printStackTrace();
+            throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
+        }
+
+        return connection;
+    }
+
+    private Map<String, Object> createParams(InterviewRoom interviewRoom, Member member) {
         Map<String, Object> params = new HashMap<>();
+
         params.put("roomIdx", interviewRoom.getIdx());
         params.put("roomName", interviewRoom.getRoomName());
         params.put("memberNickname", member.getNickname());
 
+        return params;
+    }
+
+    private Session createOpenViduSession(Map<String, Object> params) {
         SessionProperties properties = SessionProperties.fromJson(params).build();
 
         Session session;
@@ -141,22 +173,7 @@ public class InterviewService {
             throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
         }
 
-        ConnectionProperties connectionProperties = ConnectionProperties.fromJson(params).build();
-
-        Connection connection;
-        try {
-            connection = session.createConnection(connectionProperties);
-        } catch (OpenViduJavaClientException e) {
-            e.printStackTrace();
-            throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
-        } catch (OpenViduHttpException e) {
-            e.printStackTrace();
-            throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
-        }
-
-        dto.setConnectionToken(connection.getToken());
-
-        return dto;
+        return session;
     }
 
     public void updateRoomStatus(Long roomIdx) {
