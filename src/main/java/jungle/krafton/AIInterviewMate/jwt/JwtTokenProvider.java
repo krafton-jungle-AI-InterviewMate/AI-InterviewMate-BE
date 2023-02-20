@@ -100,7 +100,6 @@ public class JwtTokenProvider {
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(new String[]{"USER"})
                         .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        System.out.println(authorities);
         Long memberIdx = Long.valueOf(claims.getSubject());
         Member member = memberRepository.findByIdx(memberIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
         String memberEmail = member.getEmail();
