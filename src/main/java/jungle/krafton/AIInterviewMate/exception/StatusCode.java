@@ -17,10 +17,10 @@ public enum StatusCode {
     LOGIN_EXPIRED_JWT_TOKEN(HttpStatus.BAD_REQUEST, "112", "만료된 JWT 토큰입니다."),
     LOGIN_NOT_SUPPORTED_JWT_TOKEN(HttpStatus.BAD_REQUEST, "113", "지원되지 않는 JWT 토큰입니다."),
     LOGIN_WRONG_FORM_JWT_TOKEN(HttpStatus.BAD_REQUEST, "114", "JWT 토큰이 잘못되었습니다."),
-    NOT_FOUND_SOCIAL_LOGIN_TYPE(HttpStatus.NOT_FOUND, "115", "알 수 없는 소셜 로그인 형식입니다."),
-    NOT_FOUND_REFRESH_TOKEN_COOKIE(HttpStatus.BAD_REQUEST, "116", "REFRESH_TOKEN 쿠키를 찾을 수 없습니다."),
-    NOT_VALIDATED_REFRESH_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "117", "잘못된 REFRESH 토큰입니다."),
-    NOT_MATCHED_REFRESH_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "118", "잘못된 REFRESH_TOKEN 서명입니다."),
+    WRONG_SOCIAL_LOGIN_TYPE(HttpStatus.BAD_REQUEST, "115", "잘못된 소셜 로그인 형식입니다."),
+    NOT_FOUND_REFRESH_TOKEN_COOKIE(HttpStatus.NOT_FOUND, "116", "REFRESH_TOKEN 쿠키를 찾을 수 없습니다."),
+    NOT_VALIDATED_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "117", "잘못된 REFRESH 토큰입니다."),
+    NOT_MATCHED_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "118", "잘못된 REFRESH_TOKEN 서명입니다."),
 
     PAGING_ERROR(HttpStatus.BAD_REQUEST, "120", "페이지 요청에는 모든 요소가 필요합니다"),
     PAGING_NUM_ERROR(HttpStatus.BAD_REQUEST, "121", "페이지는 1부터 시작됩니다"),
@@ -32,7 +32,7 @@ public enum StatusCode {
 
     NOT_UPDATE_EXIT_ROOM(HttpStatus.BAD_REQUEST, "140", "종료된 방의 상태를 수정할 수 없습니다."),
 
-    NOT_MATCH_REDIRECT_URL(HttpStatus.NOT_FOUND, "300", "리다이랙트 주소가 일치하지 않습니다."),
+    NOT_MATCH_REDIRECT_URL(HttpStatus.BAD_REQUEST, "300", "리다이렉트 주소가 일치하지 않습니다."),
 
     NULL_INPUT_ERROR(HttpStatus.NOT_FOUND, "990", "Null 값이 들어왔습니다"),
     NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT(HttpStatus.INTERNAL_SERVER_ERROR, "998", "Security Context에 인증 정보가 없습니다."),

@@ -2,7 +2,6 @@ package jungle.krafton.AIInterviewMate.jwt;
 
 import jungle.krafton.AIInterviewMate.domain.AuthProvider;
 import jungle.krafton.AIInterviewMate.domain.Member;
-import jungle.krafton.AIInterviewMate.domain.UserRole;
 import jungle.krafton.AIInterviewMate.dto.login.OAuthAttributeDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
@@ -49,7 +48,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (userOptional.isPresent()) {        // 이미 가입된 경우
             user = userOptional.get();
             if (authProvider != user.getAuthProvider()) {
-                throw new PrivateException(StatusCode.NOT_FOUND_SOCIAL_LOGIN_TYPE);
+                throw new PrivateException(StatusCode.WRONG_SOCIAL_LOGIN_TYPE);
             }
 
         } else {            // 가입되지 않은 경우
@@ -62,7 +61,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Member user = Member.builder()
                 .nickname(userInfo.getName())
                 .email(userInfo.getEmail())
-                .role(UserRole.USER)
                 .authProvider(authProvider)
                 .build();
         return memberRepository.save(user);

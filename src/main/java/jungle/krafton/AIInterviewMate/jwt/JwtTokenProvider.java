@@ -27,9 +27,8 @@ public class JwtTokenProvider {
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final String SECRET_KEY;
     private final String COOKIE_REFRESH_TOKEN_KEY;
-    private final long ACCESS_TOKEN_EXPIRE_LENGTH;       // 1hour
-    private final long REFRESH_TOKEN_EXPIRE_LENGTH;    // 1week
-    private final String AUTHORITIES_KEY = "role";
+    private final long ACCESS_TOKEN_EXPIRE_LENGTH;
+    private final long REFRESH_TOKEN_EXPIRE_LENGTH;
 
     private final MemberRepository memberRepository;
 
@@ -53,14 +52,10 @@ public class JwtTokenProvider {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
         String userId = user.getName();
-        String role = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
 
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .setSubject(userId)
-                .claim(AUTHORITIES_KEY, role)
                 .setIssuer("IM")
                 .setIssuedAt(now)
                 .setExpiration(validity)
@@ -103,8 +98,9 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(accessToken);
 
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                Arrays.stream(new String[]{"USER"})
                         .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        System.out.println(authorities);
         Long memberIdx = Long.valueOf(claims.getSubject());
         Member member = memberRepository.findByIdx(memberIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
         String memberEmail = member.getEmail();
