@@ -1,5 +1,6 @@
 package jungle.krafton.AIInterviewMate.service;
 
+import io.openvidu.java.client.*;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
@@ -9,8 +10,10 @@ import jungle.krafton.AIInterviewMate.repository.MemberRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
 import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
@@ -20,6 +23,11 @@ public class InterviewService {
     private final MemberRepository memberRepository;
     private final Validator validator;
 
+    @Value("${OPENVIDU_URL}")
+    private String OPENVIDU_URL;
+    @Value("${OPENVIDU_SECRET}")
+    private String OPENVIDU_SECRET;
+    private OpenVidu openVidu;
 
     @Autowired
     public InterviewService(InterviewRoomRepository interviewRoomRepository, QuestionRepository questionRepository, MemberRepository memberRepository, Validator validator) {
@@ -28,6 +36,10 @@ public class InterviewService {
         this.memberRepository = memberRepository;
         this.validator = validator;
     }
+
+    @PostConstruct
+    public void init() {
+        this.openVidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
     public InterviewRoomInfoDto getRoomInfo(Long roomIdx) { // AI 대인에 따른 예외처리, QuestionBox의 길이가 0인 경우 예외처리
@@ -102,7 +114,49 @@ public class InterviewService {
 
         InterviewRoomCreateResponseDto dto = convertInterviewRoomToDto(interviewRoom, member);
 
-        return ResponseRoomDto(createdRoom, member);
+        RoomType roomType = interviewRoom.getRoomType();
+        if (roomType.equals(RoomType.AI)) {
+            return dto;
+        }
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomIdx", interviewRoom.getIdx());
+        params.put("roomName", interviewRoom.getRoomName());
+        params.put("memberNickname", member.getNickname());
+
+        SessionProperties properties = SessionProperties.fromJson(params).build();
+
+        Session session;
+        try {
+            session = openVidu.createSession(properties);
+        } catch (OpenViduJavaClientException e) {
+            e.printStackTrace();
+            throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
+        } catch (OpenViduHttpException e) {
+            e.printStackTrace();
+            throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
+        }
+
+        if (session == null) {
+            throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
+        }
+
+        ConnectionProperties connectionProperties = ConnectionProperties.fromJson(params).build();
+
+        Connection connection;
+        try {
+            connection = session.createConnection(connectionProperties);
+        } catch (OpenViduJavaClientException e) {
+            e.printStackTrace();
+            throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
+        } catch (OpenViduHttpException e) {
+            e.printStackTrace();
+            throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
+        }
+
+        dto.setConnectionToken(connection.getToken());
+
+        return dto;
     }
 
     public void updateRoomStatus(Long roomIdx) {

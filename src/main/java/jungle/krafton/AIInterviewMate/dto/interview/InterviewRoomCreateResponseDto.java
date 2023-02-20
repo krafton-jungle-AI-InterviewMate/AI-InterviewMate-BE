@@ -25,4 +25,9 @@ public class InterviewRoomCreateResponseDto {
     private Long roomQuestionBoxIdx;
     private LocalDateTime createdAt;
     private RoomStatus roomStatus;
+    private String connectionToken;
+
+    public void setConnectionToken(String connectionToken) {
+        this.connectionToken = connectionToken;
+    }
 }
