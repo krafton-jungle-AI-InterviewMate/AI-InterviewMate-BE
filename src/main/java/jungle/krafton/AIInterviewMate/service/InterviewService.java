@@ -94,10 +94,13 @@ public class InterviewService {
         return roomList;
     }
 
-        Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
     public InterviewRoomCreateResponseDto createInterviewRoom(InterviewRoomCreateRequestDto requestDto) {
+        Member member = memberRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
 
-        InterviewRoom createdRoom = interviewRoomRepository.save(createRequestRoom(requestDto, member));
+        InterviewRoom interviewRoom = interviewRoomRepository.save(createInterviewRoom(requestDto, member));
+
+        InterviewRoomCreateResponseDto dto = convertInterviewRoomToDto(interviewRoom, member);
 
         return ResponseRoomDto(createdRoom, member);
     }
@@ -136,7 +139,7 @@ public class InterviewService {
     }
 
 
-    private InterviewRoom createRequestRoom(InterviewRoomCreateRequestDto requestDto, Member member) {
+    private InterviewRoom createInterviewRoom(InterviewRoomCreateRequestDto requestDto, Member member) {
         validator.validate(requestDto);
 
         return InterviewRoom.builder()
@@ -152,7 +155,7 @@ public class InterviewService {
                 .build();
     }
 
-    private InterviewRoomCreateResponseDto ResponseRoomDto(InterviewRoom interviewRoom, Member member) {
+    private InterviewRoomCreateResponseDto convertInterviewRoomToDto(InterviewRoom interviewRoom, Member member) {
         return InterviewRoomCreateResponseDto.builder()
                 .roomIdx(interviewRoom.getIdx())
                 .roomName(interviewRoom.getRoomName())
