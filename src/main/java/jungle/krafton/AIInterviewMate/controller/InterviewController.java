@@ -74,8 +74,8 @@ public class InterviewController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InterviewRoomCreateResponseDto.class)))
     })
     @PostMapping("/rooms")
-    public ResponseEntity<PrivateResponseBody> createRoom(@RequestBody InterviewRoomCreateRequestDto requestDto) {
-        InterviewRoomCreateResponseDto createRoom = interviewService.createRoom(requestDto);
+    public ResponseEntity<PrivateResponseBody> createInterviewRoom(@RequestBody InterviewRoomCreateRequestDto requestDto) {
+        InterviewRoomCreateResponseDto createRoom = interviewService.createInterviewRoom(requestDto);
 
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, createRoom), HttpStatus.OK);
     }

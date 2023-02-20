@@ -90,8 +90,8 @@ public class InterviewService {
         return roomList;
     }
 
-    public InterviewRoomCreateResponseDto createRoom(InterviewRoomCreateRequestDto requestDto) {
         Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
+    public InterviewRoomCreateResponseDto createInterviewRoom(InterviewRoomCreateRequestDto requestDto) {
 
         InterviewRoom createdRoom = interviewRoomRepository.save(createRequestRoom(requestDto, member));
 
