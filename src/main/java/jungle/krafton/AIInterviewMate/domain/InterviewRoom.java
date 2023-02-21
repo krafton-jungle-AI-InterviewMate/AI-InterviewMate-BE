@@ -58,7 +58,9 @@ public class InterviewRoom extends Timestamped {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private RoomStatus roomStatus;
-    
+
+    @Column()
+    private String sessionId;
 
     @Builder
     public InterviewRoom(Member member, RoomType roomType, String roomName, String roomPassword, Boolean isPrivate, Integer roomTime, Integer roomQuestionNum, Long roomQuestionBoxIdx, Integer roomPeopleNum) {

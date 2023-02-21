@@ -1,6 +1,6 @@
 package jungle.krafton.AIInterviewMate.service;
 
-import io.openvidu.java.client.*;
+import io.openvidu.java.client.OpenVidu;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
@@ -12,6 +12,7 @@ import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -106,6 +107,7 @@ public class InterviewService {
         return roomList;
     }
 
+    @Transactional
     public InterviewRoomCreateResponseDto createInterviewRoom(InterviewRoomCreateRequestDto requestDto) {
         Member member = memberRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
@@ -115,65 +117,14 @@ public class InterviewService {
         InterviewRoomCreateResponseDto dto = convertInterviewRoomToDto(interviewRoom, member);
 
         RoomType roomType = interviewRoom.getRoomType();
-        if (roomType.equals(RoomType.AI)) {
-            return dto;
+        if (roomType.equals(RoomType.USER)) {
+            OpenViduInfoDto openViduInfoDto = OpenViduInfoDto.of(openVidu, interviewRoom, member);
+            interviewRoom.setSessionId(openViduInfoDto.getSessionId());
+
+            dto.setConnectionToken(openViduInfoDto.getConnectionToken());
         }
-
-        Map<String, Object> params = createParams(interviewRoom, member);
-        Session session = createOpenViduSession(params);
-        Connection connection = createOpenViduConnection(session, params);
-
-        dto.setConnectionToken(connection.getToken());
 
         return dto;
-    }
-
-    private Connection createOpenViduConnection(Session session, Map<String, Object> params) {
-        ConnectionProperties connectionProperties = ConnectionProperties.fromJson(params).build();
-
-        Connection connection;
-        try {
-            connection = session.createConnection(connectionProperties);
-        } catch (OpenViduJavaClientException e) {
-            e.printStackTrace();
-            throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
-        } catch (OpenViduHttpException e) {
-            e.printStackTrace();
-            throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
-        }
-
-        return connection;
-    }
-
-    private Map<String, Object> createParams(InterviewRoom interviewRoom, Member member) {
-        Map<String, Object> params = new HashMap<>();
-
-        params.put("roomIdx", interviewRoom.getIdx());
-        params.put("roomName", interviewRoom.getRoomName());
-        params.put("memberNickname", member.getNickname());
-
-        return params;
-    }
-
-    private Session createOpenViduSession(Map<String, Object> params) {
-        SessionProperties properties = SessionProperties.fromJson(params).build();
-
-        Session session;
-        try {
-            session = openVidu.createSession(properties);
-        } catch (OpenViduJavaClientException e) {
-            e.printStackTrace();
-            throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
-        } catch (OpenViduHttpException e) {
-            e.printStackTrace();
-            throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
-        }
-
-        if (session == null) {
-            throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
-        }
-
-        return session;
     }
 
     public void updateRoomStatus(Long roomIdx) {
