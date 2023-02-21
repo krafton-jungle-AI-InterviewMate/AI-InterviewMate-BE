@@ -66,8 +66,13 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date validity = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_LENGTH);
 
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+
+        String userId = user.getName();
+
         String refreshToken = Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .setSubject(userId)
                 .setIssuer("IM")
                 .setIssuedAt(now)
                 .setExpiration(validity)
@@ -78,7 +83,7 @@ public class JwtTokenProvider {
         ResponseCookie cookie = ResponseCookie.from(COOKIE_REFRESH_TOKEN_KEY, refreshToken)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Lax")
+                .sameSite("none")
                 .maxAge(REFRESH_TOKEN_EXPIRE_LENGTH / 1000)
                 .path("/")
                 .build();
