@@ -219,7 +219,6 @@ public class InterviewService {
                 .roomIdx(interviewRoom.getIdx())
                 .roomName(interviewRoom.getRoomName())
                 .roomPeopleNum(interviewRoom.getRoomPeopleNum())
-                .roomPassword(interviewRoom.getRoomPassword())
                 .roomType(interviewRoom.getRoomType())
                 .nickname(member.getNickname())
                 .roomTime(interviewRoom.getRoomTime())
