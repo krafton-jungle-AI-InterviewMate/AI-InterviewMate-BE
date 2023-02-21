@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -26,6 +27,11 @@ public class InterviewRoomCreateResponseDto {
     private LocalDateTime createdAt;
     private RoomStatus roomStatus;
     private String connectionToken;
+    private List<InterviewQuestionDto> questionList;
+
+    public void setQuestionList(List<InterviewQuestionDto> questionList) {
+        this.questionList = questionList;
+    }
 
     public void setConnectionToken(String connectionToken) {
         this.connectionToken = connectionToken;

@@ -118,13 +118,50 @@ public class InterviewService {
 
         RoomType roomType = interviewRoom.getRoomType();
         if (roomType.equals(RoomType.USER)) {
-            OpenViduInfoDto openViduInfoDto = OpenViduInfoDto.of(openVidu, interviewRoom, member);
-            interviewRoom.setSessionId(openViduInfoDto.getSessionId());
+            OpenViduInfo openViduInfo = OpenViduInfo.of(openVidu, interviewRoom, member);
+            interviewRoom.setSessionId(openViduInfo.getSessionId());
 
-            dto.setConnectionToken(openViduInfoDto.getConnectionToken());
+            dto.setConnectionToken(openViduInfo.getConnectionToken());
+        } else {
+            List<InterviewQuestionDto> questionList = createQuestionList(interviewRoom);
+
+            dto.setQuestionList(questionList);
         }
 
         return dto;
+    }
+
+    private List<InterviewQuestionDto> createQuestionList(InterviewRoom interviewRoom) {
+        Long questionBoxIdx = interviewRoom.getRoomQuestionBoxIdx();
+
+        List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
+        if (questions.isEmpty()) {
+            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION);
+        }
+
+        List<InterviewQuestionDto> interviewQuestions = new ArrayList<>();
+        int questionNum = interviewRoom.getRoomQuestionNum();
+
+        Random random = new Random();
+        random.setSeed(System.currentTimeMillis());
+
+        if (questionNum >= questions.size()) {
+            for (Question question : questions) {
+                interviewQuestions.add(new InterviewQuestionDto(question));
+            }
+        } else {
+            Set<Integer> randomSet = new HashSet<>();
+
+            while (randomSet.size() != questionNum) {
+                randomSet.add(random.nextInt(questions.size()));
+            }
+
+            for (int idx : randomSet) {
+                interviewQuestions.add(new InterviewQuestionDto(questions.get(idx)));
+            }
+        }
+
+        return interviewQuestions;
     }
 
     public void updateRoomStatus(Long roomIdx) {
