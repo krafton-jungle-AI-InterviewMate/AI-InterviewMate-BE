@@ -9,14 +9,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class UserInfoDto {
+public class MyInfoDto {
     private Long idx;
     private String email;
     private String nickname;
     private AuthProvider authProvider;
 
 
-    public UserInfoDto(Member member) {
+    public MyInfoDto(Member member) {
         this.idx = member.getIdx();
         this.email = member.getEmail();
         this.nickname = member.getNickname();

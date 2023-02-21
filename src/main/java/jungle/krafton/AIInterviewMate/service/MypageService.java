@@ -1,8 +1,8 @@
 package jungle.krafton.AIInterviewMate.service;
 
 import jungle.krafton.AIInterviewMate.domain.Member;
-import jungle.krafton.AIInterviewMate.dto.mypage.UserInfoDto;
-import jungle.krafton.AIInterviewMate.dto.rating.MypageDto;
+import jungle.krafton.AIInterviewMate.dto.mypage.MyInfoDto;
+import jungle.krafton.AIInterviewMate.dto.mypage.MypageDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
@@ -32,11 +32,11 @@ public class MypageService {
         memberRepository.save(member);
     }
 
-    public UserInfoDto getUserInfo() {
+    public MyInfoDto getMyInfo() {
         Long idx = Long.valueOf(jwtTokenProvider.getUserInfo());
         Member member = memberRepository.findByIdx(idx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
 
-        return new UserInfoDto(member);
+        return new MyInfoDto(member);
     }
 }

@@ -7,8 +7,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jungle.krafton.AIInterviewMate.domain.Member;
-import jungle.krafton.AIInterviewMate.dto.mypage.UserInfoDto;
-import jungle.krafton.AIInterviewMate.dto.rating.MypageDto;
+import jungle.krafton.AIInterviewMate.dto.mypage.MyInfoDto;
+import jungle.krafton.AIInterviewMate.dto.mypage.MypageDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.service.MypageService;
@@ -42,9 +42,9 @@ public class MypageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Member.class)))
     })
-    @GetMapping("/userinfo")
-    public ResponseEntity<PrivateResponseBody> getUserInfo() {
-        UserInfoDto userInfo = mypageService.getUserInfo();
-        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, userInfo), HttpStatus.OK);
+    @GetMapping("/myinfo")
+    public ResponseEntity<PrivateResponseBody> getMyInfo() {
+        MyInfoDto myInfo = mypageService.getMyInfo();
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, myInfo), HttpStatus.OK);
     }
 }
