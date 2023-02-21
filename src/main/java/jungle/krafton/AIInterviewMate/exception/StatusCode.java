@@ -27,6 +27,7 @@ public enum StatusCode {
     NOT_FOUND_QUESTIONBOX(HttpStatus.BAD_REQUEST, "133", "꾸러미를 찾을 수 없습니다."),
     NOT_FOUND_SESSION(HttpStatus.NOT_FOUND, "134", "해당 Session을 찾을 수 없습니다"),
     ROOM_TYPE_ERROR(HttpStatus.BAD_REQUEST, "135", "AI 방에는 입장할 수가 없습니다."),
+    ROOM_VIEWER_ERROR(HttpStatus.BAD_REQUEST, "136", "동일한 ID로 접속할 수가 없습니다. 혹은 방의 인원이 가득 찼습니다."),
 
     NOT_UPDATE_EXIT_ROOM(HttpStatus.BAD_REQUEST, "140", "종료된 방의 상태를 수정할 수 없습니다."),
 

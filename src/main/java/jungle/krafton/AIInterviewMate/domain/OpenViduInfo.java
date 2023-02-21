@@ -55,7 +55,7 @@ public class OpenViduInfo {
             throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
         } else if (e instanceof NullPointerException) {
             e.printStackTrace();
-            throw new PrivateException(StatusCode.NOT_FOUND_SESSION);
+            throw new PrivateException(StatusCode.NULL_INPUT_ERROR);
         }
     }
 

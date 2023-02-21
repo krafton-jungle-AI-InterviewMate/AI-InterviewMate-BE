@@ -9,7 +9,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jungle.krafton.AIInterviewMate.dto.interview.*;
+import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomCreateRequestDto;
+import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomCreateResponseDto;
+import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomInfoUserDto;
+import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomListDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.service.InterviewService;
@@ -31,18 +34,18 @@ public class InterviewController {
         this.interviewService = interviewService;
     }
 
-    @Operation(summary = "면접 방 정보 상세")
+    @Operation(summary = "면접 방 입장")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
     })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "AI_OK", content = @Content(schema = @Schema(implementation = InterviewRoomInfoAiDto.class)))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InterviewRoomInfoUserDto.class)))
     })
-    @GetMapping("/rooms/{roomIdx}")
-    public ResponseEntity<PrivateResponseBody> getRoomInfo(@PathVariable("roomIdx") Long roomIdx) {
-        InterviewRoomInfoDto interviewRoomInfo = interviewService.getRoomInfo(roomIdx);
+    @PostMapping("/rooms/{roomIdx}")
+    public ResponseEntity<PrivateResponseBody> enterInterviewRoom(@PathVariable("roomIdx") Long roomIdx) {
+        InterviewRoomInfoUserDto dto = interviewService.enterInterviewRoom(roomIdx);
 
-        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, interviewRoomInfo), HttpStatus.OK);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, dto), HttpStatus.OK);
     }
 
     @Operation(summary = "면접 방 상태 변경", description = "Create -> Proceed , Proceed -> Exit 으로 변경")
