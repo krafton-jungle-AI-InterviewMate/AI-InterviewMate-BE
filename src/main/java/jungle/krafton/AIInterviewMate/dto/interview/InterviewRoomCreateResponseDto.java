@@ -17,6 +17,7 @@ import java.util.List;
 public class InterviewRoomCreateResponseDto {
     private Long roomIdx;
     private String roomName;
+    private Boolean isPrivate;
     private Integer roomPeopleNum;
     private RoomType roomType;
     private String nickname;
