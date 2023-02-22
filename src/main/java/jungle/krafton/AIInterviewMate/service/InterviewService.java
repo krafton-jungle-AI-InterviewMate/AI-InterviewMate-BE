@@ -47,7 +47,9 @@ public class InterviewService {
     }
 
     public InterviewRoomInfoUserDto enterInterviewRoom(Long roomIdx) { // AI 대인에 따른 예외처리, QuestionBox의 길이가 0인 경우 예외처리
-        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
+
         //TODO: 접속할 유저로 Member 변경 필요
         Member member = interviewRoom.getMember();
 
@@ -94,15 +96,6 @@ public class InterviewService {
             interviewRoom.setRoomViewer3Idx(memberIdx);
             return;
         }
-
-        //TODO: 중복처리 로직 집어넣어야함
-        //        if (
-        //                Objects.equals(interviewRoom.getMember().getIdx(), memberIdx) ||
-        //                viewer1Idx.equals(memberIdx) ||
-        //                        viewer2Idx.equals(memberIdx) ||
-        //                        viewer3Idx.equals(memberIdx)) {
-        //            throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
-        //        }
 
         throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
     }
@@ -188,8 +181,8 @@ public class InterviewService {
     }
 
     public void updateRoomStatus(Long roomIdx) {
-        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
-        if (interviewRoom == null) throw new PrivateException(StatusCode.NOT_FOUND_ROOM);
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
         RoomStatus roomStatus = interviewRoom.getRoomStatus();
         if (roomStatus.equals(RoomStatus.CREATE)) {

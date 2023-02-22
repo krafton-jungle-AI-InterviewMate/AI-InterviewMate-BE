@@ -11,6 +11,7 @@ public enum StatusCode {
     WRONG_INPUT_REQUEST(HttpStatus.BAD_REQUEST, "101", "필수 입력항목중 미입력 항목이 존재합니다."),
     NULL_QUERY_STRING(HttpStatus.BAD_REQUEST, "102", "쿼리스트링이 존재하지 않습니다."),
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "103", "해당 유저가 존재하지 않습니다."),
+    NOT_FOUND_VIEWEE_RATING(HttpStatus.BAD_REQUEST, "104", "해당 방의 면접 데이터가 존재하지 않습니다."),
 
     NOT_FOUND_JWT_TOKEN(HttpStatus.NOT_FOUND, "110", "JWT 이 존재하지 않습니다. 다시 확인해주세요."),
     LOGIN_WRONG_SIGNATURE_JWT_TOKEN(HttpStatus.BAD_REQUEST, "111", "잘못된 JWT 서명입니다."),

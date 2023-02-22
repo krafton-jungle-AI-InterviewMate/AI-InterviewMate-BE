@@ -106,7 +106,9 @@ public class RatingService {
 
         List<RatingUserListDto> ratingList = new ArrayList<>();
         List<VieweeRating> vieweeRatingList = vieweeRatingRepository.findAllByRoomIdx(roomIdx);
-        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
+
         for (VieweeRating vieweeRating : vieweeRatingList) {
             Long viewerIdx = vieweeRating.getViewerIdx();
             String nickname = "BOT";
@@ -155,8 +157,11 @@ public class RatingService {
             scriptList.add(new RatingAiScriptListDto(question, newScript, score));
         }
 
-        VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx);
-        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+        VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_VIEWEE_RATING));
+
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
         return new RatingAiResponseDto(vieweeRating, interviewRoom, scriptList);
     }
