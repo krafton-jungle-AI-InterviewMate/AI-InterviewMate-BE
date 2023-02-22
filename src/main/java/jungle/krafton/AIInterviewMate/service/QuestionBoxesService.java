@@ -90,9 +90,17 @@ public class QuestionBoxesService {
         questionBox.setQuestionNum(0);
     }
 
-    public void updateKeyword(Long questionIdx, QuestionKeywordDto questionKeywordDto) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
-        Question question = questionRepository.findByIdx(questionIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
-        question.setKeyword(questionKeywordDto);
+    public void updateQuestion(Long questionIdx, QuestionInfoDto questionInfoDto) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
+        Question question = questionRepository.findByIdx(questionIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
+
+        //TODO: HG - Validator 써서 공백 처리 필요
+        if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
+            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
+        }
+
+        question.update(questionInfoDto);
         questionRepository.save(question);
     }
 

@@ -83,13 +83,13 @@ public class QuestionBoxesController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
-    @Operation(summary = "질문 키워드 수정하기")
+    @Operation(summary = "질문 정보 [제목, 키워드] 수정하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
-    @PutMapping("/{qestionBoxIdx}/{questionIdx}")
-    public ResponseEntity<PrivateResponseBody> updateKeyword(@PathVariable("questionIdx") Long questionIdx, @RequestBody QuestionKeywordDto questionKeywordDto) { //TODO : JWT토근이 완성되면 Path Member 식별 예외처리
-        questionBoxesService.updateKeyword(questionIdx, questionKeywordDto);
+    @PutMapping("/question/{questionIdx}")
+    public ResponseEntity<PrivateResponseBody> updateQuestion(@PathVariable("questionIdx") Long questionIdx, @RequestBody QuestionInfoDto questionInfoDto) {
+        questionBoxesService.updateQuestion(questionIdx, questionInfoDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
