@@ -12,7 +12,6 @@ import javax.persistence.*;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(nullable = false)
     private Long idx;
 
     @Column(nullable = false)
@@ -21,10 +20,21 @@ public class Member {
     @Column(nullable = false)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authProvider;
+
+    private String refreshToken;
+
     @Builder
-    public Member(String nickname, String email) {
+    public Member(String nickname, String email, AuthProvider authProvider) {
         this.nickname = nickname;
         this.email = email;
+        this.authProvider = authProvider;
+    }
+
+    public Member update(String nickname) {
+        this.nickname = nickname;
+        return this;
     }
 
     public void setNickname(String nickname) {
