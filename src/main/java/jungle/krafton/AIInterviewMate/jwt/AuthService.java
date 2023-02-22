@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class AuthService {
     @Value("${jwt.refresh-cookie-key}")
     private String cookieKey;
 
-    public String refreshToken(HttpServletRequest request, HttpServletResponse response, String oldAccessToken) {
+    public Map<String, Object> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         // 1. Validation Refresh Token
         String oldRefreshToken = CookieUtil.getCookie(request, cookieKey)
                 .map(Cookie::getValue).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_REFRESH_TOKEN_COOKIE));
@@ -31,7 +33,7 @@ public class AuthService {
         }
 
         // 2. 유저정보 얻기
-        Authentication authentication = tokenProvider.getAuthentication(oldAccessToken);
+        Authentication authentication = tokenProvider.getAuthentication(oldRefreshToken);
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
         Long id = Long.valueOf(user.getName());
@@ -47,6 +49,9 @@ public class AuthService {
         String accessToken = tokenProvider.createAccessToken(authentication);
         tokenProvider.createRefreshToken(authentication, response);
 
-        return accessToken;
+        Map<String, Object> ob = new HashMap<>();
+        ob.put("accessToken", accessToken);
+
+        return ob;
     }
 }
