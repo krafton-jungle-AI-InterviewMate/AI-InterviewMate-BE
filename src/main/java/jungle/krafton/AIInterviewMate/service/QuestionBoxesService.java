@@ -31,9 +31,19 @@ public class QuestionBoxesService {
         this.memberRepository = memberRepository;
     }
 
-    public void createQuestion(Long questionBoxIdx, QuestionKeywordDto questionKeywordDto) {
-        QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
-        questionRepository.save(convertQuestion(questionBox, questionKeywordDto));
+    @Transactional
+    public void createQuestion(Long questionBoxIdx, QuestionInfoDto questionInfoDto) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 수정할 수 있게 수정 필요
+        QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
+        //TODO: HG - Validator 써서 공백 처리 필요
+        if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
+            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
+        }
+        
+        questionRepository.save(questionInfoDto.ConvertToQuestionWithQuestionBox(questionBox));
+        questionBox.setQuestionNum(questionBox.getQuestionNum() + 1);
     }
 
     public QuestionBoxInfoDto getQuestionBoxInfo(Long questionBoxIdx) {
@@ -85,23 +95,6 @@ public class QuestionBoxesService {
         questionRepository.deleteByIdx(questionIdx);
     }
 
-    public QuestionBoxListDto convertQuestionBox(QuestionBox questionBox) {
-        return QuestionBoxListDto.builder()
-                .idx(questionBox.getIdx())
-                .boxName(questionBox.getBoxName())
-                .questionNum(questionBox.getQuestionNum())
-                .build();
-    }
 
-    public Question convertQuestion(QuestionBox questionBox, QuestionKeywordDto questionKeywordDto) {
-        return Question.builder()
-                .questionBox(questionBox)
-                .questionTitle(questionKeywordDto.getQuestionTitle())
-                .keyword1(questionKeywordDto.getKeyword1())
-                .keyword2(questionKeywordDto.getKeyword2())
-                .keyword3(questionKeywordDto.getKeyword3())
-                .keyword4(questionKeywordDto.getKeyword4())
-                .keyword5(questionKeywordDto.getKeyword5())
-                .build();
     }
 }

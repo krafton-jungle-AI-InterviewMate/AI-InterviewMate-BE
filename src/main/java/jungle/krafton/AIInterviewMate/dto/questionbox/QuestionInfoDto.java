@@ -1,6 +1,7 @@
 package jungle.krafton.AIInterviewMate.dto.questionbox;
 
 import jungle.krafton.AIInterviewMate.domain.Question;
+import jungle.krafton.AIInterviewMate.domain.QuestionBox;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +30,18 @@ public class QuestionInfoDto {
                 .keyword4(question.getKeyword4())
                 .keyword5(question.getKeyword5())
                 .questionTitle(question.getQuestionTitle())
+                .build();
+    }
+
+    public Question ConvertToQuestionWithQuestionBox(QuestionBox questionBox) {
+        return Question.builder()
+                .questionBox(questionBox)
+                .questionTitle(this.questionTitle)
+                .keyword1(this.keyword1)
+                .keyword2(this.keyword2)
+                .keyword3(this.keyword3)
+                .keyword4(this.keyword4)
+                .keyword5(this.keyword5)
                 .build();
     }
 }

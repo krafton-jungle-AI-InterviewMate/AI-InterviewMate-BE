@@ -1,6 +1,5 @@
 package jungle.krafton.AIInterviewMate.domain;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,10 +24,8 @@ public class QuestionBox {
     @Column(nullable = false)
     private Integer questionNum;
 
-    @Builder
-    public QuestionBox(Member member, String boxName, int questionNum) {
-        this.member = member;
         this.boxName = boxName;
+    public void setQuestionNum(Integer questionNum) {
         this.questionNum = questionNum;
     }
 }

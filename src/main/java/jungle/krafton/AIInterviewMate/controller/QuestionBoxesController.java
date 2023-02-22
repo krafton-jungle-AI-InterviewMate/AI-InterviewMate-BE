@@ -57,8 +57,8 @@ public class QuestionBoxesController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
     @PostMapping("/{questionBoxIdx}")
-    public ResponseEntity<PrivateResponseBody> createQuestion(@PathVariable("questionBoxIdx") Long questionBoxIdx, @RequestBody QuestionKeywordDto questionKeywordDto) {
-        questionBoxesService.createQuestion(questionBoxIdx, questionKeywordDto);
+    public ResponseEntity<PrivateResponseBody> createQuestion(@PathVariable("questionBoxIdx") Long questionBoxIdx, @RequestBody QuestionInfoDto questionInfoDto) {
+        questionBoxesService.createQuestion(questionBoxIdx, questionInfoDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
