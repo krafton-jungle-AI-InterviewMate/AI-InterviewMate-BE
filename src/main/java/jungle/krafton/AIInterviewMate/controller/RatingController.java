@@ -65,6 +65,7 @@ public class RatingController {
     })
     @GetMapping("/{roomIdx}")
     public ResponseEntity<PrivateResponseBody> getRatingList(@PathVariable Long roomIdx, @RequestParam(name = "type") RoomType roomType) {
+
         if (roomType.equals(RoomType.AI)) {
             return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, ratingService.getAiRatingList(roomIdx)), HttpStatus.OK);
         } else {

@@ -9,7 +9,7 @@ public enum StatusCode {
 
     SIGNUP_NICKNAME_FORM_ERROR(HttpStatus.BAD_REQUEST, "100", "nickname 형식을 맞춰주세요"),
     NULL_INPUT_CHAT_REQUEST(HttpStatus.BAD_REQUEST, "101", "필수 입력항목중 미입력 항목이 존재합니다."),
-    NULL_QUERY_STRING(HttpStatus.BAD_REQUEST, "102", "쿼리스트링이 존재하지 않습니다."),
+    NOT_MATCH_QUERY_STRING(HttpStatus.BAD_REQUEST, "102", "쿼리스트링이 일치하지 않습니다."),
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "103", "해당 유저가 존재하지 않습니다."),
     NOT_FOUND_QUESTION_TITLE(HttpStatus.BAD_REQUEST, "104", "질문 제목이 존재하지 않거나 공백입니다."),
     NOT_FOUND_QUESTION_BOX_TITLE(HttpStatus.BAD_REQUEST, "105", "질문 꾸러미 제목이 존재하지 않거나 공백입니다."),
@@ -31,6 +31,7 @@ public enum StatusCode {
     NOT_FOUND_ROOM(HttpStatus.BAD_REQUEST, "131", "방을 찾을 수 없습니다."),
     NOT_FOUND_QUESTION(HttpStatus.BAD_REQUEST, "132", "질문을 찾을 수 없습니다."),
     NOT_FOUND_QUESTIONBOX(HttpStatus.BAD_REQUEST, "133", "꾸러미를 찾을 수 없습니다."),
+    NOT_ACCESS_DATA_DUPLICATE(HttpStatus.BAD_REQUEST, "134", "중복된 데이터 입력입니다."),
 
     NOT_UPDATE_EXIT_ROOM(HttpStatus.BAD_REQUEST, "140", "종료된 방의 상태를 수정할 수 없습니다."),
 
