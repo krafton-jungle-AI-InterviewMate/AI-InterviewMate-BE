@@ -52,6 +52,16 @@ public class QuestionBoxesController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, dto), HttpStatus.OK);
     }
 
+    @Operation(summary = "질문 꾸러미 이름 수정하기", description = "질문 꾸러미 이름 수정시에 Body에 json 으로 questionBoxName 요소만 String Type으로 보내주시면 됩니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
+    })
+    @PutMapping("/{questionBoxIdx}")
+    public ResponseEntity<PrivateResponseBody> updateQuestionBoxInfo(@PathVariable("questionBoxIdx") Long questionBoxIdx, @RequestBody QuestionBoxInfoDto questionBoxInfoDto) {
+        questionBoxesService.updateQuestionBoxInfo(questionBoxIdx, questionBoxInfoDto);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
+    }
+
     @Operation(summary = "질문 꾸러미에 질문 추가하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())

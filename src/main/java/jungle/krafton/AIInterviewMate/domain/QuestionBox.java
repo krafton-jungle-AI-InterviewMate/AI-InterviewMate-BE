@@ -24,7 +24,10 @@ public class QuestionBox {
     @Column(nullable = false)
     private Integer questionNum;
 
+    public void setBoxName(String boxName) {
         this.boxName = boxName;
+    }
+
     public void setQuestionNum(Integer questionNum) {
         this.questionNum = questionNum;
     }
