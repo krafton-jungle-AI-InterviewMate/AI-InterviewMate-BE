@@ -42,14 +42,14 @@ public class QuestionBoxesController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, questionBoxList), HttpStatus.OK);
     }
 
-    @Operation(summary = "질문 리스트와 키워드 가져오기")
+    @Operation(summary = "질문 꾸러미 정보 [꾸러미에 속한 질문들 포함] 가져오기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Question.class))))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxInfoDto.class))))
     })
     @GetMapping("/{questionBoxIdx}")
-    public ResponseEntity<PrivateResponseBody> createQuestionList(@PathVariable("questionBoxIdx") Long questionBoxIdx) {
-        List<Question> returnQuestionList = questionBoxesService.createQuestionList(questionBoxIdx);
-        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, returnQuestionList), HttpStatus.OK);
+    public ResponseEntity<PrivateResponseBody> getQuestionBoxInfo(@PathVariable("questionBoxIdx") Long questionBoxIdx) {
+        QuestionBoxInfoDto dto = questionBoxesService.getQuestionBoxInfo(questionBoxIdx);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, dto), HttpStatus.OK);
     }
 
     @Operation(summary = "질문 꾸러미에 질문 추가하기")

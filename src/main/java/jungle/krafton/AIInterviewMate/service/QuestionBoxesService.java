@@ -36,8 +36,20 @@ public class QuestionBoxesService {
         questionRepository.save(convertQuestion(questionBox, questionKeywordDto));
     }
 
-    public List<Question> createQuestionList(Long questionBoxIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
-        return questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
+    public QuestionBoxInfoDto getQuestionBoxInfo(Long questionBoxIdx) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 볼 수 있게 처리 필요
+        QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
+        List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
+
+        List<QuestionInfoDto> questionInfoDtos = new ArrayList<>();
+
+        for (Question question : questions) {
+            questionInfoDtos.add(QuestionInfoDto.of(question));
+        }
+
+        return QuestionBoxInfoDto.of(questionBox, questionInfoDtos);
     }
 
 
