@@ -146,6 +146,6 @@ public class JwtTokenProvider {
         }
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        return customUserDetails.getUsername();
+        return customUserDetails.getName();
     }
 }

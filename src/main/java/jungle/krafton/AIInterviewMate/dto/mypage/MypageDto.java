@@ -1,4 +1,4 @@
-package jungle.krafton.AIInterviewMate.dto.rating;
+package jungle.krafton.AIInterviewMate.dto.mypage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
