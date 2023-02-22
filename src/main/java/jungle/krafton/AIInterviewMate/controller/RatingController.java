@@ -14,7 +14,6 @@ import jungle.krafton.AIInterviewMate.domain.RoomType;
 import jungle.krafton.AIInterviewMate.dto.rating.RatingAiResponseDto;
 import jungle.krafton.AIInterviewMate.dto.rating.RatingHistoryDto;
 import jungle.krafton.AIInterviewMate.dto.rating.RatingInterviewDto;
-import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.service.RatingService;
@@ -66,15 +65,11 @@ public class RatingController {
     })
     @GetMapping("/{roomIdx}")
     public ResponseEntity<PrivateResponseBody> getRatingList(@PathVariable Long roomIdx, @RequestParam(name = "type") RoomType roomType) {
-        try {
-            if (roomType.equals(RoomType.AI)) {
-                return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, ratingService.getAiRatingList(roomIdx)), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, ratingService.getUserRatingList(roomIdx)), HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            throw new PrivateException(StatusCode.NULL_QUERY_STRING);
-        }
 
+        if (roomType.equals(RoomType.AI)) {
+            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, ratingService.getAiRatingList(roomIdx)), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, ratingService.getUserRatingList(roomIdx)), HttpStatus.OK);
+        }
     }
 }

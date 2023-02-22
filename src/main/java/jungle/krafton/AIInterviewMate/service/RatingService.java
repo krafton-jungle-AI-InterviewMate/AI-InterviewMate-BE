@@ -48,7 +48,7 @@ public class RatingService {
         return ratingHistoryDtos;
     }
 
-    public void saveRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) {
+    public void saveRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) { //TODO: 코드 수정 필요 ( 중복 데이터 삭제 로직 변경 )
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
@@ -110,10 +110,14 @@ public class RatingService {
     }
 
     public RatingUserResponseDto getUserRatingList(Long roomIdx) {
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+
+        if (!interviewRoom.getRoomType().equals(RoomType.USER)) {
+            throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
+        }
 
         List<RatingUserListDto> ratingList = new ArrayList<>();
         List<VieweeRating> vieweeRatingList = vieweeRatingRepository.findAllByRoomIdx(roomIdx);
-        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
         for (VieweeRating vieweeRating : vieweeRatingList) {
             Long viewerIdx = vieweeRating.getViewerIdx();
             String nickname = "BOT";
@@ -132,7 +136,13 @@ public class RatingService {
         return new RatingUserResponseDto(interviewRoom, ratingList);
     }
 
-    public RatingAiResponseDto getAiRatingList(Long roomIdx) {
+    public RatingAiResponseDto getAiRatingList(Long roomIdx) { //TODO: 코드 수정 필요 ( 채점 기능 수정 or 삭제 )
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+
+        if (!interviewRoom.getRoomType().equals(RoomType.AI)) {
+            throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
+        }
+
         List<RatingAiScriptListDto> scriptList = new ArrayList<>();
         List<Script> scripts = scriptRepository.findAllByInterviewRoomIdx(roomIdx);
 
@@ -163,7 +173,6 @@ public class RatingService {
         }
 
         VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx);
-        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
 
         return new RatingAiResponseDto(vieweeRating, interviewRoom, scriptList);
     }
