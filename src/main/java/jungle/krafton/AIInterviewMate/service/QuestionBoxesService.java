@@ -3,8 +3,8 @@ package jungle.krafton.AIInterviewMate.service;
 import jungle.krafton.AIInterviewMate.domain.Member;
 import jungle.krafton.AIInterviewMate.domain.Question;
 import jungle.krafton.AIInterviewMate.domain.QuestionBox;
-import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxListDto;
-import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionKeywordDto;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxInfoDto;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
@@ -31,63 +31,103 @@ public class QuestionBoxesService {
         this.memberRepository = memberRepository;
     }
 
-    public void createQuestion(Long questionBoxIdx, QuestionKeywordDto questionKeywordDto) {
-        QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
-        questionRepository.save(convertQuestion(questionBox, questionKeywordDto));
+    @Transactional
+    public void createQuestion(Long questionBoxIdx, QuestionInfoDto questionInfoDto) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 수정할 수 있게 수정 필요
+        QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
+        //TODO: HG - Validator 써서 공백 처리 필요
+        if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
+            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
+        }
+
+        questionRepository.save(questionInfoDto.ConvertToQuestionWithQuestionBox(questionBox));
+        questionBox.setQuestionNum(questionBox.getQuestionNum() + 1);
     }
 
-    public List<Question> createQuestionList(Long questionBoxIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
-        return questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
+    public QuestionBoxInfoDto getQuestionBoxInfo(Long questionBoxIdx) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 볼 수 있게 처리 필요
+        QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
+        List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
+
+        List<QuestionInfoDto> questionInfoDtos = new ArrayList<>();
+
+        for (Question question : questions) {
+            questionInfoDtos.add(QuestionInfoDto.of(question));
+        }
+
+        return QuestionBoxInfoDto.of(questionBox, questionInfoDtos);
     }
 
 
-    public List<QuestionBoxListDto> getQuestionBoxes(Long memberIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
-        Member member = memberRepository.findByIdx(memberIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
+    public List<QuestionBoxInfoDto> getQuestionBoxes(Long memberIdx) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 볼 수 있게 처리 필요
+        Member member = memberRepository.findByIdx(memberIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
 
         List<QuestionBox> questionBoxList = questionBoxRepository.findAllByMember(member);
 
-        List<QuestionBoxListDto> returnQuestionBox = new ArrayList<>();
+        List<QuestionBoxInfoDto> questionBoxInfoDtos = new ArrayList<>();
 
-        for (QuestionBox questionbox : questionBoxList) {
-            returnQuestionBox.add(convertQuestionBox(questionbox));
+        for (QuestionBox questionBox : questionBoxList) {
+            questionBoxInfoDtos.add(QuestionBoxInfoDto.of(questionBox));
         }
-        
-        return returnQuestionBox;
+
+        return questionBoxInfoDtos;
     }
 
     @Transactional
-    public void clearQuestionBox(Long questionBoxIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+    public void clearQuestionBox(Long questionBoxIdx) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
+        QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
         questionRepository.deleteAllByQuestionBoxIdx(questionBoxIdx);
+
+        questionBox.setQuestionNum(0);
     }
 
-    public void updateKeyword(Long questionIdx, QuestionKeywordDto questionKeywordDto) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
-        Question question = questionRepository.findByIdx(questionIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
-        question.setKeyword(questionKeywordDto);
+    public void updateQuestion(Long questionIdx, QuestionInfoDto questionInfoDto) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
+        Question question = questionRepository.findByIdx(questionIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
+
+        //TODO: HG - Validator 써서 공백 처리 필요
+        if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
+            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
+        }
+
+        question.update(questionInfoDto);
         questionRepository.save(question);
     }
 
     @Transactional
-    public void deleteQuestion(Long questionIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+    public void deleteQuestion(Long questionIdx) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
+        Question question = questionRepository.findByIdx(questionIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
+
         questionRepository.deleteByIdx(questionIdx);
+
+        QuestionBox questionBox = question.getQuestionBox();
+        questionBox.setQuestionNum(questionBox.getQuestionNum() - 1);
     }
 
-    public QuestionBoxListDto convertQuestionBox(QuestionBox questionBox) {
-        return QuestionBoxListDto.builder()
-                .idx(questionBox.getIdx())
-                .boxName(questionBox.getBoxName())
-                .questionNum(questionBox.getQuestionNum())
-                .build();
-    }
+    @Transactional
+    public void updateQuestionBoxInfo(Long questionBoxIdx, QuestionBoxInfoDto questionBoxInfoDto) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
+        QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-    public Question convertQuestion(QuestionBox questionBox, QuestionKeywordDto questionKeywordDto) {
-        return Question.builder()
-                .questionBox(questionBox)
-                .questionTitle(questionKeywordDto.getQuestionTitle())
-                .keyword1(questionKeywordDto.getKeyword1())
-                .keyword2(questionKeywordDto.getKeyword2())
-                .keyword3(questionKeywordDto.getKeyword3())
-                .keyword4(questionKeywordDto.getKeyword4())
-                .keyword5(questionKeywordDto.getKeyword5())
-                .build();
+        //TODO: HG - Validator 써서 공백 처리 필요
+        String questionBoxName = questionBoxInfoDto.getQuestionBoxName();
+        if (questionBoxName == null || questionBoxName.trim().isEmpty()) {
+            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_BOX_TITLE);
+        }
+
+        questionBox.setBoxName(questionBoxName);
     }
 }
