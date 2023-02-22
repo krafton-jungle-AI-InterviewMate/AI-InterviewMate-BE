@@ -86,6 +86,15 @@ public class InterviewService {
         Long viewer3Idx = interviewRoom.getRoomViewer3Idx();
         Long memberIdx = member.getIdx();
 
+        if (
+                Objects.equals(interviewRoom.getMember().getIdx(), memberIdx) //방 Host 와 동일한 Id로 로그인 시도
+                        || (viewer1Idx != null && Objects.equals(viewer1Idx, memberIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
+                        || (viewer2Idx != null && Objects.equals(viewer2Idx, memberIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
+                        || (viewer3Idx != null && Objects.equals(viewer3Idx, memberIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
+        ) {
+            throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
+        }
+
         if (viewer1Idx == null) {
             interviewRoom.setRoomViewer1Idx(memberIdx);
             return;
