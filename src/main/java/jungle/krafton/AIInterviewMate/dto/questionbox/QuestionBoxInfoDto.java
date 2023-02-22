@@ -24,4 +24,12 @@ public class QuestionBoxInfoDto {
                 .questions(questionInfoDtos)
                 .build();
     }
+
+    public static QuestionBoxInfoDto of(QuestionBox questionBox) {
+        return QuestionBoxInfoDto.builder()
+                .questionBoxIdx(questionBox.getIdx())
+                .questionBoxName(questionBox.getBoxName())
+                .questionNum(questionBox.getQuestionNum())
+                .build();
+    }
 }

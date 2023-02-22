@@ -7,12 +7,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jungle.krafton.AIInterviewMate.domain.Question;
-import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxListDto;
-import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionKeywordDto;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxInfoDto;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
-import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
 import jungle.krafton.AIInterviewMate.service.QuestionBoxesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,17 +27,18 @@ public class QuestionBoxesController {
     private final QuestionBoxesService questionBoxesService;
 
     @Autowired
-    public QuestionBoxesController(QuestionBoxesService questionBoxesService, QuestionRepository questionRepository) {
+    public QuestionBoxesController(QuestionBoxesService questionBoxesService) {
         this.questionBoxesService = questionBoxesService;
     }
 
     @Operation(summary = "질문 꾸러미 가져오기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxListDto.class))))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxInfoDto.class))))
     })
-    @GetMapping("/temp/{memberIdx}") //TODO: 임시로 만들어둠 추후에 JWT 구현 후 내용 변경 필요
+    @GetMapping("/temp/{memberIdx}")
     public ResponseEntity<PrivateResponseBody> getQuestionBoxes(@PathVariable Long memberIdx) {
-        List<QuestionBoxListDto> questionBoxList = questionBoxesService.getQuestionBoxes(memberIdx);
+        //TODO: 임시로 만들어둠 추후에 JWT 구현 후 내용 변경 필요
+        List<QuestionBoxInfoDto> questionBoxList = questionBoxesService.getQuestionBoxes(memberIdx);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, questionBoxList), HttpStatus.OK);
     }
 

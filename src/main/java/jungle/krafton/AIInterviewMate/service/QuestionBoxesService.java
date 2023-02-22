@@ -3,8 +3,8 @@ package jungle.krafton.AIInterviewMate.service;
 import jungle.krafton.AIInterviewMate.domain.Member;
 import jungle.krafton.AIInterviewMate.domain.Question;
 import jungle.krafton.AIInterviewMate.domain.QuestionBox;
-import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxListDto;
-import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionKeywordDto;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxInfoDto;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
@@ -41,18 +41,20 @@ public class QuestionBoxesService {
     }
 
 
-    public List<QuestionBoxListDto> getQuestionBoxes(Long memberIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
-        Member member = memberRepository.findByIdx(memberIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
+    public List<QuestionBoxInfoDto> getQuestionBoxes(Long memberIdx) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 볼 수 있게 처리 필요
+        Member member = memberRepository.findByIdx(memberIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
 
         List<QuestionBox> questionBoxList = questionBoxRepository.findAllByMember(member);
 
-        List<QuestionBoxListDto> returnQuestionBox = new ArrayList<>();
+        List<QuestionBoxInfoDto> questionBoxInfoDtos = new ArrayList<>();
 
-        for (QuestionBox questionbox : questionBoxList) {
-            returnQuestionBox.add(convertQuestionBox(questionbox));
+        for (QuestionBox questionBox : questionBoxList) {
+            questionBoxInfoDtos.add(QuestionBoxInfoDto.of(questionBox));
         }
-        
-        return returnQuestionBox;
+
+        return questionBoxInfoDtos;
     }
 
     @Transactional
