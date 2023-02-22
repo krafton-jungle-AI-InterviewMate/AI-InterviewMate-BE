@@ -105,10 +105,14 @@ public class QuestionBoxesService {
     }
 
     @Transactional
-    public void deleteQuestion(Long questionIdx) {              //TODO : JWT토근이 완성되면 넘에 값 예외처리
+    public void deleteQuestion(Long questionIdx) {
+        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
+        Question question = questionRepository.findByIdx(questionIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
+
         questionRepository.deleteByIdx(questionIdx);
-    }
 
-
+        QuestionBox questionBox = question.getQuestionBox();
+        questionBox.setQuestionNum(questionBox.getQuestionNum() - 1);
     }
 }
