@@ -1,5 +1,9 @@
 package jungle.krafton.AIInterviewMate.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
@@ -8,7 +12,9 @@ import jungle.krafton.AIInterviewMate.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,13 +32,12 @@ public class LoginController {
         this.authService = authService;
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<PrivateResponseBody> refreshToken(HttpServletRequest request, HttpServletResponse response, @RequestBody String accessToken) {
-        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, authService.refreshToken(request, response, accessToken)), HttpStatus.OK);
-    }
-
-    @GetMapping("/oauth2/authorization/{social}")
-    public ResponseEntity<PrivateResponseBody> doSocialLogin(@PathVariable("social") String social) {
-        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
+    @Operation(summary = "Access 토큰 재 생성")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
+    })
+    @GetMapping("/refresh")
+    public ResponseEntity<PrivateResponseBody> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, authService.refreshToken(request, response)), HttpStatus.OK);
     }
 }
