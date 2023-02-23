@@ -10,6 +10,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class QuestionInfoDto {
+    private Long questionIdx;
+
     private String keyword1;
 
     private String keyword2;
@@ -24,6 +26,7 @@ public class QuestionInfoDto {
 
     public static QuestionInfoDto of(Question question) {
         return QuestionInfoDto.builder()
+                .questionIdx(question.getIdx())
                 .keyword1(question.getKeyword1())
                 .keyword2(question.getKeyword2())
                 .keyword3(question.getKeyword3())
