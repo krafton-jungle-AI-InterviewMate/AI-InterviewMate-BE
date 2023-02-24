@@ -45,7 +45,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .map(Cookie::getValue);
 
         if (redirectUri.isEmpty()) {
-            throw new PrivateException(StatusCode.NOT_MATCH_REDIRECT_URL);
+            throw new PrivateException(StatusCode.NULL_INPUT_REDIRECT_URL);
         }
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
