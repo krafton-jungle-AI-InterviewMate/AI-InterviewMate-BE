@@ -47,15 +47,18 @@ public class OpenViduInfo {
     }
 
     static public void handleError(Exception e) {
+        e.printStackTrace();
+
         if (e instanceof OpenViduJavaClientException) {
-            e.printStackTrace();
             throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
         } else if (e instanceof OpenViduHttpException) {
-            e.printStackTrace();
             throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
         } else if (e instanceof NullPointerException) {
-            e.printStackTrace();
             throw new PrivateException(StatusCode.NULL_INPUT_ERROR);
+        } else if (e instanceof PrivateException) {
+            throw (PrivateException) e;
+        } else {
+            throw new PrivateException(StatusCode.INTERNAL_SERVER_ERROR_PLZ_CHECK);
         }
     }
 
