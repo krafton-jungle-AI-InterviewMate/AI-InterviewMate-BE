@@ -1,9 +1,6 @@
 package jungle.krafton.AIInterviewMate.service;
 
-import io.openvidu.java.client.Connection;
-import io.openvidu.java.client.ConnectionProperties;
 import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.Session;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
@@ -46,63 +43,57 @@ public class InterviewService {
         this.openVidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
+    @Transactional
     public InterviewRoomInfoUserDto enterInterviewRoom(Long roomIdx) { // AI 대인에 따른 예외처리, QuestionBox의 길이가 0인 경우 예외처리
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
-
-        //TODO: 접속할 유저로 Member 변경 필요
-        Member member = interviewRoom.getMember();
 
         RoomType roomType = interviewRoom.getRoomType();
         if (roomType.equals(RoomType.AI)) {
             throw new PrivateException(StatusCode.ROOM_TYPE_ERROR);
         }
 
-        return getUserRoomInfo(interviewRoom, member);
+        //TODO: 접속할 유저로 Member 변경 필요
+        Member memberToEnter = interviewRoom.getMember();
+
+        return getUserRoomInfo(interviewRoom, memberToEnter);
     }
 
-    private InterviewRoomInfoUserDto getUserRoomInfo(InterviewRoom interviewRoom, Member member) {
-        try {
-            openVidu.fetch();
-            Session session = openVidu.getActiveSession(interviewRoom.getSessionId());
-            ConnectionProperties connectionProperties = ConnectionProperties.fromJson(OpenViduInfo.createParams(interviewRoom, member)).build();
-            //TODO: 시도하는 사람 집어넣어야함
-            checkViewerIdx(interviewRoom, member);
+    private InterviewRoomInfoUserDto getUserRoomInfo(InterviewRoom interviewRoom, Member memberToEnter) {
+        //TODO: memberToEnter를 접속 시도하는 사람 집어넣어야함
+//        checkMemberToEnterIdx(interviewRoom, memberToEnter);
 
-            Connection connection = session.createConnection(connectionProperties);
-            InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom, member);
-            dto.setConnectionToken(connection.getToken());
-            return dto;
-        } catch (Exception e) {
-            OpenViduInfo.handleError(e);
-        }
+        OpenViduInfo openViduInfo = OpenViduInfo.of(openVidu, interviewRoom, memberToEnter);
 
-        return null;
+        InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom, memberToEnter);
+        dto.setConnectionToken(openViduInfo.getConnectionToken());
+        return dto;
     }
 
-    private void checkViewerIdx(InterviewRoom interviewRoom, Member member) {
+    private void checkMemberToEnterIdx(InterviewRoom interviewRoom, Member memberToEnter) {
         Long viewer1Idx = interviewRoom.getRoomViewer1Idx();
         Long viewer2Idx = interviewRoom.getRoomViewer2Idx();
         Long viewer3Idx = interviewRoom.getRoomViewer3Idx();
-        Long memberIdx = member.getIdx();
+        Long hostMemberIdx = interviewRoom.getMember().getIdx();
+        Long memberToEnterIdx = memberToEnter.getIdx();
 
         if (
-                Objects.equals(interviewRoom.getMember().getIdx(), memberIdx) //방 Host 와 동일한 Id로 로그인 시도
-                        || (viewer1Idx != null && Objects.equals(viewer1Idx, memberIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
-                        || (viewer2Idx != null && Objects.equals(viewer2Idx, memberIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
-                        || (viewer3Idx != null && Objects.equals(viewer3Idx, memberIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
+                Objects.equals(hostMemberIdx, memberToEnterIdx) //방 Host 와 동일한 Id로 로그인 시도
+                        || (viewer1Idx != null && Objects.equals(viewer1Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
+                        || (viewer2Idx != null && Objects.equals(viewer2Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
+                        || (viewer3Idx != null && Objects.equals(viewer3Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
         ) {
             throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
         }
 
         if (viewer1Idx == null) {
-            interviewRoom.setRoomViewer1Idx(memberIdx);
+            interviewRoom.setRoomViewer1Idx(memberToEnterIdx);
             return;
         } else if (viewer2Idx == null) {
-            interviewRoom.setRoomViewer2Idx(memberIdx);
+            interviewRoom.setRoomViewer2Idx(memberToEnterIdx);
             return;
         } else if (viewer3Idx == null) {
-            interviewRoom.setRoomViewer3Idx(memberIdx);
+            interviewRoom.setRoomViewer3Idx(memberToEnterIdx);
             return;
         }
 

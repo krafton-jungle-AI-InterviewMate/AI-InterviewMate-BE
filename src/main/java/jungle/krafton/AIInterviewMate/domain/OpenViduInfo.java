@@ -17,10 +17,26 @@ public class OpenViduInfo {
     }
 
     static public OpenViduInfo of(OpenVidu openVidu, InterviewRoom interviewRoom, Member member) {
-        Map<String, Object> openViduParams = createParams(interviewRoom, member);
-        Session session = createOpenViduSession(openVidu, openViduParams);
+        Map<String, Object> params = createParams(interviewRoom, member);
+        Session session = null;
+        String curSessionId = interviewRoom.getSessionId();
 
-        return new OpenViduInfo(openViduParams, session);
+        try {
+            if (isExistSessionId(curSessionId)) {
+                openVidu.fetch();
+                session = openVidu.getActiveSession(curSessionId);
+            } else {
+                session = createOpenViduSession(openVidu, params);
+            }
+        } catch (Exception e) {
+            handleError(e);
+        }
+
+        return new OpenViduInfo(params, session);
+    }
+
+    private static boolean isExistSessionId(String sessionId) {
+        return sessionId != null;
     }
 
     static public Map<String, Object> createParams(InterviewRoom interviewRoom, Member member) {
@@ -33,17 +49,11 @@ public class OpenViduInfo {
         return params;
     }
 
-    static private Session createOpenViduSession(OpenVidu openVidu, Map<String, Object> params) {
+    static private Session createOpenViduSession(OpenVidu openVidu, Map<String, Object> params)
+            throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
 
-        Session session = null;
-        try {
-            session = openVidu.createSession(properties);
-        } catch (Exception e) {
-            handleError(e);
-        }
-
-        return session;
+        return openVidu.createSession(properties);
     }
 
     static public void handleError(Exception e) {
