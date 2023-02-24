@@ -29,7 +29,7 @@ public class Swagger2Config {
                 .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
                         .name(jwtSchemeName)
                         .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
+                        .scheme("Bearer")
                         .bearerFormat("JWT"));
 
 
