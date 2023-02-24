@@ -28,7 +28,6 @@ public class InterviewRoomCreateResponseDto {
     private Long roomQuestionBoxIdx;
     private LocalDateTime createdAt;
     private RoomStatus roomStatus;
-    private String sessionId;
     private String connectionToken;
     private List<InterviewQuestionDto> questionList;
 
@@ -48,10 +47,6 @@ public class InterviewRoomCreateResponseDto {
 
     public void setQuestionList(List<InterviewQuestionDto> questionList) {
         this.questionList = questionList;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
     }
 
     public void setConnectionToken(String connectionToken) {

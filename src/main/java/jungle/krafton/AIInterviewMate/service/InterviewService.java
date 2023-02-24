@@ -71,7 +71,6 @@ public class InterviewService {
 
             Connection connection = session.createConnection(connectionProperties);
             InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom, member);
-            dto.setSessionId(session.getSessionId());
             dto.setConnectionToken(connection.getToken());
             return dto;
         } catch (Exception e) {
@@ -147,7 +146,6 @@ public class InterviewService {
             OpenViduInfo openViduInfo = OpenViduInfo.of(openVidu, interviewRoom, member);
             interviewRoom.setSessionId(openViduInfo.getSessionId());
 
-            dto.setSessionId(openViduInfo.getSessionId());
             dto.setConnectionToken(openViduInfo.getConnectionToken());
         } else {
             List<InterviewQuestionDto> questionList = createQuestionList(interviewRoom);
