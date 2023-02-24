@@ -2,10 +2,12 @@ package jungle.krafton.AIInterviewMate.jwt;
 
 import jungle.krafton.AIInterviewMate.domain.AuthProvider;
 import jungle.krafton.AIInterviewMate.domain.Member;
+import jungle.krafton.AIInterviewMate.domain.QuestionBox;
 import jungle.krafton.AIInterviewMate.dto.login.OAuthAttributeDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
+import jungle.krafton.AIInterviewMate.repository.QuestionBoxRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -13,6 +15,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +24,8 @@ import java.util.Optional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
+
+    private final QuestionBoxRepository questionBoxRepository;
 
     // OAuth2UserRequest에 있는 Access Token으로 유저정보 get
     @Override
@@ -49,8 +55,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 throw new PrivateException(StatusCode.WRONG_SOCIAL_LOGIN_TYPE);
             }
 
-        } else {            // 가입되지 않은 경우
+        } else {            // 가입되지 않은 경우 ( 유저 생성 시 질문 꾸러미 10개 추가 )
             user = createUser(attributes, authProvider);
+            List<QuestionBox> boxes = new ArrayList<>();
+            for (int i = 1; i < 11; i++) {
+                QuestionBox questionBox = QuestionBox.builder()
+                        .member(user)
+                        .boxName("질문꾸러미-" + i)
+                        .questionNum(0)
+                        .build();
+
+                boxes.add(questionBox);
+            }
+            questionBoxRepository.saveAll(boxes);
         }
         return CustomUserDetails.create(user, oAuth2User.getAttributes());
     }
