@@ -7,6 +7,7 @@ import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxInfoDto;
 import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
+import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionBoxRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
@@ -23,12 +24,14 @@ public class QuestionBoxesService {
     private final QuestionRepository questionRepository;
     private final QuestionBoxRepository questionBoxRepository;
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public QuestionBoxesService(QuestionRepository questionRepository, QuestionBoxRepository questionBoxRepository, MemberRepository memberRepository) {
+    public QuestionBoxesService(QuestionRepository questionRepository, QuestionBoxRepository questionBoxRepository, MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.questionRepository = questionRepository;
         this.questionBoxRepository = questionBoxRepository;
         this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Transactional
@@ -63,8 +66,9 @@ public class QuestionBoxesService {
     }
 
 
-    public List<QuestionBoxInfoDto> getQuestionBoxes(Long memberIdx) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 볼 수 있게 처리 필요
+    public List<QuestionBoxInfoDto> getQuestionBoxes() {
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+        
         Member member = memberRepository.findByIdx(memberIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
 

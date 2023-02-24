@@ -35,10 +35,9 @@ public class QuestionBoxesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxInfoDto.class))))
     })
-    @GetMapping("/temp/{memberIdx}")
-    public ResponseEntity<PrivateResponseBody> getQuestionBoxes(@PathVariable Long memberIdx) {
-        //TODO: 임시로 만들어둠 추후에 JWT 구현 후 내용 변경 필요
-        List<QuestionBoxInfoDto> questionBoxList = questionBoxesService.getQuestionBoxes(memberIdx);
+    @GetMapping("")
+    public ResponseEntity<PrivateResponseBody> getQuestionBoxes() {
+        List<QuestionBoxInfoDto> questionBoxList = questionBoxesService.getQuestionBoxes();
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, questionBoxList), HttpStatus.OK);
     }
 
