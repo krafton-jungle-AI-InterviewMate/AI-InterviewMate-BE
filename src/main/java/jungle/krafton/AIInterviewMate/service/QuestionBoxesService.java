@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class QuestionBoxesService {
@@ -50,9 +51,13 @@ public class QuestionBoxesService {
     }
 
     public QuestionBoxInfoDto getQuestionBoxInfo(Long questionBoxIdx) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 볼 수 있게 처리 필요
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
+        Member member = questionBox.getMember();
+        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+            throw new PrivateException(StatusCode.WRONG_REQUEST);
+        }
 
         List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
 
@@ -68,7 +73,7 @@ public class QuestionBoxesService {
 
     public List<QuestionBoxInfoDto> getQuestionBoxes() {
         Long memberIdx = jwtTokenProvider.getUserInfo();
-        
+
         Member member = memberRepository.findByIdx(memberIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
 
