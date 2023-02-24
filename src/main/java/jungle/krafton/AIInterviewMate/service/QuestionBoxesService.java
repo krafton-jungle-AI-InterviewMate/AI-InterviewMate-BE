@@ -37,9 +37,13 @@ public class QuestionBoxesService {
 
     @Transactional
     public void createQuestion(Long questionBoxIdx, QuestionInfoDto questionInfoDto) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 수정할 수 있게 수정 필요
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
+        Member member = questionBox.getMember();
+        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+            throw new PrivateException(StatusCode.WRONG_REQUEST);
+        }
 
         //TODO: HG - Validator 써서 공백 처리 필요
         if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
