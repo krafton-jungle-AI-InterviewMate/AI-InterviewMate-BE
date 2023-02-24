@@ -75,4 +75,8 @@ public class InterviewRoom extends Timestamped {
         this.roomPeopleNum = roomPeopleNum;
         this.roomStatus = RoomStatus.CREATE;
     }
+
+    public void setRoomStatus(RoomStatus roomStatus) {
+        this.roomStatus = roomStatus;
+    }
 }

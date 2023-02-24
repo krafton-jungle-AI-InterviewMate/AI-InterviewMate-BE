@@ -10,4 +10,6 @@ public interface VieweeRatingRepository extends JpaRepository<VieweeRating, Long
     Optional<VieweeRating> findByRoomIdx(Long roomIdx);
 
     List<VieweeRating> findAllByRoomIdx(Long roomIdx);
+
+    VieweeRating findByRoomIdxAndViewerIdx(Long roomIdx, Long vieweeIdx);
 }
