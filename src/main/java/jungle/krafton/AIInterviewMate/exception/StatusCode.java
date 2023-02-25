@@ -11,8 +11,9 @@ public enum StatusCode {
     NULL_INPUT_CHAT_REQUEST(HttpStatus.BAD_REQUEST, "101", "필수 입력항목중 미입력 항목이 존재합니다."),
     NOT_MATCH_QUERY_STRING(HttpStatus.BAD_REQUEST, "102", "쿼리스트링이 일치하지 않습니다."),
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "103", "해당 유저가 존재하지 않습니다."),
-    INVALID_TITLE(HttpStatus.BAD_REQUEST, "104", "제목이 존재하지 않거나 공백입니다."),
-    WRONG_REQUEST(HttpStatus.BAD_REQUEST, "105", "본인의 데이터만 접근이 가능합니다."),
+    NOT_FOUND_VIEWEE_RATING(HttpStatus.BAD_REQUEST, "104", "해당 방의 면접 데이터가 존재하지 않습니다."),
+    INVALID_TITLE(HttpStatus.BAD_REQUEST, "105", "제목이 존재하지 않거나 공백입니다."),
+    WRONG_REQUEST(HttpStatus.BAD_REQUEST, "106", "본인의 데이터만 접근이 가능합니다."),
 
     NOT_FOUND_JWT_TOKEN(HttpStatus.NOT_FOUND, "110", "JWT 이 존재하지 않습니다. 다시 확인해주세요."),
     LOGIN_WRONG_SIGNATURE_JWT_TOKEN(HttpStatus.BAD_REQUEST, "111", "잘못된 JWT 서명입니다."),
@@ -31,9 +32,15 @@ public enum StatusCode {
     NOT_FOUND_ROOM(HttpStatus.BAD_REQUEST, "131", "방을 찾을 수 없습니다."),
     NOT_FOUND_QUESTION(HttpStatus.BAD_REQUEST, "132", "질문을 찾을 수 없습니다."),
     NOT_FOUND_QUESTIONBOX(HttpStatus.BAD_REQUEST, "133", "꾸러미를 찾을 수 없습니다."),
-    NOT_ACCESS_DATA_DUPLICATE(HttpStatus.BAD_REQUEST, "134", "중복된 데이터 입력입니다."),
+    NOT_FOUND_SESSION(HttpStatus.NOT_FOUND, "134", "해당 Session을 찾을 수 없습니다"),
+    ROOM_TYPE_ERROR(HttpStatus.BAD_REQUEST, "135", "AI 방에는 입장할 수가 없습니다."),
+    ROOM_VIEWER_ERROR(HttpStatus.BAD_REQUEST, "136", "동일한 ID로 접속할 수가 없습니다. 혹은 방의 인원이 가득 찼습니다."),
+    NOT_ACCESS_DATA_DUPLICATE(HttpStatus.BAD_REQUEST, "137", "중복된 데이터 입력입니다."),
 
     NOT_UPDATE_EXIT_ROOM(HttpStatus.BAD_REQUEST, "140", "종료된 방의 상태를 수정할 수 없습니다."),
+
+    OPENVIDU_JAVA_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "150", "openVidu 작업 중에 Spring Server Error 발생"),
+    OPENVIDU_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "151", "openVidu 작업 중에 openVidu Server Error 발생"),
 
     NULL_INPUT_REDIRECT_URL(HttpStatus.BAD_REQUEST, "300", "리다이렉트 주소가 존재하지 않습니다."),
 

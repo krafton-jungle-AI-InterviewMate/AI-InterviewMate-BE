@@ -72,7 +72,6 @@ public class RatingService {
             scriptRepository.deleteAllByInterviewRoom_Idx(roomIdx);
             for (ScriptSaveDto scriptSaveDto : ratingInterviewDto.getScriptRequestsDtos()) {
                 scriptRepository.save(convertScript(scriptSaveDto, interviewRoom));
-
             }
         }
     }
@@ -110,7 +109,8 @@ public class RatingService {
     }
 
     public RatingUserResponseDto getUserRatingList(Long roomIdx) {
-        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
         if (!interviewRoom.getRoomType().equals(RoomType.USER)) {
             throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
@@ -137,7 +137,8 @@ public class RatingService {
     }
 
     public RatingAiResponseDto getAiRatingList(Long roomIdx) { //TODO: 코드 수정 필요 ( 채점 기능 수정 or 삭제 )
-        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx);
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
         if (!interviewRoom.getRoomType().equals(RoomType.AI)) {
             throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
@@ -172,7 +173,8 @@ public class RatingService {
             scriptList.add(new RatingAiScriptListDto(question, newScript, score));
         }
 
-        VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx);
+        VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_VIEWEE_RATING));
 
         return new RatingAiResponseDto(vieweeRating, interviewRoom, scriptList);
     }

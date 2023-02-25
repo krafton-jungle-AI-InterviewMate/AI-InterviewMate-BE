@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InterviewRoomCreateRequestDto {
-
-    private String email;
     private String roomName;
     private Integer roomPeopleNum;
     private String roomPassword;
@@ -21,5 +19,4 @@ public class InterviewRoomCreateRequestDto {
     private Long roomQuestionBoxIdx;
     private Integer roomQuestionNum;
     private Integer roomTime;
-
 }

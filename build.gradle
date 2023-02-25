@@ -15,7 +15,7 @@ configurations {
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
@@ -38,8 +38,11 @@ dependencies {
     // spring security
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     compileOnly 'org.springframework.boot:spring-boot-starter-security'
+
+	// openvidu
+	implementation 'io.openvidu:openvidu-java-client:2.25.0'
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }
