@@ -147,7 +147,7 @@ public class QuestionBoxesService {
     }
 
     @Transactional
-    public void updateQuestionBoxInfo(Long questionBoxIdx, QuestionBoxInfoDto questionBoxInfoDto) {
+    public void updateQuestionBoxName(Long questionBoxIdx, QuestionBoxInfoDto questionBoxInfoDto) {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 

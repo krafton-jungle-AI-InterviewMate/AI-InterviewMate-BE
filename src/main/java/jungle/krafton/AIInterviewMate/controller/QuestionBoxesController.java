@@ -56,8 +56,8 @@ public class QuestionBoxesController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
     @PutMapping("/{questionBoxIdx}")
-    public ResponseEntity<PrivateResponseBody> updateQuestionBoxInfo(@PathVariable("questionBoxIdx") Long questionBoxIdx, @RequestBody QuestionBoxInfoDto questionBoxInfoDto) {
-        questionBoxesService.updateQuestionBoxInfo(questionBoxIdx, questionBoxInfoDto);
+    public ResponseEntity<PrivateResponseBody> updateQuestionBoxName(@PathVariable("questionBoxIdx") Long questionBoxIdx, @RequestBody QuestionBoxInfoDto questionBoxInfoDto) {
+        questionBoxesService.updateQuestionBoxName(questionBoxIdx, questionBoxInfoDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
