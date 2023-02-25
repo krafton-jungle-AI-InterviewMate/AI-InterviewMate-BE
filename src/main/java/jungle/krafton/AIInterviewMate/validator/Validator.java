@@ -12,27 +12,29 @@ import java.util.Objects;
 @Component
 public class Validator {
     public void validate(InterviewRoomCreateRequestDto requestDto) {
-        if (!isNameValid(requestDto.getRoomName())
+        if (isNameInvalid(requestDto.getRoomName())
                 || requestDto.getRoomQuestionBoxIdx() == null) {
             throw new PrivateException(StatusCode.NULL_INPUT_CHAT_REQUEST);
         }
     }
 
-    public boolean isNameValid(String name) {
-        return name != null && !name.trim().isEmpty();
+    private boolean isNameInvalid(String name) {
+        return name == null || name.trim().isEmpty();
     }
 
-    public boolean isMemberAccessValid(String name) {
-        return name != null && !name.trim().isEmpty();
-    }
-
-    public boolean isMemberAccessValid(Member member, JwtTokenProvider jwtTokenProvider) {
-        return Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo());
+    public boolean hasInvalidAccess(Member member, JwtTokenProvider jwtTokenProvider) {
+        return !Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo());
     }
 
     public void validateName(String name) {
-        if (!isNameValid(name)) {
+        if (isNameInvalid(name)) {
             throw new PrivateException(StatusCode.INVALID_TITLE);
+        }
+    }
+
+    public void validateMember(Member member, JwtTokenProvider jwtTokenProvider) {
+        if (hasInvalidAccess(member, jwtTokenProvider)) {
+            throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
     }
 }

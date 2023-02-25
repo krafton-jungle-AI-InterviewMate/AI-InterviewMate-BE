@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class QuestionBoxesService {
@@ -43,10 +42,8 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
-            throw new PrivateException(StatusCode.WRONG_REQUEST);
-        }
-        
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+
         validator.validateName(questionInfoDto.getQuestionTitle());
 
         questionRepository.save(questionInfoDto.ConvertToQuestionWithQuestionBox(questionBox));
@@ -57,9 +54,7 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
-            throw new PrivateException(StatusCode.WRONG_REQUEST);
-        }
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
 
         List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
 
@@ -95,9 +90,7 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
-            throw new PrivateException(StatusCode.WRONG_REQUEST);
-        }
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
 
         questionRepository.deleteAllByQuestionBoxIdx(questionBoxIdx);
 
@@ -109,9 +102,8 @@ public class QuestionBoxesService {
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
 
         QuestionBox questionBox = question.getQuestionBox();
-        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
-            throw new PrivateException(StatusCode.WRONG_REQUEST);
-        }
+
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
 
         validator.validateName(questionInfoDto.getQuestionTitle());
 
@@ -125,9 +117,8 @@ public class QuestionBoxesService {
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
 
         QuestionBox questionBox = question.getQuestionBox();
-        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
-            throw new PrivateException(StatusCode.WRONG_REQUEST);
-        }
+
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
 
         questionRepository.deleteByIdx(questionIdx);
 
@@ -138,11 +129,8 @@ public class QuestionBoxesService {
     public void updateQuestionBoxName(Long questionBoxIdx, QuestionBoxInfoDto questionBoxInfoDto) {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
-
-        Member member = questionBox.getMember();
-        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
-            throw new PrivateException(StatusCode.WRONG_REQUEST);
-        }
+        
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
 
         String questionBoxName = questionBoxInfoDto.getQuestionBoxName();
 
