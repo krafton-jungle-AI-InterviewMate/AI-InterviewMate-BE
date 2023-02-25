@@ -7,9 +7,11 @@ import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionBoxInfoDto;
 import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
+import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionBoxRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
+import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,33 +25,36 @@ public class QuestionBoxesService {
     private final QuestionRepository questionRepository;
     private final QuestionBoxRepository questionBoxRepository;
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final Validator validator;
 
     @Autowired
-    public QuestionBoxesService(QuestionRepository questionRepository, QuestionBoxRepository questionBoxRepository, MemberRepository memberRepository) {
+    public QuestionBoxesService(QuestionRepository questionRepository, QuestionBoxRepository questionBoxRepository, MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider, Validator validator) {
         this.questionRepository = questionRepository;
         this.questionBoxRepository = questionBoxRepository;
         this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.validator = validator;
     }
 
     @Transactional
     public void createQuestion(Long questionBoxIdx, QuestionInfoDto questionInfoDto) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 수정할 수 있게 수정 필요
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        //TODO: HG - Validator 써서 공백 처리 필요
-        if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
-            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
-        }
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+
+        validator.validateName(questionInfoDto.getQuestionTitle());
 
         questionRepository.save(questionInfoDto.ConvertToQuestionWithQuestionBox(questionBox));
         questionBox.setQuestionNum(questionBox.getQuestionNum() + 1);
     }
 
     public QuestionBoxInfoDto getQuestionBoxInfo(Long questionBoxIdx) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 볼 수 있게 처리 필요
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
 
         List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
 
@@ -63,8 +68,9 @@ public class QuestionBoxesService {
     }
 
 
-    public List<QuestionBoxInfoDto> getQuestionBoxes(Long memberIdx) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 볼 수 있게 처리 필요
+    public List<QuestionBoxInfoDto> getQuestionBoxes() {
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+
         Member member = memberRepository.findByIdx(memberIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
 
@@ -81,9 +87,10 @@ public class QuestionBoxesService {
 
     @Transactional
     public void clearQuestionBox(Long questionBoxIdx) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
 
         questionRepository.deleteAllByQuestionBoxIdx(questionBoxIdx);
 
@@ -91,14 +98,14 @@ public class QuestionBoxesService {
     }
 
     public void updateQuestion(Long questionIdx, QuestionInfoDto questionInfoDto) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
         Question question = questionRepository.findByIdx(questionIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
 
-        //TODO: HG - Validator 써서 공백 처리 필요
-        if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
-            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
-        }
+        QuestionBox questionBox = question.getQuestionBox();
+
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+
+        validator.validateName(questionInfoDto.getQuestionTitle());
 
         question.update(questionInfoDto);
         questionRepository.save(question);
@@ -106,27 +113,28 @@ public class QuestionBoxesService {
 
     @Transactional
     public void deleteQuestion(Long questionIdx) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
         Question question = questionRepository.findByIdx(questionIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
 
+        QuestionBox questionBox = question.getQuestionBox();
+
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+
         questionRepository.deleteByIdx(questionIdx);
 
-        QuestionBox questionBox = question.getQuestionBox();
         questionBox.setQuestionNum(questionBox.getQuestionNum() - 1);
     }
 
     @Transactional
-    public void updateQuestionBoxInfo(Long questionBoxIdx, QuestionBoxInfoDto questionBoxInfoDto) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
+    public void updateQuestionBoxName(Long questionBoxIdx, QuestionBoxInfoDto questionBoxInfoDto) {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+        
+        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
 
-        //TODO: HG - Validator 써서 공백 처리 필요
         String questionBoxName = questionBoxInfoDto.getQuestionBoxName();
-        if (questionBoxName == null || questionBoxName.trim().isEmpty()) {
-            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_BOX_TITLE);
-        }
+
+        validator.validateName(questionBoxName);
 
         questionBox.setBoxName(questionBoxName);
     }

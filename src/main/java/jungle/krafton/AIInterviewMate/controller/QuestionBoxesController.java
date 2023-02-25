@@ -35,10 +35,9 @@ public class QuestionBoxesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxInfoDto.class))))
     })
-    @GetMapping("/temp/{memberIdx}")
-    public ResponseEntity<PrivateResponseBody> getQuestionBoxes(@PathVariable Long memberIdx) {
-        //TODO: 임시로 만들어둠 추후에 JWT 구현 후 내용 변경 필요
-        List<QuestionBoxInfoDto> questionBoxList = questionBoxesService.getQuestionBoxes(memberIdx);
+    @GetMapping("")
+    public ResponseEntity<PrivateResponseBody> getQuestionBoxes() {
+        List<QuestionBoxInfoDto> questionBoxList = questionBoxesService.getQuestionBoxes();
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, questionBoxList), HttpStatus.OK);
     }
 
@@ -57,12 +56,12 @@ public class QuestionBoxesController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
     @PutMapping("/{questionBoxIdx}")
-    public ResponseEntity<PrivateResponseBody> updateQuestionBoxInfo(@PathVariable("questionBoxIdx") Long questionBoxIdx, @RequestBody QuestionBoxInfoDto questionBoxInfoDto) {
-        questionBoxesService.updateQuestionBoxInfo(questionBoxIdx, questionBoxInfoDto);
+    public ResponseEntity<PrivateResponseBody> updateQuestionBoxName(@PathVariable("questionBoxIdx") Long questionBoxIdx, @RequestBody QuestionBoxInfoDto questionBoxInfoDto) {
+        questionBoxesService.updateQuestionBoxName(questionBoxIdx, questionBoxInfoDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
-    @Operation(summary = "질문 꾸러미에 질문 추가하기")
+    @Operation(summary = "질문 꾸러미에 질문 추가하기", description = "Body에 questionIdx 는 전달할 필요 X, 사용하지 않는 Keyword도 전달할 필요 X 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
@@ -93,7 +92,7 @@ public class QuestionBoxesController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
-    @Operation(summary = "질문 정보 [제목, 키워드] 수정하기")
+    @Operation(summary = "질문 정보 [제목, 키워드] 수정하기", description = "Body에 questionIdx 는 전달할 필요 X, 사용하지 않는 Keyword도 전달할 필요 X 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
