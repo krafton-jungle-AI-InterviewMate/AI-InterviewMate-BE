@@ -1,9 +1,13 @@
 package jungle.krafton.AIInterviewMate.validator;
 
+import jungle.krafton.AIInterviewMate.domain.Member;
 import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomCreateRequestDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
+import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class Validator {
@@ -14,8 +18,15 @@ public class Validator {
         }
     }
 
-    private boolean isNameValid(String name) {
+    public boolean isNameValid(String name) {
         return name != null && !name.trim().isEmpty();
     }
 
+    public boolean isMemberAccessValid(String name) {
+        return name != null && !name.trim().isEmpty();
+    }
+
+    public boolean isMemberAccessValid(Member member, JwtTokenProvider jwtTokenProvider) {
+        return Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo());
+    }
 }

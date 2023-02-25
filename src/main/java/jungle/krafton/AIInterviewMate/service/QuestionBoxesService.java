@@ -11,6 +11,7 @@ import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionBoxRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
+import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +27,15 @@ public class QuestionBoxesService {
     private final QuestionBoxRepository questionBoxRepository;
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final Validator validator;
 
     @Autowired
-    public QuestionBoxesService(QuestionRepository questionRepository, QuestionBoxRepository questionBoxRepository, MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public QuestionBoxesService(QuestionRepository questionRepository, QuestionBoxRepository questionBoxRepository, MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider, Validator validator) {
         this.questionRepository = questionRepository;
         this.questionBoxRepository = questionBoxRepository;
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.validator = validator;
     }
 
     @Transactional
@@ -40,14 +43,11 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        //TODO: HG - Validator 써서 User 확인 추가
-        Member member = questionBox.getMember();
-        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
 
-        //TODO: HG - Validator 써서 공백 처리 필요
-        if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
+        if (validator.isNameValid(questionInfoDto.getQuestionTitle())) {
             throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
         }
 
@@ -59,8 +59,7 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        Member member = questionBox.getMember();
-        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
 
@@ -98,8 +97,7 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        Member member = questionBox.getMember();
-        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
 
@@ -112,15 +110,12 @@ public class QuestionBoxesService {
         Question question = questionRepository.findByIdx(questionIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
 
-        //TODO: HG - Validator 써서 User 확인 추가
         QuestionBox questionBox = question.getQuestionBox();
-        Member member = questionBox.getMember();
-        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
 
-        //TODO: HG - Validator 써서 공백 처리 필요
-        if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
+        if (validator.isNameValid(questionInfoDto.getQuestionTitle())) {
             throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
         }
 
@@ -130,14 +125,11 @@ public class QuestionBoxesService {
 
     @Transactional
     public void deleteQuestion(Long questionIdx) {
-        //TODO: HG - 중복 로직 처리하기.
         Question question = questionRepository.findByIdx(questionIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
 
-        //TODO: HG - Validator 써서 User 확인 추가
         QuestionBox questionBox = question.getQuestionBox();
-        Member member = questionBox.getMember();
-        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+        if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
 
@@ -156,9 +148,8 @@ public class QuestionBoxesService {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
 
-        //TODO: HG - Validator 써서 공백 처리 필요
         String questionBoxName = questionBoxInfoDto.getQuestionBoxName();
-        if (questionBoxName == null || questionBoxName.trim().isEmpty()) {
+        if (validator.isNameValid(questionBoxName)) {
             throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_BOX_TITLE);
         }
 
