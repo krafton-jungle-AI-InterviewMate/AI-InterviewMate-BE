@@ -40,6 +40,7 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
+        //TODO: HG - Validator 써서 User 확인 추가
         Member member = questionBox.getMember();
         if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
@@ -108,9 +109,15 @@ public class QuestionBoxesService {
     }
 
     public void updateQuestion(Long questionIdx, QuestionInfoDto questionInfoDto) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
         Question question = questionRepository.findByIdx(questionIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
+
+        //TODO: HG - Validator 써서 User 확인 추가
+        QuestionBox questionBox = question.getQuestionBox();
+        Member member = questionBox.getMember();
+        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+            throw new PrivateException(StatusCode.WRONG_REQUEST);
+        }
 
         //TODO: HG - Validator 써서 공백 처리 필요
         if (questionInfoDto.getQuestionTitle() == null || questionInfoDto.getQuestionTitle().trim().isEmpty()) {
