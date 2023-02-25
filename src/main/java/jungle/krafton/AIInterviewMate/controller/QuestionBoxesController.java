@@ -61,7 +61,7 @@ public class QuestionBoxesController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
-    @Operation(summary = "질문 꾸러미에 질문 추가하기")
+    @Operation(summary = "질문 꾸러미에 질문 추가하기", description = "Body에 questionIdx 는 전달할 필요 X, 사용하지 않는 Keyword도 전달할 필요 X 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
@@ -92,7 +92,7 @@ public class QuestionBoxesController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
-    @Operation(summary = "질문 정보 [제목, 키워드] 수정하기")
+    @Operation(summary = "질문 정보 [제목, 키워드] 수정하기", description = "Body에 questionIdx 는 전달할 필요 X, 사용하지 않는 Keyword도 전달할 필요 X 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
