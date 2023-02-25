@@ -46,10 +46,8 @@ public class QuestionBoxesService {
         if (!validator.isMemberAccessValid(questionBox.getMember(), jwtTokenProvider)) {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
-
-        if (validator.isNameValid(questionInfoDto.getQuestionTitle())) {
-            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
-        }
+        
+        validator.validateName(questionInfoDto.getQuestionTitle());
 
         questionRepository.save(questionInfoDto.ConvertToQuestionWithQuestionBox(questionBox));
         questionBox.setQuestionNum(questionBox.getQuestionNum() + 1);
@@ -115,9 +113,7 @@ public class QuestionBoxesService {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
 
-        if (validator.isNameValid(questionInfoDto.getQuestionTitle())) {
-            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_TITLE);
-        }
+        validator.validateName(questionInfoDto.getQuestionTitle());
 
         question.update(questionInfoDto);
         questionRepository.save(question);
@@ -149,9 +145,8 @@ public class QuestionBoxesService {
         }
 
         String questionBoxName = questionBoxInfoDto.getQuestionBoxName();
-        if (validator.isNameValid(questionBoxName)) {
-            throw new PrivateException(StatusCode.NOT_FOUND_QUESTION_BOX_TITLE);
-        }
+
+        validator.validateName(questionBoxName);
 
         questionBox.setBoxName(questionBoxName);
     }

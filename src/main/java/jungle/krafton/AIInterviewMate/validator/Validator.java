@@ -29,4 +29,10 @@ public class Validator {
     public boolean isMemberAccessValid(Member member, JwtTokenProvider jwtTokenProvider) {
         return Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo());
     }
+
+    public void validateName(String name) {
+        if (!isNameValid(name)) {
+            throw new PrivateException(StatusCode.INVALID_TITLE);
+        }
+    }
 }
