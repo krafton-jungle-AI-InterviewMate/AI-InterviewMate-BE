@@ -138,7 +138,7 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getUserInfo() {
+    public Long getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
@@ -146,6 +146,6 @@ public class JwtTokenProvider {
         }
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        return customUserDetails.getName();
+        return Long.valueOf(customUserDetails.getName());
     }
 }
