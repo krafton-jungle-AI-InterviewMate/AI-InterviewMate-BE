@@ -42,7 +42,7 @@ public enum StatusCode {
     OPENVIDU_JAVA_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "150", "openVidu 작업 중에 Spring Server Error 발생"),
     OPENVIDU_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "151", "openVidu 작업 중에 openVidu Server Error 발생"),
 
-    NOT_MATCH_REDIRECT_URL(HttpStatus.BAD_REQUEST, "300", "리다이렉트 주소가 일치하지 않습니다."),
+    NULL_INPUT_REDIRECT_URL(HttpStatus.BAD_REQUEST, "300", "리다이렉트 주소가 존재하지 않습니다."),
 
     NULL_INPUT_ERROR(HttpStatus.NOT_FOUND, "990", "Null 값이 들어왔습니다"),
     NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT(HttpStatus.INTERNAL_SERVER_ERROR, "998", "Security Context에 인증 정보가 없습니다."),
