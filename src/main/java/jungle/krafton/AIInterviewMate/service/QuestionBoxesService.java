@@ -130,13 +130,19 @@ public class QuestionBoxesService {
 
     @Transactional
     public void deleteQuestion(Long questionIdx) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
+        //TODO: HG - 중복 로직 처리하기.
         Question question = questionRepository.findByIdx(questionIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
 
+        //TODO: HG - Validator 써서 User 확인 추가
+        QuestionBox questionBox = question.getQuestionBox();
+        Member member = questionBox.getMember();
+        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+            throw new PrivateException(StatusCode.WRONG_REQUEST);
+        }
+
         questionRepository.deleteByIdx(questionIdx);
 
-        QuestionBox questionBox = question.getQuestionBox();
         questionBox.setQuestionNum(questionBox.getQuestionNum() - 1);
     }
 
