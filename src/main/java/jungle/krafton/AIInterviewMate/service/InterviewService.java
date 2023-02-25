@@ -5,6 +5,7 @@ import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
+import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.InterviewRoomRepository;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
@@ -23,6 +24,7 @@ public class InterviewService {
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
     private final Validator validator;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
@@ -31,11 +33,12 @@ public class InterviewService {
     private OpenVidu openVidu;
 
     @Autowired
-    public InterviewService(InterviewRoomRepository interviewRoomRepository, QuestionRepository questionRepository, MemberRepository memberRepository, Validator validator) {
+    public InterviewService(InterviewRoomRepository interviewRoomRepository, QuestionRepository questionRepository, MemberRepository memberRepository, Validator validator, JwtTokenProvider jwtTokenProvider) {
         this.interviewRoomRepository = interviewRoomRepository;
         this.questionRepository = questionRepository;
         this.memberRepository = memberRepository;
         this.validator = validator;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostConstruct
@@ -44,7 +47,7 @@ public class InterviewService {
     }
 
     @Transactional
-    public InterviewRoomInfoUserDto enterInterviewRoom(Long roomIdx) { // AI 대인에 따른 예외처리, QuestionBox의 길이가 0인 경우 예외처리
+    public InterviewRoomInfoUserDto enterInterviewRoom(Long roomIdx) {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
@@ -53,14 +56,15 @@ public class InterviewService {
             throw new PrivateException(StatusCode.ROOM_TYPE_ERROR);
         }
 
-        //TODO: 접속할 유저로 Member 변경 필요
-        Member memberToEnter = interviewRoom.getMember();
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+        Member memberToEnter = memberRepository.findByIdx(memberIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
 
         return getUserRoomInfo(interviewRoom, memberToEnter);
     }
 
     private InterviewRoomInfoUserDto getUserRoomInfo(InterviewRoom interviewRoom, Member memberToEnter) {
-        //TODO: memberToEnter를 접속 시도하는 사람 집어넣어야함
+        //TODO: 실 서비스 사용시에 해당 부분 확인을 해야함.
 //        checkMemberToEnterIdx(interviewRoom, memberToEnter);
 
         OpenViduInfo openViduInfo = OpenViduInfo.of(openVidu, interviewRoom, memberToEnter);
@@ -125,7 +129,8 @@ public class InterviewService {
 
     @Transactional
     public InterviewRoomCreateResponseDto createInterviewRoom(InterviewRoomCreateRequestDto requestDto) {
-        Member member = memberRepository.findByEmail(requestDto.getEmail())
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+        Member member = memberRepository.findByIdx(memberIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
 
         InterviewRoom interviewRoom = interviewRoomRepository.save(createInterviewRoom(requestDto, member));

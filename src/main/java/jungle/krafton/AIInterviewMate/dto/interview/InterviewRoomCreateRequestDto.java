@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InterviewRoomCreateRequestDto {
-    private String email; //TODO: JWT 사용시에 memberIdx 로 변경
     private String roomName;
     private Integer roomPeopleNum;
     private String roomPassword;
