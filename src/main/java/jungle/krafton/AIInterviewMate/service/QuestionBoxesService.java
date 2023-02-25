@@ -94,9 +94,13 @@ public class QuestionBoxesService {
 
     @Transactional
     public void clearQuestionBox(Long questionBoxIdx) {
-        //TODO : JWT토근이 완성되면 넘에 값 예외처리 - 본인 데이터만 처리할 수 있게 처리 필요
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
+
+        Member member = questionBox.getMember();
+        if (!Objects.equals(member.getIdx(), jwtTokenProvider.getUserInfo())) {
+            throw new PrivateException(StatusCode.WRONG_REQUEST);
+        }
 
         questionRepository.deleteAllByQuestionBoxIdx(questionBoxIdx);
 
