@@ -38,8 +38,8 @@ public class Validator {
         }
     }
 
-    public void validatePassword(String expected, String actual) {
-        if (!expected.equals(actual)) {
+    public void validatePassword(String actual, String needed) {
+        if (!needed.equals(actual)) {
             throw new PrivateException(StatusCode.WRONG_PASSWORD);
         }
     }

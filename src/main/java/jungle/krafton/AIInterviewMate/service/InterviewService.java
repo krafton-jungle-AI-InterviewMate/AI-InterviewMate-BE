@@ -56,7 +56,7 @@ public class InterviewService {
             throw new PrivateException(StatusCode.ROOM_TYPE_ERROR);
         }
 
-        validator.validatePassword(interviewRoom.getRoomPassword(), requestDto.getPassword());
+        validator.validatePassword(requestDto.getPassword(), interviewRoom.getRoomPassword());
 
         Long memberIdx = jwtTokenProvider.getUserInfo();
         Member memberToEnter = memberRepository.findByIdx(memberIdx)
