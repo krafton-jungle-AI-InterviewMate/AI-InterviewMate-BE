@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomCreateRequestDto;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomCreateResponseDto;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomInfoUserDto;
-import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomListDto;
+import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.service.InterviewService;
@@ -42,8 +39,8 @@ public class InterviewController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InterviewRoomInfoUserDto.class)))
     })
     @PostMapping("/rooms/{roomIdx}")
-    public ResponseEntity<PrivateResponseBody> enterInterviewRoom(@PathVariable("roomIdx") Long roomIdx) {
-        InterviewRoomInfoUserDto dto = interviewService.enterInterviewRoom(roomIdx);
+    public ResponseEntity<PrivateResponseBody> enterInterviewRoom(@PathVariable("roomIdx") Long roomIdx, @RequestBody InterviewRoomEnterRequestDto requestDto) {
+        InterviewRoomInfoUserDto dto = interviewService.enterInterviewRoom(roomIdx, requestDto);
 
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, dto), HttpStatus.OK);
     }
