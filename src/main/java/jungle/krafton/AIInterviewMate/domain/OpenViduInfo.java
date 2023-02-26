@@ -64,7 +64,7 @@ public class OpenViduInfo {
         } else if (e instanceof OpenViduHttpException) {
             throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
         } else if (e instanceof NullPointerException) {
-            throw new PrivateException(StatusCode.NULL_INPUT_ERROR);
+            throw new PrivateException(StatusCode.NOT_FOUND_SESSION);
         } else if (e instanceof PrivateException) {
             throw (PrivateException) e;
         } else {
