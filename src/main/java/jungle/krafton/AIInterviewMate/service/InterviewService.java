@@ -47,7 +47,7 @@ public class InterviewService {
     }
 
     @Transactional
-    public InterviewRoomInfoUserDto enterInterviewRoom(Long roomIdx) {
+    public InterviewRoomInfoUserDto enterInterviewRoom(Long roomIdx, InterviewRoomEnterRequestDto requestDto) {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
@@ -55,6 +55,8 @@ public class InterviewService {
         if (roomType.equals(RoomType.AI)) {
             throw new PrivateException(StatusCode.ROOM_TYPE_ERROR);
         }
+
+        validator.validatePassword(interviewRoom.getRoomPassword(), requestDto.getPassword());
 
         Long memberIdx = jwtTokenProvider.getUserInfo();
         Member memberToEnter = memberRepository.findByIdx(memberIdx)

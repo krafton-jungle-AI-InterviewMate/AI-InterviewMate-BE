@@ -37,4 +37,10 @@ public class Validator {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
     }
+
+    public void validatePassword(String expected, String actual) {
+        if (!expected.equals(actual)) {
+            throw new PrivateException(StatusCode.WRONG_PASSWORD);
+        }
+    }
 }
