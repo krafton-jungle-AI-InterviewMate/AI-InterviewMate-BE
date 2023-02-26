@@ -1,6 +1,7 @@
 package jungle.krafton.AIInterviewMate.validator;
 
 import jungle.krafton.AIInterviewMate.domain.Member;
+import jungle.krafton.AIInterviewMate.domain.RoomType;
 import jungle.krafton.AIInterviewMate.dto.interview.InterviewRoomCreateRequestDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
@@ -41,6 +42,12 @@ public class Validator {
     public void validatePassword(String actual, String needed) {
         if (!needed.equals(actual)) {
             throw new PrivateException(StatusCode.WRONG_PASSWORD);
+        }
+    }
+
+    public void validateRoomType(RoomType actual, RoomType needed) {
+        if (!needed.equals(actual)) {
+            throw new PrivateException(StatusCode.ROOM_TYPE_ERROR);
         }
     }
 }

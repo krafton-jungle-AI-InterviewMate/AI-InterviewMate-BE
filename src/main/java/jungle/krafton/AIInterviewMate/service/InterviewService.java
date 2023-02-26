@@ -52,9 +52,7 @@ public class InterviewService {
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
         RoomType roomType = interviewRoom.getRoomType();
-        if (roomType.equals(RoomType.AI)) {
-            throw new PrivateException(StatusCode.ROOM_TYPE_ERROR);
-        }
+        validator.validateRoomType(roomType, RoomType.USER);
 
         validator.validatePassword(requestDto.getPassword(), interviewRoom.getRoomPassword());
 
