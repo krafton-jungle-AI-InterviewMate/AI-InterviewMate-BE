@@ -40,7 +40,7 @@ public class Validator {
     }
 
     public void validatePassword(String actual, String needed) {
-        if (!needed.equals(actual)) {
+        if (needed != null && !needed.equals(actual)) {
             throw new PrivateException(StatusCode.WRONG_PASSWORD);
         }
     }

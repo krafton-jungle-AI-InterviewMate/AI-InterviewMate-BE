@@ -45,6 +45,20 @@ public class InterviewController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, dto), HttpStatus.OK);
     }
 
+    @Operation(summary = "비정상 면접 종료")
+    @Parameters({
+            @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
+    })
+    @DeleteMapping("/rooms/abnormal/{roomIdx}")
+    public ResponseEntity<PrivateResponseBody> exitAbnormalInterviewRoom(@PathVariable("roomIdx") Long roomIdx) {
+        interviewService.exitAbnormalInterviewRoom(roomIdx);
+
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
+    }
+
     @Operation(summary = "면접 방 상태 변경", description = "Create -> Proceed , Proceed -> Exit 으로 변경")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
