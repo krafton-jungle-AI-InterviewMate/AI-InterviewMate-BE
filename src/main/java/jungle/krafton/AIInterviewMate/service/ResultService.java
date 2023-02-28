@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ResultService {
@@ -206,10 +205,10 @@ public class ResultService {
         return script;
     }
 
-    public void saveComment(Long roomIdx, Map<String, Object> resultRequestComment) {
-        Long userIdx = jwtTokenProvider.getUserInfo();
+    public void saveComment(Long roomIdx, ResultRequestCommentDto resultRequestComment) {
+        Long memberIdx = jwtTokenProvider.getUserInfo();
 
-        Member viewer = memberRepository.findByIdx(userIdx)
+        Member viewer = memberRepository.findByIdx(memberIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
 
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
@@ -218,7 +217,7 @@ public class ResultService {
         Comment comment = Comment.builder()
                 .interviewRoom(interviewRoom)
                 .viewerIdx(viewer.getIdx())
-                .comment((String) resultRequestComment.get("comment"))
+                .comment(resultRequestComment.getComment())
                 .build();
 
         commentRepository.save(comment);

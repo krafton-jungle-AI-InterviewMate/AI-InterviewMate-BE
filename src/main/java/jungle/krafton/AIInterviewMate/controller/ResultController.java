@@ -14,6 +14,7 @@ import jungle.krafton.AIInterviewMate.domain.RoomType;
 import jungle.krafton.AIInterviewMate.dto.result.RatingAiResponseDto;
 import jungle.krafton.AIInterviewMate.dto.result.RatingHistoryDto;
 import jungle.krafton.AIInterviewMate.dto.result.ResultInterviewDto;
+import jungle.krafton.AIInterviewMate.dto.result.ResultRequestCommentDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.service.ResultService;
@@ -21,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @Tag(name = "result", description = "채점 관련 API")
 @RestController
@@ -83,7 +82,7 @@ public class ResultController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
     })
     @PostMapping(value = "/{roomIdx}/comment")
-    public ResponseEntity<PrivateResponseBody> saveComment(@PathVariable Long roomIdx, @RequestBody Map<String, Object> resultRequestComment) {
+    public ResponseEntity<PrivateResponseBody> saveComment(@PathVariable Long roomIdx, @RequestBody ResultRequestCommentDto resultRequestComment) {
         resultService.saveComment(roomIdx, resultRequestComment);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
