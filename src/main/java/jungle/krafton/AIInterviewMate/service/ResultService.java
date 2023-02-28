@@ -214,6 +214,8 @@ public class ResultService {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
+        validator.validateContents(resultRequestComment.getComment());
+
         Comment comment = Comment.builder()
                 .interviewRoom(interviewRoom)
                 .viewerIdx(viewer.getIdx())

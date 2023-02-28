@@ -50,4 +50,10 @@ public class Validator {
             throw new PrivateException(StatusCode.ROOM_TYPE_ERROR);
         }
     }
+
+    public void validateContents(String contents) {
+        if (contents == null || contents.trim().isEmpty()) {
+            throw new PrivateException(StatusCode.CONTENTS_IS_EMPTY_ERROR);
+        }
+    }
 }
