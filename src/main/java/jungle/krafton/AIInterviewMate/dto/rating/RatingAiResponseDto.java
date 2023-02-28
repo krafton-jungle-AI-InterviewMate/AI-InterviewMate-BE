@@ -1,7 +1,6 @@
 package jungle.krafton.AIInterviewMate.dto.rating;
 
 import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
-import jungle.krafton.AIInterviewMate.domain.VieweeRating;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

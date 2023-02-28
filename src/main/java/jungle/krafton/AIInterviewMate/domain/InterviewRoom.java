@@ -46,14 +46,8 @@ public class InterviewRoom extends Timestamped {
     @Column()
     private Integer roomPeopleNum;
 
-    @Column(name = "interviewer_1_idx")
-    private Long roomViewer1Idx;
-
-    @Column(name = "interviewer_2_idx")
-    private Long roomViewer2Idx;
-
-    @Column(name = "interviewer_3_idx")
-    private Long roomViewer3Idx;
+    @Column(name = "interviewer_idxes")
+    private String interviewerIdxes;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)

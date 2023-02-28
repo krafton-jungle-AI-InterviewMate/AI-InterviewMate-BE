@@ -48,7 +48,7 @@ public class RatingService {
         return ratingHistoryDtos;
     }
 
-    public void saveRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) { //TODO: 코드 수정 필요 ( 중복 데이터 삭제 로직 변경 )
+    public void saveRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) { // TODO: 코드 수정 필요 ( 중복 데이터 삭제 로직 변경 )
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
@@ -89,7 +89,7 @@ public class RatingService {
     private VieweeRating convertVieweeRating(Long roomIdx, RatingInterviewDto ratingInterviewDto) {
         return VieweeRating.builder()
                 .viewerIdx(ratingInterviewDto.getViewerIdx())
-                .vieweeIdx(1L) //Login Data 가 없어서 현재는 임시방편으로 처리함
+                .vieweeIdx(1L) // TODO: Login Data 가 없어서 현재는 임시방편으로 처리함
                 .roomType(ratingInterviewDto.getViewerIdx() == 79797979 ? RoomType.AI : RoomType.USER)
                 .answerRating(ratingInterviewDto.getAnswerRating())
                 .eyesRating(ratingInterviewDto.getEyesRating())
@@ -136,7 +136,7 @@ public class RatingService {
         return new RatingUserResponseDto(interviewRoom, ratingList);
     }
 
-    public RatingAiResponseDto getAiRatingList(Long roomIdx) { //TODO: 코드 수정 필요 ( 채점 기능 수정 or 삭제 )
+    public RatingAiResponseDto getAiRatingList(Long roomIdx) { // TODO: 코드 수정 필요 ( 채점 기능 수정 or 삭제 )
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
@@ -179,40 +179,15 @@ public class RatingService {
         return new RatingAiResponseDto(vieweeRating, interviewRoom, scriptList);
     }
 
-    private ScriptRating convertScript(String script, List<String> keywords) {
-        int matchCnt = 0;
-        int totalCnt = 5;
-        int score = 100;
+    private String convertScript(String script, List<String> keywords) {
+        int matchCnt = 1;
         for (String keyword : keywords) {
             if (keyword == null) {
-                totalCnt--;
                 continue;
             }
-            if (!script.contains(keyword)) {
-                continue;
-            }
-            matchCnt++;
             script = script.replace(keyword, "<" + matchCnt + ">" + keyword + "</" + matchCnt + ">");
+            matchCnt++;
         }
-        score = (score / totalCnt) * matchCnt;
-        return new ScriptRating(script, score);
-    }
-
-    private class ScriptRating {
-        private final String script;
-        private final int score;
-
-        public ScriptRating(String script, int score) {
-            this.script = script;
-            this.score = score;
-        }
-
-        public String getScript() {
-            return script;
-        }
-
-        public int getScore() {
-            return score;
-        }
+        return script;
     }
 }

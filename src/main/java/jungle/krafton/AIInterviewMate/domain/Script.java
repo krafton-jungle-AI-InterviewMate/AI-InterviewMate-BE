@@ -23,20 +23,10 @@ public class Script {
     private InterviewRoom interviewRoom;
 
     @Column(nullable = false)
-    private Long memberIdx;
-
-    @Column(nullable = false)
     private Long questionIdx;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "LONGTEXT")
     private String script;
-
-    @Column()
-    private Integer rating;
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
 
     public void setScript(String script) {
         this.script = script;
