@@ -37,6 +37,7 @@ public enum StatusCode {
     ROOM_VIEWER_ERROR(HttpStatus.BAD_REQUEST, "136", "동일한 ID로 접속할 수가 없습니다. 혹은 방의 인원이 가득 찼습니다."),
     NOT_ACCESS_DATA_DUPLICATE(HttpStatus.BAD_REQUEST, "137", "중복된 데이터 입력입니다."),
     WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "138", "비밀번호가 틀렸습니다."),
+    ROOM_STATUS_ERROR(HttpStatus.BAD_REQUEST, "139", "이미 시작된 방 혹은 종료된 방에는 접속할 수 없습니다."),
 
     NOT_UPDATE_EXIT_ROOM(HttpStatus.BAD_REQUEST, "140", "종료된 방의 상태를 수정할 수 없습니다."),
 

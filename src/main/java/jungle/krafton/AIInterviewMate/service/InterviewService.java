@@ -64,6 +64,8 @@ public class InterviewService {
         RoomType roomType = interviewRoom.getRoomType();
         validator.validateRoomType(roomType, RoomType.USER);
 
+        validator.validateEnterRoomStatus(interviewRoom.getRoomStatus());
+
         validator.validatePassword(requestDto.getPassword(), interviewRoom.getRoomPassword());
 
         Long memberIdx = jwtTokenProvider.getUserInfo();
