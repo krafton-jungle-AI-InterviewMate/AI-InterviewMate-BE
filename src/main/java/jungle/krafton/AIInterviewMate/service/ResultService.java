@@ -75,12 +75,12 @@ public class ResultService {
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
             resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
             for (ResultInterviewCommentDto resultInterviewCommentDto : resultInterviewDto.getComments()) {
-                commentRepository.save(convertComment(interviewRoom, resultInterviewCommentDto));
+                commentRepository.save(convertDtotoComment(interviewRoom, resultInterviewCommentDto));
             }
         } else {
             resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
             for (ResultInterviewScriptDto resultInterviewScriptDto : resultInterviewDto.getScripts()) {
-                scriptRepository.save(convertScript(interviewRoom, resultInterviewScriptDto));
+                scriptRepository.save(convertDtotoScript(interviewRoom, resultInterviewScriptDto));
             }
         }
     }
@@ -95,7 +95,7 @@ public class ResultService {
                 .build();
     }
 
-    private Script convertScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto) {
+    private Script convertDtotoScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto) {
         return Script.builder()
                 .interviewRoom(interviewRoom)
                 .questionIdx(resultInterviewScriptDto.getQuestionIdx())
@@ -103,7 +103,7 @@ public class ResultService {
                 .build();
     }
 
-    private Comment convertComment(InterviewRoom interviewRoom, ResultInterviewCommentDto resultInterviewCommentDto) {
+    private Comment convertDtotoComment(InterviewRoom interviewRoom, ResultInterviewCommentDto resultInterviewCommentDto) {
         return Comment.builder()
                 .interviewRoom(interviewRoom)
                 .viewerIdx(resultInterviewCommentDto.getViewerIdx())
@@ -118,12 +118,16 @@ public class ResultService {
         if (!interviewRoom.getRoomType().equals(RoomType.AI)) {
             throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
         }
+
         Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
         List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
         List<String> attitudeTimeline = Arrays.asList(result.getAttitudeTimeline().split(","));
         List<String> questionTimeline = Arrays.asList(result.getQuestionTimeline().split(","));
-        List<Script> scripts = scriptRepository.findAllByInterviewRoomIdx(roomIdx);
+        List<ResultInterviewScriptDto> scripts = new ArrayList<>();
+        for (Script script : scriptRepository.findAllByInterviewRoomIdx(roomIdx)) {
+            scripts.add(convertScriptToDto(script));
+        }
 
 
         return new ResultAiResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, scripts);
@@ -141,10 +145,27 @@ public class ResultService {
         List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
         List<String> attitudeTimeline = Arrays.asList(result.getAttitudeTimeline().split(","));
         List<String> questionTimeline = Arrays.asList(result.getQuestionTimeline().split(","));
-        List<Comment> comments = commentRepository.findAllByInterviewRoomIdx(roomIdx);
+        List<ResultInterviewCommentDto> comments = new ArrayList<>();
+        for (Comment comment : commentRepository.findAllByInterviewRoomIdx(roomIdx)) {
+            comments.add(convertCommentToDto(comment));
+        }
 
 
         return new ResultUserResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, comments);
+    }
+
+    public ResultInterviewScriptDto convertScriptToDto(Script script) {
+        return ResultInterviewScriptDto.builder()
+                .script(script.getScript())
+                .questionIdx(script.getQuestionIdx())
+                .build();
+    }
+
+    public ResultInterviewCommentDto convertCommentToDto(Comment comment) {
+        return ResultInterviewCommentDto.builder()
+                .comment(comment.getComment())
+                .viewerIdx(comment.getViewerIdx())
+                .build();
     }
 
 }

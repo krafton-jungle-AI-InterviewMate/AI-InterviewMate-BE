@@ -1,6 +1,5 @@
 package jungle.krafton.AIInterviewMate.dto.result;
 
-import jungle.krafton.AIInterviewMate.domain.Comment;
 import jungle.krafton.AIInterviewMate.domain.Result;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +18,9 @@ public class ResultUserResponseDto {
     private List<String> attitudeTimeline;
     private List<String> questionTimeline;
     private String comment;
-    private List<Comment> comments;
+    private List<ResultInterviewCommentDto> comments;
 
-    public ResultUserResponseDto(Result result, List<String> eyeTimeline, List<String> attitudeTimeline, List<String> questionTimeline, List<Comment> comments) {
+    public ResultUserResponseDto(Result result, List<String> eyeTimeline, List<String> attitudeTimeline, List<String> questionTimeline, List<ResultInterviewCommentDto> comments) {
         this.videoUrl = result.getVideoUrl();
         this.eyeTimeline = eyeTimeline;
         this.attitudeTimeline = attitudeTimeline;
