@@ -1,5 +1,6 @@
 package jungle.krafton.AIInterviewMate.dto.rating;
 
+import jungle.krafton.AIInterviewMate.domain.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
