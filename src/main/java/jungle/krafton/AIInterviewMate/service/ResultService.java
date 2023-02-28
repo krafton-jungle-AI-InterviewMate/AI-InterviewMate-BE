@@ -59,7 +59,7 @@ public class ResultService {
         return ratingHistoryDtos;
     }
 
-    public void saveResult(Long roomIdx, ResultInterviewDto resultInterviewDto) { // TODO: 코드 수정 필요 ( 중복 데이터 삭제 로직 변경 )
+    public void saveResult(Long roomIdx, ResultInterviewDto resultInterviewDto) {
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
         StringBuffer eyeTimelines = new StringBuffer();
@@ -83,21 +83,19 @@ public class ResultService {
             }
             questionTimelines.deleteCharAt(0);
         }
-
+        resultRepository.save(convertDtoToResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
-            resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
             for (ResultInterviewCommentDto resultInterviewCommentDto : resultInterviewDto.getComments()) {
-                commentRepository.save(convertDtotoComment(interviewRoom, resultInterviewCommentDto));
+                commentRepository.save(convertDtoToComment(interviewRoom, resultInterviewCommentDto));
             }
         } else {
-            resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
             for (ResultInterviewScriptDto resultInterviewScriptDto : resultInterviewDto.getScripts()) {
-                scriptRepository.save(convertDtotoScript(interviewRoom, resultInterviewScriptDto));
+                scriptRepository.save(convertDtoToScript(interviewRoom, resultInterviewScriptDto));
             }
         }
     }
 
-    private Result convertResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, StringBuffer eyeTimelines, StringBuffer attitudeTimelines, StringBuffer questionTimelines) {
+    private Result convertDtoToResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, StringBuffer eyeTimelines, StringBuffer attitudeTimelines, StringBuffer questionTimelines) {
         return Result.builder()
                 .interviewRoom(interviewRoom)
                 .videoUrl(resultInterviewDto.getVideoUrl())
@@ -107,7 +105,7 @@ public class ResultService {
                 .build();
     }
 
-    private Script convertDtotoScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto) {
+    private Script convertDtoToScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto) {
         return Script.builder()
                 .interviewRoom(interviewRoom)
                 .questionIdx(resultInterviewScriptDto.getQuestionIdx())
@@ -115,7 +113,7 @@ public class ResultService {
                 .build();
     }
 
-    private Comment convertDtotoComment(InterviewRoom interviewRoom, ResultInterviewCommentDto resultInterviewCommentDto) {
+    private Comment convertDtoToComment(InterviewRoom interviewRoom, ResultInterviewCommentDto resultInterviewCommentDto) {
         return Comment.builder()
                 .interviewRoom(interviewRoom)
                 .viewerIdx(resultInterviewCommentDto.getViewerIdx())
@@ -123,7 +121,7 @@ public class ResultService {
                 .build();
     }
 
-    public ResultAiResponseDto getAiResult(Long roomIdx) { // TODO: 코드 수정 필요 ( 채점 기능 수정 or 삭제 )
+    public ResultAiResponseDto getAiResult(Long roomIdx) {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
@@ -144,7 +142,7 @@ public class ResultService {
         return new ResultAiResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, scripts);
     }
 
-    public ResultUserResponseDto getUserResult(Long roomIdx) { // TODO: 코드 수정 필요 ( 채점 기능 수정 or 삭제 )
+    public ResultUserResponseDto getUserResult(Long roomIdx) {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
@@ -160,8 +158,6 @@ public class ResultService {
         for (Comment comment : commentRepository.findAllByInterviewRoomIdx(roomIdx)) {
             comments.add(convertCommentToDto(comment));
         }
-
-
         return new ResultUserResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, comments);
     }
 
@@ -177,18 +173,6 @@ public class ResultService {
                 .comment(comment.getComment())
                 .viewerIdx(comment.getViewerIdx())
                 .build();
-    }
-
-    private String convertScript(String script, List<String> keywords) {
-        int matchCnt = 1;
-        for (String keyword : keywords) {
-            if (keyword == null) {
-                continue;
-            }
-            script = script.replace(keyword, "<" + matchCnt + ">" + keyword + "</" + matchCnt + ">");
-            matchCnt++;
-        }
-        return script;
     }
 
     public void saveComment(Long roomIdx, ResultRequestCommentDto resultRequestComment) {
