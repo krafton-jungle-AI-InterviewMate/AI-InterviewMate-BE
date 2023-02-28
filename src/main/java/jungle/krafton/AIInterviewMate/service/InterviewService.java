@@ -205,7 +205,6 @@ public class InterviewService {
                 .roomName(interviewRoom.getRoomName())
                 .nickname(interviewRoom.getMember().getNickname())
                 .roomPeopleNum(interviewRoom.getRoomPeopleNum())
-                .roomPeopleNow(interviewRoom.getRoomPeopleNum())
                 .roomTime(interviewRoom.getRoomTime())
                 .roomIsPrivate(interviewRoom.getIsPrivate())
                 .createdAt(interviewRoom.getCreatedAt())
