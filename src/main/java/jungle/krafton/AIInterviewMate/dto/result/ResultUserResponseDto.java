@@ -25,7 +25,7 @@ public class ResultUserResponseDto {
         this.eyeTimeline = eyeTimeline;
         this.attitudeTimeline = attitudeTimeline;
         this.questionTimeline = questionTimeline;
-        this.comment = result.getComment();
+        this.comment = result.getMemo();
         this.comments = comments;
     }
 }

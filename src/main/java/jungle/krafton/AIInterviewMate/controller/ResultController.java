@@ -74,7 +74,7 @@ public class ResultController {
         }
     }
 
-    @Operation(summary = "면접 코멘트 저장", description = "body에 'comment' 라는 이름으로 String 데이터 넣어주시면 됩니다!!")
+    @Operation(summary = "결과 코멘트 저장", description = "body에 'comment' 라는 이름으로 String 데이터 넣어주시면 됩니다!!")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
     })
@@ -82,7 +82,7 @@ public class ResultController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
     })
     @PostMapping(value = "/{roomIdx}/comment")
-    public ResponseEntity<PrivateResponseBody> saveComment(@PathVariable Long roomIdx, @RequestBody ResultRequestCommentDto resultRequestComment) {
+    public ResponseEntity<PrivateResponseBody> savePersonalComment(@PathVariable Long roomIdx, @RequestBody ResultRequestCommentDto resultRequestComment) {
         resultService.saveComment(roomIdx, resultRequestComment);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
