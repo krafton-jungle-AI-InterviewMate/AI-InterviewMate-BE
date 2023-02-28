@@ -56,7 +56,7 @@ public class ResultController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
-    @Operation(summary = "면접 결과 확인")
+    @Operation(summary = "면접 결과 확인", description = "타입에 따라 타른 Dto가 출력 됩니다.")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1"),
             @Parameter(in = ParameterIn.QUERY, name = "type", description = "방 타입", example = "AI")
