@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ResultService {
@@ -205,7 +206,7 @@ public class ResultService {
         return script;
     }
 
-    public void saveComment(Long roomIdx, ResultRequestCommentDto resultRequestCommentDto) {
+    public void saveComment(Long roomIdx, Map<String, Object> resultRequestComment) {
         Long userIdx = jwtTokenProvider.getUserInfo();
 
         Member viewer = memberRepository.findByIdx(userIdx)
@@ -217,7 +218,7 @@ public class ResultService {
         Comment comment = Comment.builder()
                 .interviewRoom(interviewRoom)
                 .viewerIdx(viewer.getIdx())
-                .comment(resultRequestCommentDto.getComment())
+                .comment((String) resultRequestComment.get("comment"))
                 .build();
 
         commentRepository.save(comment);

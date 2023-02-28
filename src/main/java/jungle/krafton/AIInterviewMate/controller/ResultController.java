@@ -14,7 +14,6 @@ import jungle.krafton.AIInterviewMate.domain.RoomType;
 import jungle.krafton.AIInterviewMate.dto.result.RatingAiResponseDto;
 import jungle.krafton.AIInterviewMate.dto.result.RatingHistoryDto;
 import jungle.krafton.AIInterviewMate.dto.result.ResultInterviewDto;
-import jungle.krafton.AIInterviewMate.dto.result.ResultRequestCommentDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.service.ResultService;
@@ -22,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Tag(name = "result", description = "채점 관련 API")
 @RestController
@@ -74,7 +75,7 @@ public class ResultController {
         }
     }
 
-    @Operation(summary = "면접 코멘트 저장 ")
+    @Operation(summary = "면접 코멘트 저장", description = "body에 'comment' 라는 이름으로 String 데이터 넣어주시면 됩니다!!")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
     })
@@ -82,8 +83,8 @@ public class ResultController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
     })
     @PostMapping(value = "/{roomIdx}/comment")
-    public ResponseEntity<PrivateResponseBody> saveComment(@PathVariable Long roomIdx, @RequestBody ResultRequestCommentDto resultRequestCommentDto) {
-        resultService.saveComment(roomIdx, resultRequestCommentDto);
+    public ResponseEntity<PrivateResponseBody> saveComment(@PathVariable Long roomIdx, @RequestBody Map<String, Object> resultRequestComment) {
+        resultService.saveComment(roomIdx, resultRequestComment);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 }
