@@ -35,5 +35,5 @@ public class Result {
     private String questionTimeline;
 
     @Column(columnDefinition = "LONGTEXT")
-    private String comment;
+    private String personalComment;
 }
