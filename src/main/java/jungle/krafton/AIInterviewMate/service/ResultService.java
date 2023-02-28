@@ -195,7 +195,7 @@ public class ResultService {
         commentRepository.save(comment);
     }
 
-    public void saveMemo(Long roomIdx, ResultmemoDto resultmemoDto) {
+    public void saveMemo(Long roomIdx, ResultMemoDto resultMemoDto) {
         Long memberIdx = jwtTokenProvider.getUserInfo();
 
         Member viewer = memberRepository.findByIdx(memberIdx)
@@ -204,9 +204,9 @@ public class ResultService {
         Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
 
-        validator.validateContents(resultmemoDto.getComment());
+        validator.validateContents(resultMemoDto.getComment());
 
-        result.setMemo(resultmemoDto.getComment());
+        result.setMemo(resultMemoDto.getComment());
 
         resultRepository.save(result);
     }

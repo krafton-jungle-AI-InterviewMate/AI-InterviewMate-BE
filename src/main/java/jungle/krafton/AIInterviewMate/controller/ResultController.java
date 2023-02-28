@@ -84,7 +84,7 @@ public class ResultController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
-    @Operation(summary = "결과 메모 저장", description = "body에 'comment' 라는 이름으로 String 데이터 넣어주시면 됩니다!!")
+    @Operation(summary = "결과 메모 저장", description = "body에 'memo' 라는 이름으로 String 데이터 넣어주시면 됩니다!!")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
     })
@@ -92,7 +92,7 @@ public class ResultController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
     })
     @PostMapping(value = "/{roomIdx}/memo")
-    public ResponseEntity<PrivateResponseBody> saveMemo(@PathVariable Long roomIdx, @RequestBody ResultmemoDto resultmemoDto) {
+    public ResponseEntity<PrivateResponseBody> saveMemo(@PathVariable Long roomIdx, @RequestBody ResultMemoDto resultmemoDto) {
         resultService.saveMemo(roomIdx, resultmemoDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }

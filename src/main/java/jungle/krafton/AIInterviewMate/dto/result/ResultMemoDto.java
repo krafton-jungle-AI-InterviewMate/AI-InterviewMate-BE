@@ -3,6 +3,6 @@ package jungle.krafton.AIInterviewMate.dto.result;
 import lombok.Getter;
 
 @Getter
-public class ResultmemoDto {
+public class ResultMemoDto {
     private String comment;
 }
