@@ -25,13 +25,13 @@ public class Result {
     @Column()
     private String videoUrl;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String eyeTimeline;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String attitudeTimeline;
 
-    @Column()
+    @Column(length = 1000)
     private String questionTimeline;
 
     @Column(length = 1000)
