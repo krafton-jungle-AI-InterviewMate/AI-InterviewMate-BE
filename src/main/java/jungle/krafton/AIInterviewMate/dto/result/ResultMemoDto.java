@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class ResultMemoDto {
-    private String comment;
+    private String memo;
 }

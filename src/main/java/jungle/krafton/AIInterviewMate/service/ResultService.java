@@ -204,9 +204,9 @@ public class ResultService {
         Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
 
-        validator.validateContents(resultMemoDto.getComment());
+        validator.validateContents(resultMemoDto.getMemo());
 
-        result.setMemo(resultMemoDto.getComment());
+        result.setMemo(resultMemoDto.getMemo());
 
         resultRepository.save(result);
     }
