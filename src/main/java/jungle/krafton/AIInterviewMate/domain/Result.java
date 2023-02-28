@@ -22,7 +22,7 @@ public class Result {
     @JoinColumn(name = "interviewRoom_idx", nullable = false)
     private InterviewRoom interviewRoom;
 
-    @Column()
+    @Column(length = 1000)
     private String videoUrl;
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
