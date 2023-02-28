@@ -23,8 +23,8 @@ public class InterviewRoomInfoUserDto extends InterviewRoomCreateResponseDto {
         this.roomViewer2Idx = Long.valueOf(viewerIdxList.get(1));
         this.roomViewer3Idx = Long.valueOf(viewerIdxList.get(2));
 
-        this.roomViewer1Idx = interviewRoom.getRoomViewer1Idx();
-        this.roomViewer2Idx = interviewRoom.getRoomViewer2Idx();
-        this.roomViewer3Idx = interviewRoom.getRoomViewer3Idx();
+//        this.roomViewer1Idx = interviewRoom.getRoomViewer1Idx();
+//        this.roomViewer2Idx = interviewRoom.getRoomViewer2Idx();
+//        this.roomViewer3Idx = interviewRoom.getRoomViewer3Idx();
     }
 }
