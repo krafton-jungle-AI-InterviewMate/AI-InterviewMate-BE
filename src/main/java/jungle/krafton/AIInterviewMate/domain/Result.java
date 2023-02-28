@@ -25,10 +25,10 @@ public class Result {
     @Column(length = 1000)
     private String videoUrl;
 
-    @Column(nullable = false, columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String eyeTimeline;
 
-    @Column(nullable = false, columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String attitudeTimeline;
 
     @Column(columnDefinition = "LONGTEXT")

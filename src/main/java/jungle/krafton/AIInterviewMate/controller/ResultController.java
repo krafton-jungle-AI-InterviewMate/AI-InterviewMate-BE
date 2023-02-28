@@ -11,26 +11,26 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jungle.krafton.AIInterviewMate.domain.RoomType;
-import jungle.krafton.AIInterviewMate.dto.rating.RatingAiResponseDto;
-import jungle.krafton.AIInterviewMate.dto.rating.RatingHistoryDto;
-import jungle.krafton.AIInterviewMate.dto.rating.RatingInterviewDto;
+import jungle.krafton.AIInterviewMate.dto.result.RatingAiResponseDto;
+import jungle.krafton.AIInterviewMate.dto.result.RatingHistoryDto;
+import jungle.krafton.AIInterviewMate.dto.result.ResultInterviewDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
-import jungle.krafton.AIInterviewMate.service.RatingService;
+import jungle.krafton.AIInterviewMate.service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "rating", description = "채점 관련 API")
+@Tag(name = "result", description = "채점 관련 API")
 @RestController
-@RequestMapping("/rating")
-public class RatingController {
-    private final RatingService ratingService;
+@RequestMapping("/result")
+public class ResultController {
+    private final ResultService resultService;
 
     @Autowired
-    public RatingController(RatingService ratingService) {
-        this.ratingService = ratingService;
+    public ResultController(ResultService resultService) {
+        this.resultService = resultService;
     }
 
     @Operation(summary = "면접 결과 전체 리스트 확인")
@@ -39,7 +39,7 @@ public class RatingController {
     })
     @GetMapping("/history")
     public ResponseEntity<PrivateResponseBody> getRatingHistory() {
-        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, ratingService.getRatingHistory()), HttpStatus.OK);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getRatingHistory()), HttpStatus.OK);
     }
 
     @Operation(summary = "면접 결과 저장 ")
@@ -49,9 +49,9 @@ public class RatingController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
     })
-    @PostMapping(value = "/{roomIdx}/viewee")
-    public ResponseEntity<PrivateResponseBody> saveRating(@PathVariable Long roomIdx, @RequestBody RatingInterviewDto ratingInterviewDto) {
-        ratingService.saveRating(roomIdx, ratingInterviewDto);
+    @PostMapping(value = "/{roomIdx}/result")
+    public ResponseEntity<PrivateResponseBody> saveRating(@PathVariable Long roomIdx, @RequestBody ResultInterviewDto resultInterviewDto) {
+        resultService.saveResult(roomIdx, resultInterviewDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
@@ -67,9 +67,9 @@ public class RatingController {
     public ResponseEntity<PrivateResponseBody> getRatingList(@PathVariable Long roomIdx, @RequestParam(name = "type") RoomType roomType) {
 
         if (roomType.equals(RoomType.AI)) {
-            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, ratingService.getAiRatingList(roomIdx)), HttpStatus.OK);
+            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getAiRatingList(roomIdx)), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, ratingService.getUserRatingList(roomIdx)), HttpStatus.OK);
+            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getUserRatingList(roomIdx)), HttpStatus.OK);
         }
     }
 }

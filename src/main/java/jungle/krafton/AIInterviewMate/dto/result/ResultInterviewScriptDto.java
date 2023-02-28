@@ -1,4 +1,4 @@
-package jungle.krafton.AIInterviewMate.dto.rating;
+package jungle.krafton.AIInterviewMate.dto.result;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ScriptSaveDto {
+public class ResultInterviewScriptDto {
     private Long questionIdx;
     private String script;
 }

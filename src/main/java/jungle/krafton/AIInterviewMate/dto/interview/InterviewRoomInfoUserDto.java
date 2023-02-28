@@ -1,7 +1,6 @@
 package jungle.krafton.AIInterviewMate.dto.interview;
 
 import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
-import jungle.krafton.AIInterviewMate.domain.Member;
 import lombok.*;
 
 @Getter
