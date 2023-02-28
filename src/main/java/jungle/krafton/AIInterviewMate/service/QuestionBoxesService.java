@@ -42,7 +42,7 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+        validator.validateAccessMember(questionBox.getMember(), jwtTokenProvider);
 
         validator.validateName(questionInfoDto.getQuestionTitle());
 
@@ -54,7 +54,7 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+        validator.validateAccessMember(questionBox.getMember(), jwtTokenProvider);
 
         List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
 
@@ -90,7 +90,7 @@ public class QuestionBoxesService {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
 
-        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+        validator.validateAccessMember(questionBox.getMember(), jwtTokenProvider);
 
         questionRepository.deleteAllByQuestionBoxIdx(questionBoxIdx);
 
@@ -103,7 +103,7 @@ public class QuestionBoxesService {
 
         QuestionBox questionBox = question.getQuestionBox();
 
-        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+        validator.validateAccessMember(questionBox.getMember(), jwtTokenProvider);
 
         validator.validateName(questionInfoDto.getQuestionTitle());
 
@@ -118,7 +118,7 @@ public class QuestionBoxesService {
 
         QuestionBox questionBox = question.getQuestionBox();
 
-        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+        validator.validateAccessMember(questionBox.getMember(), jwtTokenProvider);
 
         questionRepository.deleteByIdx(questionIdx);
 
@@ -129,8 +129,8 @@ public class QuestionBoxesService {
     public void updateQuestionBoxName(Long questionBoxIdx, QuestionBoxInfoDto questionBoxInfoDto) {
         QuestionBox questionBox = questionBoxRepository.findByIdx(questionBoxIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTIONBOX));
-        
-        validator.validateMember(questionBox.getMember(), jwtTokenProvider);
+
+        validator.validateAccessMember(questionBox.getMember(), jwtTokenProvider);
 
         String questionBoxName = questionBoxInfoDto.getQuestionBoxName();
 

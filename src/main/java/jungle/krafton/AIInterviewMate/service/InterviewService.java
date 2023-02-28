@@ -72,6 +72,9 @@ public class InterviewService {
         Member memberToEnter = memberRepository.findByIdx(memberIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
 
+        //TODO: 실 서비스 시에 확인할 부분
+//        validator.validateHostToRejoin(interviewRoom.getMember(), memberToEnter);
+
         return getUserRoomInfo(interviewRoom, memberToEnter);
     }
 
@@ -176,7 +179,7 @@ public class InterviewService {
     }
 
     private InterviewRoomInfoUserDto getUserRoomInfo(InterviewRoom interviewRoom, Member memberToEnter) {
-        checkMemberToEnterIdx(interviewRoom, memberToEnter);
+        addMemberToInterviewerIdxes(interviewRoom, memberToEnter);
 
         OpenViduInfo openViduInfo = OpenViduInfo.of(openVidu, interviewRoom, memberToEnter);
 
@@ -185,28 +188,16 @@ public class InterviewService {
         return dto;
     }
 
-    private void checkMemberToEnterIdx(InterviewRoom interviewRoom, Member memberToEnter) {
-        List<String> idxes = null;
+    private void addMemberToInterviewerIdxes(InterviewRoom interviewRoom, Member memberToEnter) {
         String interviewerIdxes = interviewRoom.getInterviewerIdxes();
+        String memberToEnterIdx = String.valueOf(memberToEnter.getIdx());
+        List<String> idxes = new ArrayList<>();
 
-        if (interviewerIdxes == null) {
-            idxes = new ArrayList<>();
-        } else {
+        if (interviewerIdxes != null) {
             String[] viewerStrIdxArr = interviewerIdxes.split(",");
             idxes = new ArrayList<>(List.of(viewerStrIdxArr));
-        }
-        String hostMemberIdx = String.valueOf(interviewRoom.getMember().getIdx());
-        String memberToEnterIdx = String.valueOf(memberToEnter.getIdx());
 
-
-        //TODO: 실 서비스 사용시에 해당 부분 확인을 해야함.
-        if (
-//                idxes.contains(hostMemberIdx) ||
-//                idxes.size() >= 3 ||
-//                        idxes.contains(memberToEnterIdx)
-                idxes.size() >= 3
-        ) {
-            throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
+            validator.validateMemberToEnterInterviewerRole(idxes, memberToEnterIdx);
         }
 
         idxes.add(memberToEnterIdx);
@@ -319,7 +310,7 @@ public class InterviewService {
 
 
     private InterviewRoom createInterviewRoom(InterviewRoomCreateRequestDto requestDto, Member member) {
-        validator.validate(requestDto);
+        validator.validateDto(requestDto);
 
         return InterviewRoom.builder()
                 .member(member)

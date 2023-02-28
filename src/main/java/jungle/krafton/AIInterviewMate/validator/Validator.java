@@ -9,11 +9,12 @@ import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
 public class Validator {
-    public void validate(InterviewRoomCreateRequestDto requestDto) {
+    public void validateDto(InterviewRoomCreateRequestDto requestDto) {
         if (isNameInvalid(requestDto.getRoomName())
                 || requestDto.getRoomQuestionBoxIdx() == null) {
             throw new PrivateException(StatusCode.NULL_INPUT_CHAT_REQUEST);
@@ -34,7 +35,7 @@ public class Validator {
         }
     }
 
-    public void validateMember(Member member, JwtTokenProvider jwtTokenProvider) {
+    public void validateAccessMember(Member member, JwtTokenProvider jwtTokenProvider) {
         if (hasInvalidAccess(member, jwtTokenProvider)) {
             throw new PrivateException(StatusCode.WRONG_REQUEST);
         }
@@ -61,6 +62,31 @@ public class Validator {
     public void validateExitRoomStatus(RoomStatus actual) {
         if (actual == RoomStatus.EXIT) {
             throw new PrivateException(StatusCode.ALREADY_EXIT_ROOM);
+        }
+    }
+
+    public void validateHostToRejoin(Member host, Member memberToEnter) {
+        if (host.equals(memberToEnter)) {
+            throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
+        }
+    }
+
+    public boolean isMaxInterviewerNum(int size) {
+        return size >= 3;
+    }
+
+    public boolean hasSameInterviewer(List<String> idxes, String memberToEnterIdx) {
+        return idxes.contains(memberToEnterIdx);
+    }
+
+    public void validateMemberToEnterInterviewerRole(List<String> idxes, String memberToEnterIdx) {
+        //TODO: 실 서비스 사용시에 해당 부분 확인을 해야함.
+
+        if (
+                isMaxInterviewerNum(idxes.size())
+//                        || hasSameInterviewer(idxes, memberToEnterIdx)
+        ) {
+            throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
         }
     }
 }
