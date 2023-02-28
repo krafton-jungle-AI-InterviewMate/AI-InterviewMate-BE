@@ -50,13 +50,13 @@ public class ResultController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
     })
-    @PostMapping(value = "/{roomIdx}/result")
+    @PostMapping(value = "/{roomIdx}")
     public ResponseEntity<PrivateResponseBody> saveRating(@PathVariable Long roomIdx, @RequestBody ResultInterviewDto resultInterviewDto) {
         resultService.saveResult(roomIdx, resultInterviewDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 
-    @Operation(summary = "면접 결과 상세 보기")
+    @Operation(summary = "면접 결과 확인", description = "타입에 따라 다른 Dto가 출력 됩니다.")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1"),
             @Parameter(in = ParameterIn.QUERY, name = "type", description = "방 타입", example = "AI")
@@ -68,9 +68,9 @@ public class ResultController {
     public ResponseEntity<PrivateResponseBody> getRatingList(@PathVariable Long roomIdx, @RequestParam(name = "type") RoomType roomType) {
 
         if (roomType.equals(RoomType.AI)) {
-            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getAiRatingList(roomIdx)), HttpStatus.OK);
+            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getAiResult(roomIdx)), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getUserRatingList(roomIdx)), HttpStatus.OK);
+            return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getUserResult(roomIdx)), HttpStatus.OK);
         }
     }
 
