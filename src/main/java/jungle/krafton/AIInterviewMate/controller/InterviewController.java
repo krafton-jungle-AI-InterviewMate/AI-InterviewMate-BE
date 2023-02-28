@@ -45,7 +45,7 @@ public class InterviewController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, dto), HttpStatus.OK);
     }
 
-    @Operation(summary = "비정상 면접 종료")
+    @Operation(summary = "면접 방에서 나가기 [브라우저 닫기 포함]", description = "면접 중간에 나가기 버튼, 브라우저를 그냥 닫을 때도 해당 메서드를 Call 해주시면 DB가 삭제됩니다.")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
     })
@@ -53,8 +53,8 @@ public class InterviewController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
     @DeleteMapping("/rooms/abnormal/{roomIdx}")
-    public ResponseEntity<PrivateResponseBody> exitAbnormalInterviewRoom(@PathVariable("roomIdx") Long roomIdx) {
-        interviewService.exitAbnormalInterviewRoom(roomIdx);
+    public ResponseEntity<PrivateResponseBody> exitInterviewRoom(@PathVariable("roomIdx") Long roomIdx) {
+        interviewService.exitInterviewRoom(roomIdx);
 
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }

@@ -76,7 +76,7 @@ public class InterviewService {
     }
 
     @Transactional
-    public void exitAbnormalInterviewRoom(Long roomIdx) {
+    public void exitInterviewRoom(Long roomIdx) {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
