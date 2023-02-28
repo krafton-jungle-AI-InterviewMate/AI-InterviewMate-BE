@@ -100,11 +100,11 @@ public class InterviewService {
                 interviewRoomRepository.delete(interviewRoom);
             }
         } else {
-            exitInterviewRoom(interviewRoom);
+            updateInterviewerIdxes(interviewRoom);
         }
     }
 
-    private void exitInterviewRoom(InterviewRoom interviewRoom) {
+    private void updateInterviewerIdxes(InterviewRoom interviewRoom) {
         String[] memberIdxes = interviewRoom.getInterviewerIdxes().split(",");
         String memberIdxToExit = String.valueOf(jwtTokenProvider.getUserInfo());
 
