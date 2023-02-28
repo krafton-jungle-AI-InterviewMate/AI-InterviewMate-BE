@@ -17,7 +17,7 @@ public class ResultUserResponseDto {
     private List<String> eyeTimeline;
     private List<String> attitudeTimeline;
     private List<String> questionTimeline;
-    private String comment;
+    private String memo;
     private List<ResultInterviewCommentDto> comments;
 
     public ResultUserResponseDto(Result result, List<String> eyeTimeline, List<String> attitudeTimeline, List<String> questionTimeline, List<ResultInterviewCommentDto> comments) {
@@ -25,7 +25,7 @@ public class ResultUserResponseDto {
         this.eyeTimeline = eyeTimeline;
         this.attitudeTimeline = attitudeTimeline;
         this.questionTimeline = questionTimeline;
-        this.comment = result.getComment();
+        this.memo = result.getMemo();
         this.comments = comments;
     }
 }

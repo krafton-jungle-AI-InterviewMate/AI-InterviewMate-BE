@@ -11,10 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jungle.krafton.AIInterviewMate.domain.RoomType;
-import jungle.krafton.AIInterviewMate.dto.result.RatingAiResponseDto;
-import jungle.krafton.AIInterviewMate.dto.result.RatingHistoryDto;
-import jungle.krafton.AIInterviewMate.dto.result.ResultInterviewDto;
-import jungle.krafton.AIInterviewMate.dto.result.ResultRequestCommentDto;
+import jungle.krafton.AIInterviewMate.dto.result.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.service.ResultService;
@@ -84,6 +81,19 @@ public class ResultController {
     @PostMapping(value = "/{roomIdx}/comment")
     public ResponseEntity<PrivateResponseBody> saveComment(@PathVariable Long roomIdx, @RequestBody ResultRequestCommentDto resultRequestComment) {
         resultService.saveComment(roomIdx, resultRequestComment);
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
+    }
+
+    @Operation(summary = "결과 메모 저장", description = "body에 'memo' 라는 이름으로 String 데이터 넣어주시면 됩니다!!")
+    @Parameters({
+            @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
+    })
+    @PostMapping(value = "/{roomIdx}/memo")
+    public ResponseEntity<PrivateResponseBody> saveMemo(@PathVariable Long roomIdx, @RequestBody ResultMemoDto resultmemoDto) {
+        resultService.saveMemo(roomIdx, resultmemoDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 }
