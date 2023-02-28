@@ -194,4 +194,20 @@ public class ResultService {
 
         commentRepository.save(comment);
     }
+
+    public void saveMemo(Long roomIdx, ResultmemoDto resultmemoDto) {
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+
+        Member viewer = memberRepository.findByIdx(memberIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
+
+        Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
+
+        validator.validateContents(resultmemoDto.getComment());
+
+        result.setMemo(resultmemoDto.getComment());
+
+        resultRepository.save(result);
+    }
 }

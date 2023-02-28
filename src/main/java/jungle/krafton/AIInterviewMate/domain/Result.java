@@ -36,4 +36,8 @@ public class Result {
 
     @Column(columnDefinition = "LONGTEXT")
     private String memo;
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
 }
