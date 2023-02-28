@@ -13,8 +13,6 @@ import java.util.List;
 
 @Service
 public class ResultService {
-    private final long MEMBER_IDX = 1;
-
     private final InterviewRoomRepository interviewRoomRepository;
     private final ResultRepository resultRepository;
     private final CommentRepository commentRepository;
