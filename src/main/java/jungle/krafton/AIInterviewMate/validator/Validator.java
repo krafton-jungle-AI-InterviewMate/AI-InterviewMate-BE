@@ -57,4 +57,10 @@ public class Validator {
             throw new PrivateException(StatusCode.ROOM_STATUS_ERROR);
         }
     }
+
+    public void validateExitRoomStatus(RoomStatus actual) {
+        if (actual == RoomStatus.EXIT) {
+            throw new PrivateException(StatusCode.ALREADY_EXIT_ROOM);
+        }
+    }
 }

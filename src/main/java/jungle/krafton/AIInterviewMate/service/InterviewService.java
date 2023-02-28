@@ -80,11 +80,33 @@ public class InterviewService {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
+        RoomStatus roomStatus = interviewRoom.getRoomStatus();
+
+        validator.validateExitRoomStatus(roomStatus);
+
         RoomType roomType = interviewRoom.getRoomType();
         if (roomType == RoomType.USER) {
-            exitAbnormalUserInterviewRoom(interviewRoom);
+            if (interviewRoom.getRoomStatus() == RoomStatus.CREATE) {
+                exitNormalUserInterviewRoom(interviewRoom);
+            } else {
+                exitAbnormalUserInterviewRoom(interviewRoom);
+            }
         } else {
             deleteAbnormalAiInterviewRoom(interviewRoom);
+        }
+    }
+
+    private void exitNormalUserInterviewRoom(InterviewRoom interviewRoom) {
+        /*
+            면접자가 나감 => 더 이상의 방을 유지할 필요가 없으므로 Session 을 종료
+            면접관이 나가면 면접관 List 업데이트
+         */
+        if (hasHostLeftRoom(interviewRoom.getMember())) {
+            closeSession(interviewRoom);
+
+            interviewRoomRepository.delete(interviewRoom);
+        } else {
+            updateInterviewerIdxes(interviewRoom);
         }
     }
 
@@ -111,6 +133,10 @@ public class InterviewService {
         String saveIdxes = Arrays.stream(memberIdxes)
                 .filter(memberIdx -> !memberIdx.equals(memberIdxToExit))
                 .collect(Collectors.joining(","));
+
+        if (saveIdxes.isEmpty()) {
+            saveIdxes = null;
+        }
 
         interviewRoom.setInterviewerIdxes(saveIdxes);
     }
