@@ -49,7 +49,7 @@ public class ResultController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
     })
-    @PostMapping(value = "/{roomIdx}/result")
+    @PostMapping(value = "/{roomIdx}")
     public ResponseEntity<PrivateResponseBody> saveRating(@PathVariable Long roomIdx, @RequestBody ResultInterviewDto resultInterviewDto) {
         resultService.saveResult(roomIdx, resultInterviewDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
