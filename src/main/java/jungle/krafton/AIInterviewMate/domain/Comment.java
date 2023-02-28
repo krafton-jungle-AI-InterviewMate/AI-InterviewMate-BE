@@ -25,6 +25,6 @@ public class Comment {
     @Column(nullable = false)
     private Long viewerIdx;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String comment;
 }

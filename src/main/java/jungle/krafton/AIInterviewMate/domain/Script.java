@@ -25,7 +25,7 @@ public class Script {
     @Column(nullable = false)
     private Long questionIdx;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "LONGTEXT")
     private String script;
 
     public void setScript(String script) {
