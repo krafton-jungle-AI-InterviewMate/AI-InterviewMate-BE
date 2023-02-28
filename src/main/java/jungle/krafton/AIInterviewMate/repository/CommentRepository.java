@@ -9,4 +9,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllByInterviewRoomIdx(Long roomIdx);
 
     List<Comment> findAllByInterviewRoomIdxAndViewerIdx(Long roomIdx, Long viewerIdx);
+
+    Comment findByInterviewRoomIdxAndViewerIdx(Long roomIdx, Long viewerIdx);
 }

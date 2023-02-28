@@ -4,7 +4,9 @@ import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.result.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
+import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.*;
+import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +20,20 @@ public class ResultService {
     private final ResultRepository resultRepository;
     private final CommentRepository commentRepository;
     private final ScriptRepository scriptRepository;
-
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+    private final Validator validator;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public ResultService(InterviewRoomRepository interviewRoomRepository, ResultRepository resultRepository, CommentRepository commentRepository, ScriptRepository scriptRepository, QuestionRepository questionRepository, MemberRepository memberRepository) {
+    public ResultService(InterviewRoomRepository interviewRoomRepository,
+                         ResultRepository resultRepository,
+                         CommentRepository commentRepository,
+                         ScriptRepository scriptRepository,
+                         QuestionRepository questionRepository,
+                         MemberRepository memberRepository,
+                         Validator validator,
+                         JwtTokenProvider jwtTokenProvider) {
 
         this.interviewRoomRepository = interviewRoomRepository;
         this.commentRepository = commentRepository;
@@ -31,6 +41,8 @@ public class ResultService {
         this.questionRepository = questionRepository;
         this.resultRepository = resultRepository;
         this.memberRepository = memberRepository;
+        this.validator = validator;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public List<RatingHistoryDto> getRatingHistory() {
@@ -129,7 +141,6 @@ public class ResultService {
             scripts.add(convertScriptToDto(script));
         }
 
-
         return new ResultAiResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, scripts);
     }
 
@@ -168,4 +179,35 @@ public class ResultService {
                 .build();
     }
 
+    private String convertScript(String script, List<String> keywords) {
+        int matchCnt = 1;
+        for (String keyword : keywords) {
+            if (keyword == null) {
+                continue;
+            }
+            script = script.replace(keyword, "<" + matchCnt + ">" + keyword + "</" + matchCnt + ">");
+            matchCnt++;
+        }
+        return script;
+    }
+
+    public void saveComment(Long roomIdx, ResultRequestCommentDto resultRequestComment) {
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+
+        Member viewer = memberRepository.findByIdx(memberIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
+
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
+
+        validator.validateContents(resultRequestComment.getComment());
+
+        Comment comment = Comment.builder()
+                .interviewRoom(interviewRoom)
+                .viewerIdx(viewer.getIdx())
+                .comment(resultRequestComment.getComment())
+                .build();
+
+        commentRepository.save(comment);
+    }
 }
