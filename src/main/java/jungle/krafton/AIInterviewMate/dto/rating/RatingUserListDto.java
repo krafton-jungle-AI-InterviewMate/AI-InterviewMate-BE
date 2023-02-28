@@ -18,11 +18,11 @@ public class RatingUserListDto {
     private Integer answerRating;
     private List<RatingUserCommentDto> commentList;
 
-    public RatingUserListDto(String nickname, VieweeRating vieweeRating, List<RatingUserCommentDto> commentList) {
-        this.viewerName = nickname;
-        this.eyesRating = vieweeRating.getEyesRating();
-        this.attitudeRating = vieweeRating.getAttitudeRating();
-        this.answerRating = vieweeRating.getAnswerRating();
-        this.commentList = commentList;
-    }
+//    public RatingUserListDto(String nickname, VieweeRating vieweeRating, List<RatingUserCommentDto> commentList) {
+//        this.viewerName = nickname;
+//        this.eyesRating = vieweeRating.getEyesRating();
+//        this.attitudeRating = vieweeRating.getAttitudeRating();
+//        this.answerRating = vieweeRating.getAnswerRating();
+//        this.commentList = commentList;
+//    }
 }

@@ -1,6 +1,5 @@
 package jungle.krafton.AIInterviewMate.dto.rating;
 
-import jungle.krafton.AIInterviewMate.domain.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,8 +13,8 @@ public class RatingUserCommentDto {
     private String questionTitle;
     private String comment;
 
-    public RatingUserCommentDto(Comment comment) {
-        this.questionTitle = comment.getQuestionTitle();
-        this.comment = comment.getComment();
-    }
+//    public RatingUserCommentDto(Comment comment) {
+//        this.questionTitle = comment.getQuestionTitle();
+//        this.comment = comment.getComment();
+//    }
 }
