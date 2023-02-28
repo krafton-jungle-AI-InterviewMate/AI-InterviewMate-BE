@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Document</title>
+    <link
+            href="https://unpkg.com/video.js/dist/video-js.css"
+            rel="stylesheet"
+    />
+</head>
+<body>
+<video
+        class="video-js vjs-default-skin"
+        controls
+        data-setup="{}"
+        height="360"
+        id="my_video_1"
+        preload="auto"
+        width="640"
+>
+    <source
+            src="https://d2i0597ukjxpay.cloudfront.net/output/test/Default/HLS/test_540.m3u8"
+            type="application/x-mpegURL"
+    />
+</video>
+
+<script src="https://vjs.zencdn.net/7.2.3/video.js"></script>
+<script
+        crossorigin="anonymous"
+        integrity="sha512-utkFvaMvnpseOQ/4m1+/2zKYNh5r/FHUs5XZAds52wXbfMgeHvHg/3PFnou6DME2U7F2OkcPSM0AWQdYdPKAKg=="
+        src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-media-sources/4.7.2/videojs-contrib-media-sources.min.js"
+></script>
+</body>
+</html>
