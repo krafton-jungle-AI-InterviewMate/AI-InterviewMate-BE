@@ -1,4 +1,4 @@
-package jungle.krafton.AIInterviewMate.dto.rating;
+package jungle.krafton.AIInterviewMate.dto.result;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,8 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 @Getter
-public class CommentsRequestDto {
+public class ResultInterviewCommentDto {
     private Long viewerIdx;
-    private String questionTitle;
     private String comment;
 }
