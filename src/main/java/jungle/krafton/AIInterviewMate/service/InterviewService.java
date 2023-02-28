@@ -33,7 +33,11 @@ public class InterviewService {
     private OpenVidu openVidu;
 
     @Autowired
-    public InterviewService(InterviewRoomRepository interviewRoomRepository, QuestionRepository questionRepository, MemberRepository memberRepository, Validator validator, JwtTokenProvider jwtTokenProvider) {
+    public InterviewService(InterviewRoomRepository interviewRoomRepository,
+                            QuestionRepository questionRepository,
+                            MemberRepository memberRepository,
+                            Validator validator,
+                            JwtTokenProvider jwtTokenProvider) {
         this.interviewRoomRepository = interviewRoomRepository;
         this.questionRepository = questionRepository;
         this.memberRepository = memberRepository;
@@ -74,35 +78,36 @@ public class InterviewService {
         return dto;
     }
 
-    private void checkMemberToEnterIdx(InterviewRoom interviewRoom, Member memberToEnter) {
-        Long viewer1Idx = interviewRoom.getRoomViewer1Idx();
-        Long viewer2Idx = interviewRoom.getRoomViewer2Idx();
-        Long viewer3Idx = interviewRoom.getRoomViewer3Idx();
-        Long hostMemberIdx = interviewRoom.getMember().getIdx();
-        Long memberToEnterIdx = memberToEnter.getIdx();
-
-        if (
-                Objects.equals(hostMemberIdx, memberToEnterIdx) //방 Host 와 동일한 Id로 로그인 시도
-                        || (viewer1Idx != null && Objects.equals(viewer1Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
-                        || (viewer2Idx != null && Objects.equals(viewer2Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
-                        || (viewer3Idx != null && Objects.equals(viewer3Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
-        ) {
-            throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
-        }
-
-        if (viewer1Idx == null) {
-            interviewRoom.setRoomViewer1Idx(memberToEnterIdx);
-            return;
-        } else if (viewer2Idx == null) {
-            interviewRoom.setRoomViewer2Idx(memberToEnterIdx);
-            return;
-        } else if (viewer3Idx == null) {
-            interviewRoom.setRoomViewer3Idx(memberToEnterIdx);
-            return;
-        }
-
-        throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
-    }
+    //TODO: Entity 수정에 맞춰서 로직 바꿔주세요...ㅎㅎ..
+//    private void checkMemberToEnterIdx(InterviewRoom interviewRoom, Member memberToEnter) {
+//        Long viewer1Idx = interviewRoom.getRoomViewer1Idx();
+//        Long viewer2Idx = interviewRoom.getRoomViewer2Idx();
+//        Long viewer3Idx = interviewRoom.getRoomViewer3Idx();
+//        Long hostMemberIdx = interviewRoom.getMember().getIdx();
+//        Long memberToEnterIdx = memberToEnter.getIdx();
+//
+//        if (
+//                Objects.equals(hostMemberIdx, memberToEnterIdx) //방 Host 와 동일한 Id로 로그인 시도
+//                        || (viewer1Idx != null && Objects.equals(viewer1Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
+//                        || (viewer2Idx != null && Objects.equals(viewer2Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
+//                        || (viewer3Idx != null && Objects.equals(viewer3Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
+//        ) {
+//            throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
+//        }
+//
+//        if (viewer1Idx == null) {
+//            interviewRoom.setRoomViewer1Idx(memberToEnterIdx);
+//            return;
+//        } else if (viewer2Idx == null) {
+//            interviewRoom.setRoomViewer2Idx(memberToEnterIdx);
+//            return;
+//        } else if (viewer3Idx == null) {
+//            interviewRoom.setRoomViewer3Idx(memberToEnterIdx);
+//            return;
+//        }
+//
+//        throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
+//    }
 
     public List<InterviewRoomListDto> getRoomList() {
         List<InterviewRoomListDto> roomList = new ArrayList<>();
@@ -110,18 +115,7 @@ public class InterviewService {
         List<InterviewRoom> allRoom = interviewRoomRepository
                 .findAllByRoomStatusOrRoomStatusOrderByCreatedAtDescRoomStatus(RoomStatus.CREATE, RoomStatus.PROCEED);
         for (InterviewRoom room : allRoom) {
-
-            int cnt = 1;
-            if (room.getRoomViewer1Idx() != null) {
-                cnt++;
-            }
-            if (room.getRoomViewer2Idx() != null) {
-                cnt++;
-            }
-            if (room.getRoomViewer3Idx() != null) {
-                cnt++;
-            }
-            roomList.add(convertCreateAndProceedRoom(cnt, room));
+            roomList.add(convertCreateAndProceedRoom(room));
         }
 
         return roomList;
@@ -203,7 +197,7 @@ public class InterviewService {
         interviewRoomRepository.save(interviewRoom);
     }
 
-    private InterviewRoomListDto convertCreateAndProceedRoom(Integer cnt, InterviewRoom interviewRoom) {
+    private InterviewRoomListDto convertCreateAndProceedRoom(InterviewRoom interviewRoom) {
         return InterviewRoomListDto.builder()
                 .idx(interviewRoom.getIdx())
                 .roomStatus(interviewRoom.getRoomStatus())
@@ -211,7 +205,7 @@ public class InterviewService {
                 .roomName(interviewRoom.getRoomName())
                 .nickname(interviewRoom.getMember().getNickname())
                 .roomPeopleNum(interviewRoom.getRoomPeopleNum())
-                .roomPeopleNow(cnt)
+                .roomPeopleNow(interviewRoom.getRoomPeopleNum())
                 .roomTime(interviewRoom.getRoomTime())
                 .roomIsPrivate(interviewRoom.getIsPrivate())
                 .createdAt(interviewRoom.getCreatedAt())

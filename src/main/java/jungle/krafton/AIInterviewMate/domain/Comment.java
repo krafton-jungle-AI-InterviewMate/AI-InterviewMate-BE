@@ -25,12 +25,6 @@ public class Comment {
     @Column(nullable = false)
     private Long viewerIdx;
 
-    @Column(nullable = false)
-    private Long vieweeIdx;
-
-    @Column(nullable = false)
-    private String questionTitle;
-
     @Column(nullable = false, length = 1000)
     private String comment;
 }
