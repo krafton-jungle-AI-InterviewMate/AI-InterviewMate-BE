@@ -12,9 +12,9 @@ import java.util.List;
 public class ResultInterviewDto {
     private Long roomIdx;
     private String videoUrl;
-    private List<String> eyeTimeLines;
-    private List<String> attitudeTimeLines;
-    private List<String> questionTimeLines;
+    private List<String> eyeTimelines;
+    private List<String> attitudeTimelines;
+    private List<String> questionTimelines;
     private List<ResultInterviewCommentDto> comments;
     private List<ResultInterviewScriptDto> scripts;
 }

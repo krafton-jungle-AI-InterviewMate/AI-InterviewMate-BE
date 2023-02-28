@@ -51,48 +51,48 @@ public class ResultService {
     public void saveResult(Long roomIdx, ResultInterviewDto resultInterviewDto) { // TODO: 코드 수정 필요 ( 중복 데이터 삭제 로직 변경 )
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
-        StringBuffer eyeTimeLines = new StringBuffer();
-        StringBuffer attitudeTimeLines = new StringBuffer();
-        StringBuffer questionTimeLines = new StringBuffer();
-        if (resultInterviewDto.getEyeTimeLines() != null) {
-            for (String eyeTimeLine : resultInterviewDto.getEyeTimeLines()) {
-                eyeTimeLines.append(",").append(eyeTimeLine);
+        StringBuffer eyeTimelines = new StringBuffer();
+        StringBuffer attitudeTimelines = new StringBuffer();
+        StringBuffer questionTimelines = new StringBuffer();
+        if (resultInterviewDto.getEyeTimelines() != null) {
+            for (String eyeTimeline : resultInterviewDto.getEyeTimelines()) {
+                eyeTimelines.append(",").append(eyeTimeline);
             }
-            eyeTimeLines.deleteCharAt(0);
+            eyeTimelines.deleteCharAt(0);
         }
-        if (resultInterviewDto.getAttitudeTimeLines() != null) {
-            for (String attitudeTimeLine : resultInterviewDto.getAttitudeTimeLines()) {
-                attitudeTimeLines.append(",").append(attitudeTimeLine);
+        if (resultInterviewDto.getAttitudeTimelines() != null) {
+            for (String attitudeTimeline : resultInterviewDto.getAttitudeTimelines()) {
+                attitudeTimelines.append(",").append(attitudeTimeline);
             }
-            attitudeTimeLines.deleteCharAt(0);
+            attitudeTimelines.deleteCharAt(0);
         }
-        if (resultInterviewDto.getQuestionTimeLines() != null) {
-            for (String questionTimeLine : resultInterviewDto.getQuestionTimeLines()) {
-                questionTimeLines.append(",").append(questionTimeLine);
+        if (resultInterviewDto.getQuestionTimelines() != null) {
+            for (String questionTimeline : resultInterviewDto.getQuestionTimelines()) {
+                questionTimelines.append(",").append(questionTimeline);
             }
-            questionTimeLines.deleteCharAt(0);
+            questionTimelines.deleteCharAt(0);
         }
 
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
-            resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimeLines, attitudeTimeLines, questionTimeLines));
+            resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
             for (ResultInterviewCommentDto resultInterviewCommentDto : resultInterviewDto.getComments()) {
                 commentRepository.save(convertComment(interviewRoom, resultInterviewCommentDto));
             }
         } else {
-            resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimeLines, attitudeTimeLines, questionTimeLines));
+            resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
             for (ResultInterviewScriptDto resultInterviewScriptDto : resultInterviewDto.getScripts()) {
                 scriptRepository.save(convertScript(interviewRoom, resultInterviewScriptDto));
             }
         }
     }
 
-    private Result convertResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, StringBuffer eyeTimeLines, StringBuffer attitudeTimeLines, StringBuffer questionTimeLines) {
+    private Result convertResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, StringBuffer eyeTimelines, StringBuffer attitudeTimelines, StringBuffer questionTimelines) {
         return Result.builder()
                 .interviewRoom(interviewRoom)
                 .videoUrl(resultInterviewDto.getVideoUrl())
-                .eyeTimeline(eyeTimeLines.toString())
-                .attitudeTimeline(attitudeTimeLines.toString())
-                .questionTimeline(questionTimeLines.toString())
+                .eyeTimeline(eyeTimelines.toString())
+                .attitudeTimeline(attitudeTimelines.toString())
+                .questionTimeline(questionTimelines.toString())
                 .build();
     }
 
