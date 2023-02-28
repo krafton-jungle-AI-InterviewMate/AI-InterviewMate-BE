@@ -25,7 +25,7 @@ public class ResultAiResponseDto {
         this.eyeTimeline = eyeTimeline;
         this.attitudeTimeline = attitudeTimeline;
         this.questionTimeline = questionTimeline;
-        this.comment = result.getComment();
+        this.comment = result.getPersonalComment();
         this.scripts = scripts;
     }
 }
