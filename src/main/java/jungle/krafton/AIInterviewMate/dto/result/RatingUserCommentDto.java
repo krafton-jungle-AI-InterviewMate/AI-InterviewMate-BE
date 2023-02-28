@@ -1,6 +1,5 @@
 package jungle.krafton.AIInterviewMate.dto.result;
 
-import jungle.krafton.AIInterviewMate.domain.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

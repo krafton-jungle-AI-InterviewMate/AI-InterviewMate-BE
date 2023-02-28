@@ -51,23 +51,26 @@ public class ResultService {
     public void saveResult(Long roomIdx, ResultInterviewDto resultInterviewDto) { // TODO: 코드 수정 필요 ( 중복 데이터 삭제 로직 변경 )
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
-        String eyeTimeLines = "";
-        String attitudeTimeLines = "";
-        String questionTimeLines = "";
+        StringBuffer eyeTimeLines = new StringBuffer();
+        StringBuffer attitudeTimeLines = new StringBuffer();
+        StringBuffer questionTimeLines = new StringBuffer();
         if (resultInterviewDto.getEyeTimeLines() != null) {
             for (String eyeTimeLine : resultInterviewDto.getEyeTimeLines()) {
-                eyeTimeLines = eyeTimeLines.concat(eyeTimeLine);
+                eyeTimeLines.append(",").append(eyeTimeLine);
             }
+            eyeTimeLines.deleteCharAt(0);
         }
         if (resultInterviewDto.getAttitudeTimeLines() != null) {
             for (String attitudeTimeLine : resultInterviewDto.getAttitudeTimeLines()) {
-                attitudeTimeLines = attitudeTimeLines.concat(attitudeTimeLine);
+                attitudeTimeLines.append(",").append(attitudeTimeLine);
             }
+            attitudeTimeLines.deleteCharAt(0);
         }
         if (resultInterviewDto.getQuestionTimeLines() != null) {
             for (String questionTimeLine : resultInterviewDto.getQuestionTimeLines()) {
-                questionTimeLines = questionTimeLines.concat(questionTimeLine);
+                questionTimeLines.append(",").append(questionTimeLine);
             }
+            questionTimeLines.deleteCharAt(0);
         }
 
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
@@ -83,13 +86,13 @@ public class ResultService {
         }
     }
 
-    private Result convertResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, String eyeTimeLines, String attitudeTimeLines, String questionTimeLines) {
+    private Result convertResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, StringBuffer eyeTimeLines, StringBuffer attitudeTimeLines, StringBuffer questionTimeLines) {
         return Result.builder()
                 .interviewRoom(interviewRoom)
                 .videoUrl(resultInterviewDto.getVideoUrl())
-                .eyeTimeline(eyeTimeLines)
-                .attitudeTimeline(attitudeTimeLines)
-                .questionTimeline(questionTimeLines)
+                .eyeTimeline(eyeTimeLines.toString())
+                .attitudeTimeline(attitudeTimeLines.toString())
+                .questionTimeline(questionTimeLines.toString())
                 .build();
     }
 

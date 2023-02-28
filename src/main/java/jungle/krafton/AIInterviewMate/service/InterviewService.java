@@ -1,5 +1,6 @@
 package jungle.krafton.AIInterviewMate.service;
 
+import com.sun.xml.bind.v2.TODO;
 import io.openvidu.java.client.OpenVidu;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.interview.*;
@@ -78,7 +79,7 @@ public class InterviewService {
         return dto;
     }
 
-    //TODO: Entity 수정에 맞춰서 로직 바꿔주세요...ㅎㅎ..
+    TODO: Entity 수정에 맞춰서 로직 바꿔주세요...ㅎㅎ..
     private void checkMemberToEnterIdx(InterviewRoom interviewRoom, Member memberToEnter) {
         Long viewer1Idx = interviewRoom.getRoomViewer1Idx();
         Long viewer2Idx = interviewRoom.getRoomViewer2Idx();
