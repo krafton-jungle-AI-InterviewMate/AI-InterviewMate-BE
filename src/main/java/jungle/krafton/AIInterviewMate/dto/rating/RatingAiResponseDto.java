@@ -1,5 +1,6 @@
 package jungle.krafton.AIInterviewMate.dto.rating;
 
+import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,12 +21,12 @@ public class RatingAiResponseDto {
     private LocalDateTime createdAt;
     private Integer roomQuestionNum;
 
-//    public RatingAiResponseDto(VieweeRating vieweeRating, InterviewRoom interviewRoom, List<RatingAiScriptListDto> scriptList) {
-//        this.eyesRating = vieweeRating.getEyesRating();
-//        this.attitudeRating = vieweeRating.getAttitudeRating();
-//        this.roomName = interviewRoom.getRoomName();
-//        this.createdAt = interviewRoom.getCreatedAt();
-//        this.roomQuestionNum = interviewRoom.getRoomQuestionNum();
-//        this.scriptList = scriptList;
-//    }
+    public RatingAiResponseDto(VieweeRating vieweeRating, InterviewRoom interviewRoom, List<RatingAiScriptListDto> scriptList) {
+        this.eyesRating = vieweeRating.getEyesRating();
+        this.attitudeRating = vieweeRating.getAttitudeRating();
+        this.roomName = interviewRoom.getRoomName();
+        this.createdAt = interviewRoom.getCreatedAt();
+        this.roomQuestionNum = interviewRoom.getRoomQuestionNum();
+        this.scriptList = scriptList;
+    }
 }

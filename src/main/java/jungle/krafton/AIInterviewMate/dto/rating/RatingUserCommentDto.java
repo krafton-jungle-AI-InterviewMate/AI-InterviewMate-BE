@@ -13,8 +13,8 @@ public class RatingUserCommentDto {
     private String questionTitle;
     private String comment;
 
-//    public RatingUserCommentDto(Comment comment) {
-//        this.questionTitle = comment.getQuestionTitle();
-//        this.comment = comment.getComment();
-//    }
+    public RatingUserCommentDto(Comment comment) {
+        this.questionTitle = comment.getQuestionTitle();
+        this.comment = comment.getComment();
+    }
 }
