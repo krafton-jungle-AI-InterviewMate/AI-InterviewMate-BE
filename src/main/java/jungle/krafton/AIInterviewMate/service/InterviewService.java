@@ -1,6 +1,5 @@
 package jungle.krafton.AIInterviewMate.service;
 
-import io.openvidu.java.client.OpenVidu;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
@@ -11,13 +10,12 @@ import jungle.krafton.AIInterviewMate.repository.CommentRepository;
 import jungle.krafton.AIInterviewMate.repository.InterviewRoomRepository;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
+import jungle.krafton.AIInterviewMate.util.OpenViduGetter;
 import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,12 +27,7 @@ public class InterviewService {
     private final CommentRepository commentRepository;
     private final Validator validator;
     private final JwtTokenProvider jwtTokenProvider;
-
-    @Value("${OPENVIDU_URL}")
-    private String OPENVIDU_URL;
-    @Value("${OPENVIDU_SECRET}")
-    private String OPENVIDU_SECRET;
-    private OpenVidu openVidu;
+    private final OpenViduGetter openViduGetter;
 
     @Autowired
     public InterviewService(InterviewRoomRepository interviewRoomRepository,
@@ -42,18 +35,15 @@ public class InterviewService {
                             MemberRepository memberRepository,
                             CommentRepository commentRepository,
                             Validator validator,
-                            JwtTokenProvider jwtTokenProvider) {
+                            JwtTokenProvider jwtTokenProvider,
+                            OpenViduGetter openViduGetter) {
         this.interviewRoomRepository = interviewRoomRepository;
         this.questionRepository = questionRepository;
         this.memberRepository = memberRepository;
         this.commentRepository = commentRepository;
         this.validator = validator;
         this.jwtTokenProvider = jwtTokenProvider;
-    }
-
-    @PostConstruct
-    public void init() {
-        this.openVidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+        this.openViduGetter = openViduGetter;
     }
 
     @Transactional
@@ -105,7 +95,7 @@ public class InterviewService {
             면접관이 나가면 면접관 List 업데이트
          */
         if (hasHostLeftRoom(interviewRoom.getMember())) {
-            OpenViduInfo.closeSession(openVidu, interviewRoom.getSessionId());
+            OpenViduInfo.closeSession(openViduGetter.getOpenVidu(), interviewRoom.getSessionId());
 
             interviewRoomRepository.delete(interviewRoom);
         } else {
@@ -119,7 +109,7 @@ public class InterviewService {
             그리고 면접관의 comment가 하나도 없으면 면접 결과도 확인할 필요가 없으므로 방을 삭제.
          */
         if (hasHostLeftRoom(interviewRoom.getMember()) || isAllViewersOut(interviewRoom)) {
-            OpenViduInfo.closeSession(openVidu, interviewRoom.getSessionId());
+            OpenViduInfo.closeSession(openViduGetter.getOpenVidu(), interviewRoom.getSessionId());
 
             if (viewerCommentsEmpty(interviewRoom)) {
                 interviewRoomRepository.delete(interviewRoom);
@@ -179,7 +169,7 @@ public class InterviewService {
     private InterviewRoomInfoUserDto getUserRoomInfo(InterviewRoom interviewRoom, Member memberToEnter) {
         addMemberToInterviewerIdxes(interviewRoom, memberToEnter);
 
-        OpenViduInfo openViduInfo = OpenViduInfo.of(openVidu, interviewRoom, memberToEnter);
+        OpenViduInfo openViduInfo = OpenViduInfo.of(openViduGetter.getOpenVidu(), interviewRoom, memberToEnter);
 
         InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom);
         dto.setConnectionToken(openViduInfo.getConnectionToken());
@@ -228,7 +218,7 @@ public class InterviewService {
 
         RoomType roomType = interviewRoom.getRoomType();
         if (roomType.equals(RoomType.USER)) {
-            OpenViduInfo openViduInfo = OpenViduInfo.of(openVidu, interviewRoom, member);
+            OpenViduInfo openViduInfo = OpenViduInfo.of(openViduGetter.getOpenVidu(), interviewRoom, member);
             interviewRoom.setSessionId(openViduInfo.getSessionId());
 
             dto.setConnectionToken(openViduInfo.getConnectionToken());
