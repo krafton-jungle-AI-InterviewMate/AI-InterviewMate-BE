@@ -35,6 +35,17 @@ public class OpenViduInfo {
         return new OpenViduInfo(params, session);
     }
 
+    static public void closeSession(OpenVidu openVidu, String sessionId) {
+        try {
+            openVidu.fetch();
+
+            Session activeSession = openVidu.getActiveSession(sessionId);
+            activeSession.close();
+        } catch (Exception e) {
+            handleError(e);
+        }
+    }
+
     private static boolean isExistSessionId(String sessionId) {
         return sessionId != null;
     }

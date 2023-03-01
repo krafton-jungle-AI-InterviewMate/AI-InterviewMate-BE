@@ -1,5 +1,6 @@
 package jungle.krafton.AIInterviewMate.service;
 
+import io.openvidu.java.client.OpenVidu;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.result.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
@@ -8,9 +9,11 @@ import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.*;
 import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +28,12 @@ public class ResultService {
     private final MemberRepository memberRepository;
     private final Validator validator;
     private final JwtTokenProvider jwtTokenProvider;
+    @Value("${OPENVIDU_URL}")
+    private String OPENVIDU_URL;
+    @Value("${OPENVIDU_SECRET}")
+    private String OPENVIDU_SECRET;
+    private OpenVidu openVidu;
+
 
     @Autowired
     public ResultService(InterviewRoomRepository interviewRoomRepository,
@@ -35,7 +44,6 @@ public class ResultService {
                          MemberRepository memberRepository,
                          Validator validator,
                          JwtTokenProvider jwtTokenProvider) {
-
         this.interviewRoomRepository = interviewRoomRepository;
         this.commentRepository = commentRepository;
         this.scriptRepository = scriptRepository;
@@ -44,6 +52,11 @@ public class ResultService {
         this.memberRepository = memberRepository;
         this.validator = validator;
         this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.openVidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
     public List<ResultHistoryDto> getRatingHistory() {
@@ -81,6 +94,12 @@ public class ResultService {
                 scriptRepository.save(convertDtoToScript(interviewRoom, resultInterviewScriptDto));
             }
         }
+
+        if (interviewRoom.getRoomType().equals(RoomType.USER)) {
+            OpenViduInfo.closeSession(openVidu, interviewRoom.getSessionId());
+        }
+    }
+
     private String convertTimelinesToString(List<String> timelines) {
         if (timelines == null) {
             return null;
