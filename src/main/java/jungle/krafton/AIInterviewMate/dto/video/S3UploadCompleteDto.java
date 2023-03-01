@@ -11,4 +11,5 @@ public class S3UploadCompleteDto {
     private List<S3UploadPartsDetailDto> parts;
     private String fileName;
     private String uploadId;
+    private Long roomIdx;
 }

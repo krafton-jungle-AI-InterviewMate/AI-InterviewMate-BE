@@ -3,7 +3,11 @@ package jungle.krafton.AIInterviewMate.service;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import jungle.krafton.AIInterviewMate.domain.Result;
 import jungle.krafton.AIInterviewMate.dto.video.*;
+import jungle.krafton.AIInterviewMate.exception.PrivateException;
+import jungle.krafton.AIInterviewMate.exception.StatusCode;
+import jungle.krafton.AIInterviewMate.repository.ResultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -23,17 +27,18 @@ public class VideosService {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
     private final AmazonS3Client amazonS3Client;
+    private final ResultRepository resultRepository;
 
     public S3UploadDto initiateUpload(String originFileName, String targetBucket, String targetObjectDir) {
 
         // 사용자가 보낸 파일 확장자와 현재 시간을 이용해 새로운 파일 이름을 만든다.
-        String fileType = originFileName.substring(originFileName.lastIndexOf(".")).toLowerCase();
-        String newFileName = System.currentTimeMillis() + fileType;
+//        String fileType = originFileName.substring(originFileName.lastIndexOf(".")).toLowerCase();
+//        String newFileName = System.currentTimeMillis() + fileType;
         Instant now = Instant.now();
 
         CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
                 .bucket(targetBucket) // 버킷 설정
-                .key(targetObjectDir + "/" + newFileName) // 업로드될 경로 설정
+                .key(targetObjectDir + "/" + originFileName) // 업로드될 경로 설정
                 .acl(ObjectCannedACL.PUBLIC_READ) // public_read로 acl 설정
                 .expires(now.plusSeconds(60 * 20)) // 객체를 더 이상 캐시할 수 없는 날짜 및 시간
                 .build();
@@ -41,7 +46,7 @@ public class VideosService {
         // Amazon S3는 멀티파트 업로드에 대한 고유 식별자인 업로드 ID가 포함된 응답을 반환합니다.
         CreateMultipartUploadResponse response = s3Client.createMultipartUpload(createMultipartUploadRequest);
 
-        return new S3UploadDto(response.uploadId(), newFileName);
+        return new S3UploadDto(response.uploadId(), originFileName);
     }
 
     public S3PresignedUrlDto getUploadSignedUrl(S3UploadSignedUrlDto s3UploadSignedUrlDto, String targetBucket, String targetObjectDir) {
@@ -99,6 +104,13 @@ public class VideosService {
 
         // 영상 사이즈를 구함
         long fileSize = getFileSizeFromS3Url(bucket, objectKey);
+
+        // 영상 도메인 저장
+        Result result = resultRepository.findByInterviewRoomIdx(s3UploadCompleteDto.getRoomIdx())
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
+        String videoUrl = "https://d2i0597ukjxpay.cloudfront.net/output/" + fileName + "/Default/HLS/" + fileName + ".m3u8";
+        result.setVideoUrl(videoUrl);
+        resultRepository.save(result);
 
         return S3UploadResultDto.builder()
                 .name(fileName)
