@@ -1,7 +1,6 @@
 package jungle.krafton.AIInterviewMate.service;
 
 import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.Session;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.interview.*;
 import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
@@ -106,7 +105,7 @@ public class InterviewService {
             면접관이 나가면 면접관 List 업데이트
          */
         if (hasHostLeftRoom(interviewRoom.getMember())) {
-            closeSession(interviewRoom);
+            OpenViduInfo.closeSession(openVidu, interviewRoom.getSessionId());
 
             interviewRoomRepository.delete(interviewRoom);
         } else {
@@ -120,7 +119,7 @@ public class InterviewService {
             그리고 면접관의 comment가 하나도 없으면 면접 결과도 확인할 필요가 없으므로 방을 삭제.
          */
         if (hasHostLeftRoom(interviewRoom.getMember()) || isAllViewersOut(interviewRoom)) {
-            closeSession(interviewRoom);
+            OpenViduInfo.closeSession(openVidu, interviewRoom.getSessionId());
 
             if (viewerCommentsEmpty(interviewRoom)) {
                 interviewRoomRepository.delete(interviewRoom);
@@ -165,18 +164,6 @@ public class InterviewService {
         Long memberIdx = jwtTokenProvider.getUserInfo();
 
         return memberIdxes.length == 1 && Long.parseLong(memberIdxes[0]) == memberIdx;
-    }
-
-    private void closeSession(InterviewRoom interviewRoom) {
-        String sessionId = interviewRoom.getSessionId();
-        try {
-            openVidu.fetch();
-
-            Session activeSession = openVidu.getActiveSession(sessionId);
-            activeSession.close();
-        } catch (Exception e) {
-            OpenViduInfo.handleError(e);
-        }
     }
 
     private boolean hasHostLeftRoom(Member host) {

@@ -1,5 +1,6 @@
 package jungle.krafton.AIInterviewMate.service;
 
+import io.openvidu.java.client.OpenVidu;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.result.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
@@ -8,8 +9,11 @@ import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.*;
 import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +28,12 @@ public class ResultService {
     private final MemberRepository memberRepository;
     private final Validator validator;
     private final JwtTokenProvider jwtTokenProvider;
+    @Value("${OPENVIDU_URL}")
+    private String OPENVIDU_URL;
+    @Value("${OPENVIDU_SECRET}")
+    private String OPENVIDU_SECRET;
+    private OpenVidu openVidu;
+
 
     @Autowired
     public ResultService(InterviewRoomRepository interviewRoomRepository,
@@ -34,7 +44,6 @@ public class ResultService {
                          MemberRepository memberRepository,
                          Validator validator,
                          JwtTokenProvider jwtTokenProvider) {
-
         this.interviewRoomRepository = interviewRoomRepository;
         this.commentRepository = commentRepository;
         this.scriptRepository = scriptRepository;
@@ -43,6 +52,11 @@ public class ResultService {
         this.memberRepository = memberRepository;
         this.validator = validator;
         this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.openVidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
     public List<ResultHistoryDto> getResultHistory() {
@@ -60,31 +74,17 @@ public class ResultService {
         return resultHistoryDtos;
     }
 
+    @Transactional
     public void saveResult(Long roomIdx, ResultInterviewDto resultInterviewDto) {
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
-        StringBuffer eyeTimelines = new StringBuffer();
-        StringBuffer attitudeTimelines = new StringBuffer();
-        StringBuffer questionTimelines = new StringBuffer();
-        if (resultInterviewDto.getEyeTimelines() != null) {
-            for (String eyeTimeline : resultInterviewDto.getEyeTimelines()) {
-                eyeTimelines.append(",").append(eyeTimeline);
-            }
-            eyeTimelines.deleteCharAt(0);
-        }
-        if (resultInterviewDto.getAttitudeTimelines() != null) {
-            for (String attitudeTimeline : resultInterviewDto.getAttitudeTimelines()) {
-                attitudeTimelines.append(",").append(attitudeTimeline);
-            }
-            attitudeTimelines.deleteCharAt(0);
-        }
-        if (resultInterviewDto.getQuestionTimelines() != null) {
-            for (String questionTimeline : resultInterviewDto.getQuestionTimelines()) {
-                questionTimelines.append(",").append(questionTimeline);
-            }
-            questionTimelines.deleteCharAt(0);
-        }
+
+        String eyeTimelines = convertTimelinesToString(resultInterviewDto.getEyeTimelines());
+        String attitudeTimelines = convertTimelinesToString(resultInterviewDto.getAttitudeTimelines());
+        String questionTimelines = convertTimelinesToString(resultInterviewDto.getQuestionTimelines());
+
         resultRepository.save(convertDtoToResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
+
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
             for (ResultInterviewCommentDto resultInterviewCommentDto : resultInterviewDto.getComments()) {
                 commentRepository.save(convertDtoToComment(interviewRoom, resultInterviewCommentDto));
@@ -94,15 +94,35 @@ public class ResultService {
                 scriptRepository.save(convertDtoToScript(interviewRoom, resultInterviewScriptDto));
             }
         }
+
+        if (interviewRoom.getRoomType().equals(RoomType.USER)) {
+            OpenViduInfo.closeSession(openVidu, interviewRoom.getSessionId());
+        }
     }
 
-    private Result convertDtoToResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, StringBuffer eyeTimelines, StringBuffer attitudeTimelines, StringBuffer questionTimelines) {
+    private String convertTimelinesToString(List<String> timelines) {
+        if (timelines == null) {
+            return null;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (String timeline : timelines) {
+            stringBuilder.append(",").append(timeline);
+        }
+
+        stringBuilder.deleteCharAt(0);
+
+        return stringBuilder.toString();
+    }
+
+    private Result convertDtoToResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, String eyeTimelines, String attitudeTimelines, String questionTimelines) {
         return Result.builder()
                 .interviewRoom(interviewRoom)
                 .videoUrl(resultInterviewDto.getVideoUrl())
-                .eyeTimeline(eyeTimelines.toString())
-                .attitudeTimeline(attitudeTimelines.toString())
-                .questionTimeline(questionTimelines.toString())
+                .eyeTimeline(eyeTimelines)
+                .attitudeTimeline(attitudeTimelines)
+                .questionTimeline(questionTimelines)
                 .build();
     }
 
