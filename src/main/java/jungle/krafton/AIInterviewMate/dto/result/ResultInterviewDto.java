@@ -10,7 +10,6 @@ import java.util.List;
 @Builder
 @Getter
 public class ResultInterviewDto {
-    private Long roomIdx;
     private String videoUrl;
     private List<String> eyeTimelines;
     private List<String> attitudeTimelines;
