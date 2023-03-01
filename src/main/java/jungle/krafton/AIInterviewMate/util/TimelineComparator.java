@@ -1,4 +1,4 @@
-package jungle.krafton.AIInterviewMate;
+package jungle.krafton.AIInterviewMate.util;
 
 import jungle.krafton.AIInterviewMate.dto.result.ResultTimelineDto;
 

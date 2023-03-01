@@ -1,7 +1,5 @@
 package jungle.krafton.AIInterviewMate.service;
 
-import io.openvidu.java.client.OpenVidu;
-import jungle.krafton.AIInterviewMate.TimelineComparator;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.result.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
@@ -9,13 +7,13 @@ import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.*;
 import jungle.krafton.AIInterviewMate.util.OpenViduCustomWrapper;
+import jungle.krafton.AIInterviewMate.util.TimelineComparator;
 import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
