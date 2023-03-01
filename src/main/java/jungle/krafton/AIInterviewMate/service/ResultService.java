@@ -45,7 +45,7 @@ public class ResultService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public List<ResultHistoryDto> getRatingHistory() {
+    public List<ResultHistoryDto> getResultHistory() {
         Long memberIdx = jwtTokenProvider.getUserInfo();
         List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdxOrderByCreatedAtDesc(memberIdx);
 

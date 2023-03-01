@@ -36,8 +36,8 @@ public class ResultController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResultHistoryDto.class))))
     })
     @GetMapping("/history")
-    public ResponseEntity<PrivateResponseBody> getRatingHistory() {
-        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getRatingHistory()), HttpStatus.OK);
+    public ResponseEntity<PrivateResponseBody> getResultHistory() {
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getResultHistory()), HttpStatus.OK);
     }
 
     @Operation(summary = "면접 결과 저장 ")
@@ -48,7 +48,7 @@ public class ResultController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
     })
     @PostMapping(value = "/{roomIdx}")
-    public ResponseEntity<PrivateResponseBody> saveRating(@PathVariable Long roomIdx, @RequestBody ResultInterviewDto resultInterviewDto) {
+    public ResponseEntity<PrivateResponseBody> saveResult(@PathVariable Long roomIdx, @RequestBody ResultInterviewDto resultInterviewDto) {
         resultService.saveResult(roomIdx, resultInterviewDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
@@ -59,10 +59,10 @@ public class ResultController {
             @Parameter(in = ParameterIn.QUERY, name = "type", description = "방 타입", example = "AI")
     })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = RatingAiResponseDto.class)))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ResultAiResponseDto.class)))
     })
     @GetMapping("/{roomIdx}")
-    public ResponseEntity<PrivateResponseBody> getRatingList(@PathVariable Long roomIdx, @RequestParam(name = "type") RoomType roomType) {
+    public ResponseEntity<PrivateResponseBody> getResultList(@PathVariable Long roomIdx, @RequestParam(name = "type") RoomType roomType) {
 
         if (roomType.equals(RoomType.AI)) {
             return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, resultService.getAiResult(roomIdx)), HttpStatus.OK);
