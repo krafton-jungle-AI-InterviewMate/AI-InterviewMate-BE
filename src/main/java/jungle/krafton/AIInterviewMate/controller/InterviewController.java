@@ -52,7 +52,7 @@ public class InterviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
-    @DeleteMapping("/rooms/abnormal/{roomIdx}")
+    @DeleteMapping("/rooms/{roomIdx}")
     public ResponseEntity<PrivateResponseBody> exitInterviewRoom(@PathVariable("roomIdx") Long roomIdx) {
         interviewService.exitInterviewRoom(roomIdx);
 
