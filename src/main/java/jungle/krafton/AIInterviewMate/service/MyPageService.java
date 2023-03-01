@@ -2,7 +2,7 @@ package jungle.krafton.AIInterviewMate.service;
 
 import jungle.krafton.AIInterviewMate.domain.Member;
 import jungle.krafton.AIInterviewMate.dto.mypage.MyInfoDto;
-import jungle.krafton.AIInterviewMate.dto.mypage.MypageDto;
+import jungle.krafton.AIInterviewMate.dto.mypage.MyPageDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
@@ -11,23 +11,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MypageService {
+public class MyPageService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public MypageService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public MyPageService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public void updateNickname(MypageDto mypageDto) {
 
         Member member = memberRepository.findByEmail(mypageDto.getEmail())
+    public void updateNickname(MyPageDto myPageDto) {
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
 
-        member.setNickname(mypageDto.getNickname());
+        member.setNickname(myPageDto.getNickname());
 
         memberRepository.save(member);
     }

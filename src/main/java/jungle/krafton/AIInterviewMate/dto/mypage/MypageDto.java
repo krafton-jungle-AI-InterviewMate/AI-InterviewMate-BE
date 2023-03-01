@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 @Getter
-public class MypageDto {
+public class MyPageDto {
     private String nickname;
     private String email;
 }
