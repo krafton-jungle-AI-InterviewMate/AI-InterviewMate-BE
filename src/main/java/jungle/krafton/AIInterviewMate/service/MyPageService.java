@@ -33,8 +33,8 @@ public class MyPageService {
     }
 
     public MyInfoDto getMyInfo() {
-        Long idx = jwtTokenProvider.getUserInfo();
-        Member member = memberRepository.findByIdx(idx)
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+        Member member = memberRepository.findByIdx(memberIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
 
         return new MyInfoDto(member);
