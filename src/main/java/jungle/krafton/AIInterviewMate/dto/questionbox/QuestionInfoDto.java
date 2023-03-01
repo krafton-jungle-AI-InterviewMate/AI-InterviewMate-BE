@@ -12,6 +12,8 @@ import lombok.Getter;
 public class QuestionInfoDto {
     private Long questionIdx;
 
+    private String questionTitle;
+
     private String keyword1;
 
     private String keyword2;
@@ -22,17 +24,16 @@ public class QuestionInfoDto {
 
     private String keyword5;
 
-    private String questionTitle;
 
     public static QuestionInfoDto of(Question question) {
         return QuestionInfoDto.builder()
                 .questionIdx(question.getIdx())
+                .questionTitle(question.getQuestionTitle())
                 .keyword1(question.getKeyword1())
                 .keyword2(question.getKeyword2())
                 .keyword3(question.getKeyword3())
                 .keyword4(question.getKeyword4())
                 .keyword5(question.getKeyword5())
-                .questionTitle(question.getQuestionTitle())
                 .build();
     }
 

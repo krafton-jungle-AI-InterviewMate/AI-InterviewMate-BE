@@ -4,6 +4,7 @@ import io.openvidu.java.client.OpenVidu;
 import io.openvidu.java.client.Session;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.interview.*;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
@@ -245,7 +246,7 @@ public class InterviewService {
 
             dto.setConnectionToken(openViduInfo.getConnectionToken());
         } else {
-            List<InterviewQuestionDto> questionList = createQuestionList(interviewRoom);
+            List<QuestionInfoDto> questionList = createQuestionList(interviewRoom);
 
             dto.setQuestionList(questionList);
         }
@@ -253,7 +254,7 @@ public class InterviewService {
         return dto;
     }
 
-    private List<InterviewQuestionDto> createQuestionList(InterviewRoom interviewRoom) {
+    private List<QuestionInfoDto> createQuestionList(InterviewRoom interviewRoom) {
         Long questionBoxIdx = interviewRoom.getRoomQuestionBoxIdx();
 
         List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
@@ -261,7 +262,7 @@ public class InterviewService {
             throw new PrivateException(StatusCode.NOT_FOUND_QUESTION);
         }
 
-        List<InterviewQuestionDto> interviewQuestions = new ArrayList<>();
+        List<QuestionInfoDto> interviewQuestions = new ArrayList<>();
         int questionNum = interviewRoom.getRoomQuestionNum();
 
         Random random = new Random();
@@ -269,7 +270,7 @@ public class InterviewService {
 
         if (questionNum >= questions.size()) {
             for (Question question : questions) {
-                interviewQuestions.add(new InterviewQuestionDto(question));
+                interviewQuestions.add(QuestionInfoDto.of(question));
             }
         } else {
             Set<Integer> randomSet = new HashSet<>();
@@ -279,7 +280,7 @@ public class InterviewService {
             }
 
             for (int idx : randomSet) {
-                interviewQuestions.add(new InterviewQuestionDto(questions.get(idx)));
+                interviewQuestions.add(QuestionInfoDto.of(questions.get(idx)));
             }
         }
 
