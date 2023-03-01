@@ -59,7 +59,7 @@ public class ResultService {
         this.openVidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public List<ResultHistoryDto> getRatingHistory() {
+    public List<ResultHistoryDto> getResultHistory() {
         Long memberIdx = jwtTokenProvider.getUserInfo();
         List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdxOrderByCreatedAtDesc(memberIdx);
 
