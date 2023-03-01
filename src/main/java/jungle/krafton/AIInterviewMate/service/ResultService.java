@@ -134,12 +134,16 @@ public class ResultService {
         List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
         List<String> attitudeTimeline = Arrays.asList(result.getAttitudeTimeline().split(","));
         List<String> questionTimeline = Arrays.asList(result.getQuestionTimeline().split(","));
-        List<ResultInterviewScriptDto> scripts = new ArrayList<>();
+        List<ResultResponseScriptDto> scripts = new ArrayList<>();
+
         for (Script script : scriptRepository.findAllByInterviewRoomIdx(roomIdx)) {
-            scripts.add(convertScriptToDto(script));
+            String questionTitle = questionRepository.findByIdx(script.getQuestionIdx())
+                    .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION))
+                    .getQuestionTitle();
+            scripts.add(convertScriptToDto(script, questionTitle));
         }
 
-        return new ResultAiResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, scripts);
+        return new ResultAiResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, scripts, interviewRoom);
     }
 
     public ResultUserResponseDto getUserResult(Long roomIdx) {
@@ -154,24 +158,23 @@ public class ResultService {
         List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
         List<String> attitudeTimeline = Arrays.asList(result.getAttitudeTimeline().split(","));
         List<String> questionTimeline = Arrays.asList(result.getQuestionTimeline().split(","));
-        List<ResultInterviewCommentDto> comments = new ArrayList<>();
+        List<ResultResponseCommentDto> comments = new ArrayList<>();
         for (Comment comment : commentRepository.findAllByInterviewRoomIdx(roomIdx)) {
             comments.add(convertCommentToDto(comment));
         }
-        return new ResultUserResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, comments);
+        return new ResultUserResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, comments, interviewRoom);
     }
 
-    public ResultInterviewScriptDto convertScriptToDto(Script script) {
-        return ResultInterviewScriptDto.builder()
+    public ResultResponseScriptDto convertScriptToDto(Script script, String questionTitle) {
+        return ResultResponseScriptDto.builder()
                 .script(script.getScript())
-                .questionIdx(script.getQuestionIdx())
+                .questionTitle(questionTitle)
                 .build();
     }
 
-    public ResultInterviewCommentDto convertCommentToDto(Comment comment) {
-        return ResultInterviewCommentDto.builder()
+    public ResultResponseCommentDto convertCommentToDto(Comment comment) {
+        return ResultResponseCommentDto.builder()
                 .comment(comment.getComment())
-                .viewerIdx(comment.getViewerIdx())
                 .build();
     }
 
