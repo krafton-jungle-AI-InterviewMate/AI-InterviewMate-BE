@@ -1,4 +1,4 @@
-// <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 const fileInput = document.getElementById("fileUpload");
 
@@ -100,14 +100,29 @@ fileInput.onchange = async () => {
         console.log(multiUploadArray);
         // 6. 모든 청크 업로드가 완료되면 Spring Boot 서버로 업로드 완료 요청을 보냅니다.
         // 업로드 아이디 뿐만 아니라 이 때 Part 번호와 이에 해당하는 Etag를 가진 'parts'를 같이 보냅니다.
-        const completeUpload = await axios.post(`${url}/complete-upload`, {
-            fileName: newFilename,
-            parts: multiUploadArray,
-            uploadId: uploadId
+
+        axios({
+            url: url + "/complete-upload",
+            method: "POST",
+            data: {
+                "fileName": newFilename,
+                "parts": multiUploadArray,
+                "uploadId": uploadId,
+            }
+        }).then((res) => {
+            console.log(res.data, ' 업로드 완료 응답값');
+            let end = new Date();
+            console.log("파일 업로드 하는데 걸린 시간 : " + (end - start) + "ms")
         });
-        let end = new Date();
-        console.log("파일 업로드 하는데 걸린 시간 : " + (end - start) + "ms")
-        console.log(completeUpload.data, ' 업로드 완료 응답값');
+
+        // const completeUpload = await axios.post(`${url}/complete-upload`, {
+        //     fileName: newFilename,
+        //     parts: multiUploadArray,
+        //     uploadId: uploadId
+        // });
+        // let end = new Date();
+        // console.log("파일 업로드 하는데 걸린 시간 : " + (end - start) + "ms")
+        // console.log(completeUpload.data, ' 업로드 완료 응답값');
     } catch (err) {
         console.log(err, err.stack);
     }
