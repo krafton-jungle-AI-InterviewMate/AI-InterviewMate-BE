@@ -9,6 +9,7 @@ import jungle.krafton.AIInterviewMate.repository.*;
 import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +61,7 @@ public class ResultService {
         return resultHistoryDtos;
     }
 
+    @Transactional
     public void saveResult(Long roomIdx, ResultInterviewDto resultInterviewDto) {
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
