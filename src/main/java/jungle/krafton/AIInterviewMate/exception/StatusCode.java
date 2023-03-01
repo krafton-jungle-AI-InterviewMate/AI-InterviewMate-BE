@@ -40,6 +40,9 @@ public enum StatusCode {
     NOT_FOUND_RESULT(HttpStatus.BAD_REQUEST, "139", "결과를 찾을 수 없습니다."),
 
     NOT_UPDATE_EXIT_ROOM(HttpStatus.BAD_REQUEST, "140", "종료된 방의 상태를 수정할 수 없습니다."),
+    ROOM_STATUS_ERROR(HttpStatus.BAD_REQUEST, "141", "이미 시작된 방 혹은 종료된 방에는 접속할 수 없습니다."),
+    ALREADY_EXIT_ROOM(HttpStatus.BAD_REQUEST, "142", "이미 종료된 방입니다."),
+    NOT_FOUND_INTERVIEWERS(HttpStatus.BAD_REQUEST, "143", "방에 면접관이 존재하지 않습니다."),
 
     OPENVIDU_JAVA_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "150", "openVidu 작업 중에 Spring Server Error 발생"),
     OPENVIDU_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "151", "openVidu 작업 중에 openVidu Server Error 발생"),

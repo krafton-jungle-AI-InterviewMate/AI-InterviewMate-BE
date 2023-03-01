@@ -45,6 +45,20 @@ public class InterviewController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, dto), HttpStatus.OK);
     }
 
+    @Operation(summary = "면접 방에서 나가기 [화면 종료시 포함]", description = "면접 중간에 나가기 버튼, 화면 종료시에도 해당 메서드를 Call 해주시면 DB가 삭제됩니다.")
+    @Parameters({
+            @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content())
+    })
+    @DeleteMapping("/rooms/{roomIdx}")
+    public ResponseEntity<PrivateResponseBody> exitInterviewRoom(@PathVariable("roomIdx") Long roomIdx) {
+        interviewService.exitInterviewRoom(roomIdx);
+
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
+    }
+
     @Operation(summary = "면접 방 상태 변경", description = "Create -> Proceed , Proceed -> Exit 으로 변경")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "roomIdx", description = "방 번호", example = "1")
