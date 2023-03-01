@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jungle.krafton.AIInterviewMate.domain.Member;
 import jungle.krafton.AIInterviewMate.dto.mypage.MyInfoDto;
-import jungle.krafton.AIInterviewMate.dto.mypage.MypageDto;
+import jungle.krafton.AIInterviewMate.dto.mypage.MyPageDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateResponseBody;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
-import jungle.krafton.AIInterviewMate.service.MypageService;
+import jungle.krafton.AIInterviewMate.service.MyPageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "mypage", description = "마이페이지 관련 API")
 @RestController
 @RequestMapping("/mypage")
-public class MypageController {
-    private final MypageService mypageService;
+public class MyPageController {
+    private final MyPageService mypageService;
 
     @Autowired
-    public MypageController(MypageService mypageService) {
+    public MyPageController(MyPageService mypageService) {
         this.mypageService = mypageService;
     }
 
@@ -33,8 +33,8 @@ public class MypageController {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content())
     })
     @PutMapping("/nickname")
-    public ResponseEntity<PrivateResponseBody> updateMypage(@RequestBody MypageDto mypageDto) {
-        mypageService.updateNickname(mypageDto);
+    public ResponseEntity<PrivateResponseBody> updateNickname(@RequestBody MyPageDto myPageDto) {
+        mypageService.updateNickname(myPageDto);
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, null), HttpStatus.OK);
     }
 

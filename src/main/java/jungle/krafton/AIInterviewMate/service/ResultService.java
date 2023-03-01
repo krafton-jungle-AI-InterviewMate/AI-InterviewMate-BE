@@ -79,6 +79,8 @@ public class ResultService {
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
+        validator.validateAccessMember(interviewRoom.getMember(), jwtTokenProvider);
+
         String eyeTimelines = convertTimelinesToString(resultInterviewDto.getEyeTimelines());
         String attitudeTimelines = convertTimelinesToString(resultInterviewDto.getAttitudeTimelines());
         String questionTimelines = convertTimelinesToString(resultInterviewDto.getQuestionTimelines());
@@ -150,6 +152,8 @@ public class ResultService {
             throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
         }
 
+        validator.validateAccessMember(interviewRoom.getMember(), jwtTokenProvider);
+
         Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
         List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
@@ -174,6 +178,9 @@ public class ResultService {
         if (!interviewRoom.getRoomType().equals(RoomType.USER)) {
             throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
         }
+
+        validator.validateAccessMember(interviewRoom.getMember(), jwtTokenProvider);
+
         Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
         List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
@@ -220,13 +227,11 @@ public class ResultService {
     }
 
     public void saveMemo(Long roomIdx, ResultMemoDto resultMemoDto) {
-        Long memberIdx = jwtTokenProvider.getUserInfo();
-
-        Member viewer = memberRepository.findByIdx(memberIdx)
-                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
-
         Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
+
+        InterviewRoom interviewRoom = result.getInterviewRoom();
+        validator.validateAccessMember(interviewRoom.getMember(), jwtTokenProvider);
 
         validator.validateContents(resultMemoDto.getMemo());
 
