@@ -6,7 +6,7 @@ import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.*;
-import jungle.krafton.AIInterviewMate.util.OpenViduGetter;
+import jungle.krafton.AIInterviewMate.util.OpenViduCustomWrapper;
 import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class ResultService {
     private final MemberRepository memberRepository;
     private final Validator validator;
     private final JwtTokenProvider jwtTokenProvider;
-    private final OpenViduGetter openViduGetter;
+    private final OpenViduCustomWrapper openViduCustomWrapper;
 
 
     @Autowired
@@ -38,7 +38,7 @@ public class ResultService {
                          MemberRepository memberRepository,
                          Validator validator,
                          JwtTokenProvider jwtTokenProvider,
-                         OpenViduGetter openViduGetter) {
+                         OpenViduCustomWrapper openViduCustomWrapper) {
         this.interviewRoomRepository = interviewRoomRepository;
         this.commentRepository = commentRepository;
         this.scriptRepository = scriptRepository;
@@ -47,7 +47,7 @@ public class ResultService {
         this.memberRepository = memberRepository;
         this.validator = validator;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.openViduGetter = openViduGetter;
+        this.openViduCustomWrapper = openViduCustomWrapper;
     }
 
     public List<ResultHistoryDto> getResultHistory() {
@@ -89,7 +89,7 @@ public class ResultService {
         }
 
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
-            OpenViduInfo.closeSession(openViduGetter.getOpenVidu(), interviewRoom.getSessionId());
+            openViduCustomWrapper.closeSession(interviewRoom.getSessionId());
         }
     }
 
