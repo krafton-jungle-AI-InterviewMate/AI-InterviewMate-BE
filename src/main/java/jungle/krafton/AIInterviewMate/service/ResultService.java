@@ -46,7 +46,8 @@ public class ResultService {
     }
 
     public List<RatingHistoryDto> getRatingHistory() {
-        List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdxOrderByCreatedAtDesc(MEMBER_IDX);
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+        List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdxOrderByCreatedAtDesc(memberIdx);
 
         List<RatingHistoryDto> ratingHistoryDtos = new ArrayList<>();
 
