@@ -109,7 +109,7 @@ public class InterviewService {
 
             interviewRoomRepository.delete(interviewRoom);
         } else {
-            updateInterviewerIdxes(interviewRoom);
+            updateExitInterviewerIdxes(interviewRoom);
         }
     }
 
@@ -125,12 +125,12 @@ public class InterviewService {
                 interviewRoomRepository.delete(interviewRoom);
             }
         } else {
-            updateInterviewerIdxes(interviewRoom);
+            updateExitInterviewerIdxes(interviewRoom);
         }
     }
 
-    private void updateInterviewerIdxes(InterviewRoom interviewRoom) {
         String[] memberIdxes = interviewRoom.getInterviewerIdxes().split(",");
+    private void updateExitInterviewerIdxes(InterviewRoom interviewRoom) {
         String memberIdxToExit = String.valueOf(jwtTokenProvider.getUserInfo());
 
         String saveIdxes = Arrays.stream(memberIdxes)
