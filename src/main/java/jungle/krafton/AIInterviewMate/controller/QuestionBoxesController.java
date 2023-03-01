@@ -31,7 +31,7 @@ public class QuestionBoxesController {
         this.questionBoxesService = questionBoxesService;
     }
 
-    @Operation(summary = "질문 꾸러미 가져오기")
+    @Operation(summary = "질문 꾸러미 List [꾸러미에 속한 질문들 포함 X] 가져오기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxInfoDto.class))))
     })
@@ -41,9 +41,9 @@ public class QuestionBoxesController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, questionBoxList), HttpStatus.OK);
     }
 
-    @Operation(summary = "질문 꾸러미 정보 [꾸러미에 속한 질문들 포함] 가져오기")
+    @Operation(summary = "질문 꾸러미 1개의 정보 [꾸러미에 속한 질문들 포함] 가져오기")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuestionBoxInfoDto.class))))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = QuestionBoxInfoDto.class)))
     })
     @GetMapping("/{questionBoxIdx}")
     public ResponseEntity<PrivateResponseBody> getQuestionBoxInfo(@PathVariable("questionBoxIdx") Long questionBoxIdx) {
