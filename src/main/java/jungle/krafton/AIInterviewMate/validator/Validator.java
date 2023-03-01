@@ -53,6 +53,12 @@ public class Validator {
         }
     }
 
+    public void validateContents(String contents) {
+        if (contents == null || contents.trim().isEmpty()) {
+            throw new PrivateException(StatusCode.CONTENTS_IS_EMPTY_ERROR);
+        }
+    }
+
     public void validateEnterRoomStatus(RoomStatus actual) {
         if (actual != RoomStatus.CREATE) {
             throw new PrivateException(StatusCode.ROOM_STATUS_ERROR);

@@ -4,11 +4,14 @@ import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.result.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
+import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.*;
+import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -17,12 +20,20 @@ public class ResultService {
     private final ResultRepository resultRepository;
     private final CommentRepository commentRepository;
     private final ScriptRepository scriptRepository;
-
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+    private final Validator validator;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public ResultService(InterviewRoomRepository interviewRoomRepository, ResultRepository resultRepository, CommentRepository commentRepository, ScriptRepository scriptRepository, QuestionRepository questionRepository, MemberRepository memberRepository) {
+    public ResultService(InterviewRoomRepository interviewRoomRepository,
+                         ResultRepository resultRepository,
+                         CommentRepository commentRepository,
+                         ScriptRepository scriptRepository,
+                         QuestionRepository questionRepository,
+                         MemberRepository memberRepository,
+                         Validator validator,
+                         JwtTokenProvider jwtTokenProvider) {
 
         this.interviewRoomRepository = interviewRoomRepository;
         this.commentRepository = commentRepository;
@@ -30,6 +41,8 @@ public class ResultService {
         this.questionRepository = questionRepository;
         this.resultRepository = resultRepository;
         this.memberRepository = memberRepository;
+        this.validator = validator;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public List<RatingHistoryDto> getRatingHistory() {
@@ -46,7 +59,7 @@ public class ResultService {
         return ratingHistoryDtos;
     }
 
-    public void saveResult(Long roomIdx, ResultInterviewDto resultInterviewDto) { // TODO: 코드 수정 필요 ( 중복 데이터 삭제 로직 변경 )
+    public void saveResult(Long roomIdx, ResultInterviewDto resultInterviewDto) {
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
         StringBuffer eyeTimelines = new StringBuffer();
@@ -70,21 +83,19 @@ public class ResultService {
             }
             questionTimelines.deleteCharAt(0);
         }
-
+        resultRepository.save(convertDtoToResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
-            resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
             for (ResultInterviewCommentDto resultInterviewCommentDto : resultInterviewDto.getComments()) {
-                commentRepository.save(convertComment(interviewRoom, resultInterviewCommentDto));
+                commentRepository.save(convertDtoToComment(interviewRoom, resultInterviewCommentDto));
             }
         } else {
-            resultRepository.save(convertResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
             for (ResultInterviewScriptDto resultInterviewScriptDto : resultInterviewDto.getScripts()) {
-                scriptRepository.save(convertScript(interviewRoom, resultInterviewScriptDto));
+                scriptRepository.save(convertDtoToScript(interviewRoom, resultInterviewScriptDto));
             }
         }
     }
 
-    private Result convertResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, StringBuffer eyeTimelines, StringBuffer attitudeTimelines, StringBuffer questionTimelines) {
+    private Result convertDtoToResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, StringBuffer eyeTimelines, StringBuffer attitudeTimelines, StringBuffer questionTimelines) {
         return Result.builder()
                 .interviewRoom(interviewRoom)
                 .videoUrl(resultInterviewDto.getVideoUrl())
@@ -94,7 +105,7 @@ public class ResultService {
                 .build();
     }
 
-    private Script convertScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto) {
+    private Script convertDtoToScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto) {
         return Script.builder()
                 .interviewRoom(interviewRoom)
                 .questionIdx(resultInterviewScriptDto.getQuestionIdx())
@@ -102,7 +113,7 @@ public class ResultService {
                 .build();
     }
 
-    private Comment convertComment(InterviewRoom interviewRoom, ResultInterviewCommentDto resultInterviewCommentDto) {
+    private Comment convertDtoToComment(InterviewRoom interviewRoom, ResultInterviewCommentDto resultInterviewCommentDto) {
         return Comment.builder()
                 .interviewRoom(interviewRoom)
                 .viewerIdx(resultInterviewCommentDto.getViewerIdx())
@@ -110,35 +121,7 @@ public class ResultService {
                 .build();
     }
 
-    public RatingUserResponseDto getUserRatingList(Long roomIdx) {
-        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
-                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
-
-        if (!interviewRoom.getRoomType().equals(RoomType.USER)) {
-            throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
-        }
-
-        List<RatingUserListDto> ratingList = new ArrayList<>();
-        List<VieweeRating> vieweeRatingList = vieweeRatingRepository.findAllByRoomIdx(roomIdx);
-        for (VieweeRating vieweeRating : vieweeRatingList) {
-            Long viewerIdx = vieweeRating.getViewerIdx();
-            String nickname = "BOT";
-            if (viewerIdx != 79797979) {
-                Member member = memberRepository.findByIdx(viewerIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
-                nickname = member.getNickname();
-            }
-            List<RatingUserCommentDto> commentList = new ArrayList<>();
-            List<Comment> comments = commentRepository.findAllByInterviewRoomIdxAndViewerIdx(roomIdx, viewerIdx);
-            for (Comment comment : comments) {
-                commentList.add(new RatingUserCommentDto(comment));
-            }
-            ratingList.add(new RatingUserListDto(nickname, vieweeRating, commentList));
-        }
-
-        return new RatingUserResponseDto(interviewRoom, ratingList);
-    }
-
-    public RatingAiResponseDto getAiRatingList(Long roomIdx) { // TODO: 코드 수정 필요 ( 채점 기능 수정 or 삭제 )
+    public ResultAiResponseDto getAiResult(Long roomIdx) {
         InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
@@ -146,50 +129,85 @@ public class ResultService {
             throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
         }
 
-        List<RatingAiScriptListDto> scriptList = new ArrayList<>();
-        List<Script> scripts = scriptRepository.findAllByInterviewRoomIdx(roomIdx);
-
-        for (Script script : scripts) {
-            String pureScript = script.getScript();
-            Long questionIdx = script.getQuestionIdx();
-            Question question = questionRepository.findByIdx(questionIdx).orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
-            List<String> keywords = new ArrayList<>();
-
-            keywords.add(question.getKeyword1());
-            keywords.add(question.getKeyword2());
-            keywords.add(question.getKeyword3());
-            keywords.add(question.getKeyword4());
-            keywords.add(question.getKeyword5());
-
-            ScriptRating converter = convertScript(pureScript, keywords);
-
-            String newScript = converter.getScript();
-            int score = converter.getScore();
-
-            Script updateQuery = scriptRepository.findByInterviewRoomIdxAndQuestionIdx(roomIdx, questionIdx);
-
-            updateQuery.setRating(score);
-            updateQuery.setScript(pureScript);
-            scriptRepository.save(updateQuery);
-
-            scriptList.add(new RatingAiScriptListDto(question, newScript, score));
+        Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
+        List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
+        List<String> attitudeTimeline = Arrays.asList(result.getAttitudeTimeline().split(","));
+        List<String> questionTimeline = Arrays.asList(result.getQuestionTimeline().split(","));
+        List<ResultInterviewScriptDto> scripts = new ArrayList<>();
+        for (Script script : scriptRepository.findAllByInterviewRoomIdx(roomIdx)) {
+            scripts.add(convertScriptToDto(script));
         }
 
-        VieweeRating vieweeRating = vieweeRatingRepository.findByRoomIdx(roomIdx)
-                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_VIEWEE_RATING));
-
-        return new RatingAiResponseDto(vieweeRating, interviewRoom, scriptList);
+        return new ResultAiResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, scripts);
     }
 
-    private String convertScript(String script, List<String> keywords) {
-        int matchCnt = 1;
-        for (String keyword : keywords) {
-            if (keyword == null) {
-                continue;
-            }
-            script = script.replace(keyword, "<" + matchCnt + ">" + keyword + "</" + matchCnt + ">");
-            matchCnt++;
+    public ResultUserResponseDto getUserResult(Long roomIdx) {
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
+
+        if (!interviewRoom.getRoomType().equals(RoomType.USER)) {
+            throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
         }
-        return script;
+        Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
+        List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
+        List<String> attitudeTimeline = Arrays.asList(result.getAttitudeTimeline().split(","));
+        List<String> questionTimeline = Arrays.asList(result.getQuestionTimeline().split(","));
+        List<ResultInterviewCommentDto> comments = new ArrayList<>();
+        for (Comment comment : commentRepository.findAllByInterviewRoomIdx(roomIdx)) {
+            comments.add(convertCommentToDto(comment));
+        }
+        return new ResultUserResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, comments);
+    }
+
+    public ResultInterviewScriptDto convertScriptToDto(Script script) {
+        return ResultInterviewScriptDto.builder()
+                .script(script.getScript())
+                .questionIdx(script.getQuestionIdx())
+                .build();
+    }
+
+    public ResultInterviewCommentDto convertCommentToDto(Comment comment) {
+        return ResultInterviewCommentDto.builder()
+                .comment(comment.getComment())
+                .viewerIdx(comment.getViewerIdx())
+                .build();
+    }
+
+    public void saveComment(Long roomIdx, ResultRequestCommentDto resultRequestComment) {
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+
+        Member viewer = memberRepository.findByIdx(memberIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
+
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
+
+        validator.validateContents(resultRequestComment.getComment());
+
+        Comment comment = Comment.builder()
+                .interviewRoom(interviewRoom)
+                .viewerIdx(viewer.getIdx())
+                .comment(resultRequestComment.getComment())
+                .build();
+
+        commentRepository.save(comment);
+    }
+
+    public void saveMemo(Long roomIdx, ResultMemoDto resultMemoDto) {
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+
+        Member viewer = memberRepository.findByIdx(memberIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
+
+        Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
+
+        validator.validateContents(resultMemoDto.getMemo());
+
+        result.setMemo(resultMemoDto.getMemo());
+
+        resultRepository.save(result);
     }
 }

@@ -35,5 +35,9 @@ public class Result {
     private String questionTimeline;
 
     @Column(columnDefinition = "LONGTEXT")
-    private String personalComment;
+    private String memo;
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
 }
