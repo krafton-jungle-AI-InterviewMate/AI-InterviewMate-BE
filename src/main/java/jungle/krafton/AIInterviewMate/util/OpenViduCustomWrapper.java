@@ -1,56 +1,66 @@
-package jungle.krafton.AIInterviewMate.domain;
+package jungle.krafton.AIInterviewMate.util;
 
 import io.openvidu.java.client.*;
+import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
+import jungle.krafton.AIInterviewMate.domain.Member;
+import jungle.krafton.AIInterviewMate.dto.openvidu.OpenViduInfoDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OpenViduInfo {
-    private final Map<String, Object> params;
-    private final Session session;
+@Component
+public class OpenViduCustomWrapper {
+    private OpenVidu openVidu;
+    @Value("${OPENVIDU_URL}")
+    private String OPENVIDU_URL;
+    @Value("${OPENVIDU_SECRET}")
+    private String OPENVIDU_SECRET;
 
-    private OpenViduInfo(Map<String, Object> params, Session session) {
-        this.params = params;
-        this.session = session;
+    @PostConstruct
+    public void init() {
+        this.openVidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    static public OpenViduInfo of(OpenVidu openVidu, InterviewRoom interviewRoom, Member member) {
+    public OpenViduInfoDto createOpenViduInfoDto(InterviewRoom interviewRoom, Member member) {
         Map<String, Object> params = createParams(interviewRoom, member);
         Session session = null;
         String curSessionId = interviewRoom.getSessionId();
 
         try {
             if (isExistSessionId(curSessionId)) {
-                openVidu.fetch();
-                session = openVidu.getActiveSession(curSessionId);
+                this.openVidu.fetch();
+                session = this.openVidu.getActiveSession(curSessionId);
             } else {
-                session = createOpenViduSession(openVidu, params);
+                session = createOpenViduSession(params);
             }
         } catch (Exception e) {
             handleError(e);
         }
 
-        return new OpenViduInfo(params, session);
+        return new OpenViduInfoDto(params, session);
     }
 
-    static public void closeSession(OpenVidu openVidu, String sessionId) {
+    public void closeSession(String sessionId) {
         try {
-            openVidu.fetch();
+            this.openVidu.fetch();
 
-            Session activeSession = openVidu.getActiveSession(sessionId);
+            Session activeSession = this.openVidu.getActiveSession(sessionId);
             activeSession.close();
         } catch (Exception e) {
             handleError(e);
         }
     }
 
-    private static boolean isExistSessionId(String sessionId) {
+    private boolean isExistSessionId(String sessionId) {
         return sessionId != null;
     }
 
-    static public Map<String, Object> createParams(InterviewRoom interviewRoom, Member member) {
+    public Map<String, Object> createParams(InterviewRoom interviewRoom, Member member) {
         Map<String, Object> params = new HashMap<>();
 
         params.put("roomIdx", interviewRoom.getIdx());
@@ -60,14 +70,13 @@ public class OpenViduInfo {
         return params;
     }
 
-    static private Session createOpenViduSession(OpenVidu openVidu, Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+    private Session createOpenViduSession(Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
 
-        return openVidu.createSession(properties);
+        return this.openVidu.createSession(properties);
     }
 
-    static public void handleError(Exception e) {
+    public void handleError(Exception e) {
         e.printStackTrace();
 
         if (e instanceof OpenViduJavaClientException) {
@@ -81,22 +90,5 @@ public class OpenViduInfo {
         } else {
             throw new PrivateException(StatusCode.INTERNAL_SERVER_ERROR_PLZ_CHECK);
         }
-    }
-
-    public String getConnectionToken() {
-        ConnectionProperties connectionProperties = ConnectionProperties.fromJson(params).build();
-
-        Connection connection = null;
-        try {
-            connection = session.createConnection(connectionProperties);
-        } catch (Exception e) {
-            handleError(e);
-        }
-
-        return connection.getToken();
-    }
-
-    public String getSessionId() {
-        return this.session.getSessionId();
     }
 }
