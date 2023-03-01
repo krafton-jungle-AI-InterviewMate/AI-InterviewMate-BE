@@ -129,8 +129,13 @@ public class InterviewService {
         }
     }
 
-        String[] memberIdxes = interviewRoom.getInterviewerIdxes().split(",");
     private void updateExitInterviewerIdxes(InterviewRoom interviewRoom) {
+        String interviewerIdxes = interviewRoom.getInterviewerIdxes();
+        if (interviewerIdxes == null) {
+            throw new PrivateException(StatusCode.NOT_FOUND_INTERVIEWERS);
+        }
+
+        String[] memberIdxes = interviewerIdxes.split(",");
         String memberIdxToExit = String.valueOf(jwtTokenProvider.getUserInfo());
 
         String saveIdxes = Arrays.stream(memberIdxes)
@@ -150,7 +155,12 @@ public class InterviewService {
     }
 
     private boolean isAllViewersOut(InterviewRoom interviewRoom) {
-        String[] memberIdxes = interviewRoom.getInterviewerIdxes().split(",");
+        String interviewerIdxes = interviewRoom.getInterviewerIdxes();
+        if (interviewerIdxes == null) {
+            throw new PrivateException(StatusCode.NOT_FOUND_INTERVIEWERS);
+        }
+
+        String[] memberIdxes = interviewerIdxes.split(",");
         Long memberIdx = jwtTokenProvider.getUserInfo();
 
         return memberIdxes.length == 1 && Long.parseLong(memberIdxes[0]) == memberIdx;
