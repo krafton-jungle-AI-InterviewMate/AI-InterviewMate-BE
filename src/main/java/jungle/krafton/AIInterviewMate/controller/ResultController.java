@@ -33,7 +33,7 @@ public class ResultController {
 
     @Operation(summary = "면접 결과 전체 리스트 확인")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = RatingHistoryDto.class))))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResultHistoryDto.class))))
     })
     @GetMapping("/history")
     public ResponseEntity<PrivateResponseBody> getRatingHistory() {

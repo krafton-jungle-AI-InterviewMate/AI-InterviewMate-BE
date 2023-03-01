@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-public class RatingHistoryDto {
+public class ResultHistoryDto {
     private String roomName;
     private Long roomIdx;
     private LocalDateTime createdAt;
@@ -19,7 +19,7 @@ public class RatingHistoryDto {
     private Integer roomTime;
     private Integer roomQuestionNum;
 
-    public RatingHistoryDto(InterviewRoom interviewRoom) {
+    public ResultHistoryDto(InterviewRoom interviewRoom) {
         this.roomName = interviewRoom.getRoomName();
         this.roomIdx = interviewRoom.getIdx();
         this.createdAt = interviewRoom.getCreatedAt();

@@ -45,18 +45,19 @@ public class ResultService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public List<RatingHistoryDto> getRatingHistory() {
-        List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdxOrderByCreatedAtDesc(MEMBER_IDX);
+    public List<ResultHistoryDto> getRatingHistory() {
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+        List<InterviewRoom> interviewRooms = interviewRoomRepository.findAllByMemberIdxOrderByCreatedAtDesc(memberIdx);
 
-        List<RatingHistoryDto> ratingHistoryDtos = new ArrayList<>();
+        List<ResultHistoryDto> resultHistoryDtos = new ArrayList<>();
 
         for (InterviewRoom interviewRoom : interviewRooms) {
             if (interviewRoom.getRoomStatus() == RoomStatus.EXIT) {
-                ratingHistoryDtos.add(new RatingHistoryDto(interviewRoom));
+                resultHistoryDtos.add(new ResultHistoryDto(interviewRoom));
             }
         }
 
-        return ratingHistoryDtos;
+        return resultHistoryDtos;
     }
 
     public void saveResult(Long roomIdx, ResultInterviewDto resultInterviewDto) {
