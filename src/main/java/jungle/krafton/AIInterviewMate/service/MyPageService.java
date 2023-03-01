@@ -22,9 +22,9 @@ public class MyPageService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-
-        Member member = memberRepository.findByEmail(mypageDto.getEmail())
     public void updateNickname(MyPageDto myPageDto) {
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+        Member member = memberRepository.findByIdx(memberIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
 
         member.setNickname(myPageDto.getNickname());
