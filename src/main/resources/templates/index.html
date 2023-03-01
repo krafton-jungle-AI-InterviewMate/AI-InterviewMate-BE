@@ -4,12 +4,18 @@
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Document</title>
+
+    <!--    aws-sdk를 CDN으로 불러온것-->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js"></script>
+
     <link
             href="https://unpkg.com/video.js/dist/video-js.css"
             rel="stylesheet"
     />
 </head>
 <body>
+<input id="fileUpload" type="file"/>
+
 <video
         class="video-js vjs-default-skin"
         controls
@@ -20,16 +26,17 @@
         width="640"
 >
     <source
-            src="https://d2i0597ukjxpay.cloudfront.net/output/test/Default/HLS/test_540.m3u8"
+            src="https://d2i0597ukjxpay.cloudfront.net/output/test/Default/HLS/test.m3u8"
             type="application/x-mpegURL"
     />
 </video>
-
+<!--    스트리밍 파일 .m3u8 파일을 읽기 위한 video js 사용 -->
 <script src="https://vjs.zencdn.net/7.2.3/video.js"></script>
 <script
         crossorigin="anonymous"
         integrity="sha512-utkFvaMvnpseOQ/4m1+/2zKYNh5r/FHUs5XZAds52wXbfMgeHvHg/3PFnou6DME2U7F2OkcPSM0AWQdYdPKAKg=="
         src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-media-sources/4.7.2/videojs-contrib-media-sources.min.js"
 ></script>
+<script src="app.js"></script>
 </body>
 </html>
