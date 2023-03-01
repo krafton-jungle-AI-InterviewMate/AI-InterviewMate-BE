@@ -38,6 +38,9 @@ public class OpenViduCustomWrapper {
             } else {
                 session = createOpenViduSession(params);
             }
+        } catch (NullPointerException e) {
+            //이미 닫힌 방이므로 해당 예외는 무시처리
+            System.out.println("createSession: 이미 닫힌 Session 입니다.");
         } catch (Exception e) {
             handleError(e);
         }
@@ -51,6 +54,9 @@ public class OpenViduCustomWrapper {
 
             Session activeSession = this.openVidu.getActiveSession(sessionId);
             activeSession.close();
+        } catch (NullPointerException e) {
+            //이미 닫힌 방이므로 해당 예외는 무시처리
+            System.out.println("closeSession: 이미 닫힌 Session 입니다.");
         } catch (Exception e) {
             handleError(e);
         }
@@ -83,8 +89,6 @@ public class OpenViduCustomWrapper {
             throw new PrivateException(StatusCode.OPENVIDU_JAVA_SERVER_ERROR);
         } else if (e instanceof OpenViduHttpException) {
             throw new PrivateException(StatusCode.OPENVIDU_SERVER_ERROR);
-        } else if (e instanceof NullPointerException) {
-            throw new PrivateException(StatusCode.NOT_FOUND_SESSION);
         } else if (e instanceof PrivateException) {
             throw (PrivateException) e;
         } else {
