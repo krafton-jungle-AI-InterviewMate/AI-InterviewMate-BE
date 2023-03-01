@@ -1,28 +1,30 @@
-package jungle.krafton.AIInterviewMate.dto.rating;
+package jungle.krafton.AIInterviewMate.dto.result;
 
 import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
+import jungle.krafton.AIInterviewMate.domain.RoomType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Getter
 @AllArgsConstructor
 @Builder
-@ToString
-public class RatingUserResponseDto {
+@Getter
+public class ResultHistoryDto {
     private String roomName;
+    private Long roomIdx;
     private LocalDateTime createdAt;
+    private RoomType roomType;
     private Integer roomTime;
-    private List<RatingUserListDto> ratingList;
+    private Integer roomQuestionNum;
 
-    public RatingUserResponseDto(InterviewRoom interviewRoom, List<RatingUserListDto> ratingList) {
+    public ResultHistoryDto(InterviewRoom interviewRoom) {
         this.roomName = interviewRoom.getRoomName();
+        this.roomIdx = interviewRoom.getIdx();
         this.createdAt = interviewRoom.getCreatedAt();
+        this.roomType = interviewRoom.getRoomType();
         this.roomTime = interviewRoom.getRoomTime();
-        this.ratingList = ratingList;
+        this.roomQuestionNum = interviewRoom.getRoomQuestionNum();
     }
 }

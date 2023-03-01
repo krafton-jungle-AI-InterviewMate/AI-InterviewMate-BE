@@ -3,9 +3,11 @@ package jungle.krafton.AIInterviewMate.service;
 import io.openvidu.java.client.OpenVidu;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.interview.*;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
+import jungle.krafton.AIInterviewMate.repository.CommentRepository;
 import jungle.krafton.AIInterviewMate.repository.InterviewRoomRepository;
 import jungle.krafton.AIInterviewMate.repository.MemberRepository;
 import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
@@ -17,12 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InterviewService {
     private final InterviewRoomRepository interviewRoomRepository;
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
     private final Validator validator;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -33,10 +37,16 @@ public class InterviewService {
     private OpenVidu openVidu;
 
     @Autowired
-    public InterviewService(InterviewRoomRepository interviewRoomRepository, QuestionRepository questionRepository, MemberRepository memberRepository, Validator validator, JwtTokenProvider jwtTokenProvider) {
+    public InterviewService(InterviewRoomRepository interviewRoomRepository,
+                            QuestionRepository questionRepository,
+                            MemberRepository memberRepository,
+                            CommentRepository commentRepository,
+                            Validator validator,
+                            JwtTokenProvider jwtTokenProvider) {
         this.interviewRoomRepository = interviewRoomRepository;
         this.questionRepository = questionRepository;
         this.memberRepository = memberRepository;
+        this.commentRepository = commentRepository;
         this.validator = validator;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -54,54 +64,144 @@ public class InterviewService {
         RoomType roomType = interviewRoom.getRoomType();
         validator.validateRoomType(roomType, RoomType.USER);
 
+        validator.validateEnterRoomStatus(interviewRoom.getRoomStatus());
+
         validator.validatePassword(requestDto.getPassword(), interviewRoom.getRoomPassword());
 
         Long memberIdx = jwtTokenProvider.getUserInfo();
         Member memberToEnter = memberRepository.findByIdx(memberIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_USER));
 
+        //TODO: 실 서비스 시에 확인할 부분
+//        validator.validateHostToRejoin(interviewRoom.getMember(), memberToEnter);
+
         return getUserRoomInfo(interviewRoom, memberToEnter);
     }
 
+    @Transactional
+    public void exitInterviewRoom(Long roomIdx) {
+        InterviewRoom interviewRoom = interviewRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
+
+        RoomStatus roomStatus = interviewRoom.getRoomStatus();
+
+        validator.validateExitRoomStatus(roomStatus);
+
+        RoomType roomType = interviewRoom.getRoomType();
+        if (roomType == RoomType.USER) {
+            if (interviewRoom.getRoomStatus() == RoomStatus.CREATE) {
+                exitNormalUserInterviewRoom(interviewRoom);
+            } else {
+                exitAbnormalUserInterviewRoom(interviewRoom);
+            }
+        } else {
+            deleteAbnormalAiInterviewRoom(interviewRoom);
+        }
+    }
+
+    private void exitNormalUserInterviewRoom(InterviewRoom interviewRoom) {
+        /*
+            면접자가 나감 => 더 이상의 방을 유지할 필요가 없으므로 Session 을 종료
+            면접관이 나가면 면접관 List 업데이트
+         */
+        if (hasHostLeftRoom(interviewRoom.getMember())) {
+            OpenViduInfo.closeSession(openVidu, interviewRoom.getSessionId());
+
+            interviewRoomRepository.delete(interviewRoom);
+        } else {
+            updateExitInterviewerIdxes(interviewRoom);
+        }
+    }
+
+    private void exitAbnormalUserInterviewRoom(InterviewRoom interviewRoom) {
+        /*
+            면접자가 나감 || 마지막 면접관이 방을 나감 => 더 이상의 방을 유지할 필요가 없으므로 Session 을 종료
+            그리고 면접관의 comment가 하나도 없으면 면접 결과도 확인할 필요가 없으므로 방을 삭제.
+         */
+        if (hasHostLeftRoom(interviewRoom.getMember()) || isAllViewersOut(interviewRoom)) {
+            OpenViduInfo.closeSession(openVidu, interviewRoom.getSessionId());
+
+            if (viewerCommentsEmpty(interviewRoom)) {
+                interviewRoomRepository.delete(interviewRoom);
+            }
+        } else {
+            updateExitInterviewerIdxes(interviewRoom);
+        }
+    }
+
+    private void updateExitInterviewerIdxes(InterviewRoom interviewRoom) {
+        String interviewerIdxes = interviewRoom.getInterviewerIdxes();
+        if (interviewerIdxes == null) {
+            throw new PrivateException(StatusCode.NOT_FOUND_INTERVIEWERS);
+        }
+
+        String[] memberIdxes = interviewerIdxes.split(",");
+        String memberIdxToExit = String.valueOf(jwtTokenProvider.getUserInfo());
+
+        String saveIdxes = Arrays.stream(memberIdxes)
+                .filter(memberIdx -> !memberIdx.equals(memberIdxToExit))
+                .collect(Collectors.joining(","));
+
+        if (saveIdxes.isEmpty()) {
+            saveIdxes = null;
+        }
+
+        interviewRoom.setInterviewerIdxes(saveIdxes);
+    }
+
+    private boolean viewerCommentsEmpty(InterviewRoom interviewRoom) {
+        List<Comment> comments = commentRepository.findAllByInterviewRoomIdx(interviewRoom.getIdx());
+        return comments.isEmpty();
+    }
+
+    private boolean isAllViewersOut(InterviewRoom interviewRoom) {
+        String interviewerIdxes = interviewRoom.getInterviewerIdxes();
+        if (interviewerIdxes == null) {
+            throw new PrivateException(StatusCode.NOT_FOUND_INTERVIEWERS);
+        }
+
+        String[] memberIdxes = interviewerIdxes.split(",");
+        Long memberIdx = jwtTokenProvider.getUserInfo();
+
+        return memberIdxes.length == 1 && Long.parseLong(memberIdxes[0]) == memberIdx;
+    }
+
+    private boolean hasHostLeftRoom(Member host) {
+        Long memberIdxToExit = jwtTokenProvider.getUserInfo();
+
+        return Objects.equals(host.getIdx(), memberIdxToExit);
+    }
+
+    private void deleteAbnormalAiInterviewRoom(InterviewRoom interviewRoom) {
+        interviewRoomRepository.delete(interviewRoom);
+    }
+
     private InterviewRoomInfoUserDto getUserRoomInfo(InterviewRoom interviewRoom, Member memberToEnter) {
-        //TODO: 실 서비스 사용시에 해당 부분 확인을 해야함.
-//        checkMemberToEnterIdx(interviewRoom, memberToEnter);
+        addMemberToInterviewerIdxes(interviewRoom, memberToEnter);
 
         OpenViduInfo openViduInfo = OpenViduInfo.of(openVidu, interviewRoom, memberToEnter);
 
-        InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom, memberToEnter);
+        InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom);
         dto.setConnectionToken(openViduInfo.getConnectionToken());
         return dto;
     }
 
-    private void checkMemberToEnterIdx(InterviewRoom interviewRoom, Member memberToEnter) {
-        Long viewer1Idx = interviewRoom.getRoomViewer1Idx();
-        Long viewer2Idx = interviewRoom.getRoomViewer2Idx();
-        Long viewer3Idx = interviewRoom.getRoomViewer3Idx();
-        Long hostMemberIdx = interviewRoom.getMember().getIdx();
-        Long memberToEnterIdx = memberToEnter.getIdx();
+    private void addMemberToInterviewerIdxes(InterviewRoom interviewRoom, Member memberToEnter) {
+        String interviewerIdxes = interviewRoom.getInterviewerIdxes();
+        String memberToEnterIdx = String.valueOf(memberToEnter.getIdx());
+        List<String> idxes = new ArrayList<>();
 
-        if (
-                Objects.equals(hostMemberIdx, memberToEnterIdx) //방 Host 와 동일한 Id로 로그인 시도
-                        || (viewer1Idx != null && Objects.equals(viewer1Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
-                        || (viewer2Idx != null && Objects.equals(viewer2Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
-                        || (viewer3Idx != null && Objects.equals(viewer3Idx, memberToEnterIdx)) //동일한 면접관이 또 접속을 하려고 하는지 확인
-        ) {
-            throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
+        if (interviewerIdxes != null) {
+            String[] viewerStrIdxArr = interviewerIdxes.split(",");
+            idxes = new ArrayList<>(List.of(viewerStrIdxArr));
+
+            validator.validateMemberToEnterInterviewerRole(idxes, memberToEnterIdx);
         }
 
-        if (viewer1Idx == null) {
-            interviewRoom.setRoomViewer1Idx(memberToEnterIdx);
-            return;
-        } else if (viewer2Idx == null) {
-            interviewRoom.setRoomViewer2Idx(memberToEnterIdx);
-            return;
-        } else if (viewer3Idx == null) {
-            interviewRoom.setRoomViewer3Idx(memberToEnterIdx);
-            return;
-        }
+        idxes.add(memberToEnterIdx);
+        String saveIdxes = idxes.stream().sorted().collect(Collectors.joining(","));
 
-        throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
+        interviewRoom.setInterviewerIdxes(saveIdxes);
     }
 
     public List<InterviewRoomListDto> getRoomList() {
@@ -110,18 +210,7 @@ public class InterviewService {
         List<InterviewRoom> allRoom = interviewRoomRepository
                 .findAllByRoomStatusOrRoomStatusOrderByCreatedAtDescRoomStatus(RoomStatus.CREATE, RoomStatus.PROCEED);
         for (InterviewRoom room : allRoom) {
-
-            int cnt = 1;
-            if (room.getRoomViewer1Idx() != null) {
-                cnt++;
-            }
-            if (room.getRoomViewer2Idx() != null) {
-                cnt++;
-            }
-            if (room.getRoomViewer3Idx() != null) {
-                cnt++;
-            }
-            roomList.add(convertCreateAndProceedRoom(cnt, room));
+            roomList.add(convertCreateAndProceedRoom(room));
         }
 
         return roomList;
@@ -144,7 +233,7 @@ public class InterviewService {
 
             dto.setConnectionToken(openViduInfo.getConnectionToken());
         } else {
-            List<InterviewQuestionDto> questionList = createQuestionList(interviewRoom);
+            List<QuestionInfoDto> questionList = createQuestionList(interviewRoom);
 
             dto.setQuestionList(questionList);
         }
@@ -152,7 +241,7 @@ public class InterviewService {
         return dto;
     }
 
-    private List<InterviewQuestionDto> createQuestionList(InterviewRoom interviewRoom) {
+    private List<QuestionInfoDto> createQuestionList(InterviewRoom interviewRoom) {
         Long questionBoxIdx = interviewRoom.getRoomQuestionBoxIdx();
 
         List<Question> questions = questionRepository.findAllByQuestionBoxIdx(questionBoxIdx);
@@ -160,7 +249,7 @@ public class InterviewService {
             throw new PrivateException(StatusCode.NOT_FOUND_QUESTION);
         }
 
-        List<InterviewQuestionDto> interviewQuestions = new ArrayList<>();
+        List<QuestionInfoDto> interviewQuestions = new ArrayList<>();
         int questionNum = interviewRoom.getRoomQuestionNum();
 
         Random random = new Random();
@@ -168,7 +257,7 @@ public class InterviewService {
 
         if (questionNum >= questions.size()) {
             for (Question question : questions) {
-                interviewQuestions.add(new InterviewQuestionDto(question));
+                interviewQuestions.add(QuestionInfoDto.of(question));
             }
         } else {
             Set<Integer> randomSet = new HashSet<>();
@@ -178,7 +267,7 @@ public class InterviewService {
             }
 
             for (int idx : randomSet) {
-                interviewQuestions.add(new InterviewQuestionDto(questions.get(idx)));
+                interviewQuestions.add(QuestionInfoDto.of(questions.get(idx)));
             }
         }
 
@@ -203,7 +292,7 @@ public class InterviewService {
         interviewRoomRepository.save(interviewRoom);
     }
 
-    private InterviewRoomListDto convertCreateAndProceedRoom(Integer cnt, InterviewRoom interviewRoom) {
+    private InterviewRoomListDto convertCreateAndProceedRoom(InterviewRoom interviewRoom) {
         return InterviewRoomListDto.builder()
                 .idx(interviewRoom.getIdx())
                 .roomStatus(interviewRoom.getRoomStatus())
@@ -211,7 +300,6 @@ public class InterviewService {
                 .roomName(interviewRoom.getRoomName())
                 .nickname(interviewRoom.getMember().getNickname())
                 .roomPeopleNum(interviewRoom.getRoomPeopleNum())
-                .roomPeopleNow(cnt)
                 .roomTime(interviewRoom.getRoomTime())
                 .roomIsPrivate(interviewRoom.getIsPrivate())
                 .createdAt(interviewRoom.getCreatedAt())
@@ -220,7 +308,7 @@ public class InterviewService {
 
 
     private InterviewRoom createInterviewRoom(InterviewRoomCreateRequestDto requestDto, Member member) {
-        validator.validate(requestDto);
+        validator.validateDto(requestDto);
 
         return InterviewRoom.builder()
                 .member(member)

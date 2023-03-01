@@ -19,7 +19,6 @@ public class InterviewRoomListDto {
     private String roomName;
     private String nickname;
     private Integer roomPeopleNum;
-    private Integer roomPeopleNow;
     private Integer roomTime;
     private Boolean roomIsPrivate;
     private RoomType roomType;

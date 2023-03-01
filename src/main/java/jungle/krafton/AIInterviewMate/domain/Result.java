@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Getter
-public class Video {
+public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
@@ -22,12 +22,22 @@ public class Video {
     @JoinColumn(name = "interviewRoom_idx", nullable = false)
     private InterviewRoom interviewRoom;
 
-    @Column(nullable = false)
-    private Long memberIdx;
+    @Column(length = 1000)
+    private String videoUrl;
 
-    @Column(nullable = false)
-    private Long questionIdx;
+    @Column(columnDefinition = "LONGTEXT")
+    private String eyeTimeline;
 
-    @Column(nullable = false)
-    private String url;
+    @Column(columnDefinition = "LONGTEXT")
+    private String attitudeTimeline;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String questionTimeline;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String memo;
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
 }

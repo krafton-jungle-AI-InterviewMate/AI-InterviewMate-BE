@@ -37,15 +37,22 @@ public enum StatusCode {
     ROOM_VIEWER_ERROR(HttpStatus.BAD_REQUEST, "136", "동일한 ID로 접속할 수가 없습니다. 혹은 방의 인원이 가득 찼습니다."),
     NOT_ACCESS_DATA_DUPLICATE(HttpStatus.BAD_REQUEST, "137", "중복된 데이터 입력입니다."),
     WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "138", "비밀번호가 틀렸습니다."),
+    NOT_FOUND_RESULT(HttpStatus.BAD_REQUEST, "139", "결과를 찾을 수 없습니다."),
 
     NOT_UPDATE_EXIT_ROOM(HttpStatus.BAD_REQUEST, "140", "종료된 방의 상태를 수정할 수 없습니다."),
+    ROOM_STATUS_ERROR(HttpStatus.BAD_REQUEST, "141", "이미 시작된 방 혹은 종료된 방에는 접속할 수 없습니다."),
+    ALREADY_EXIT_ROOM(HttpStatus.BAD_REQUEST, "142", "이미 종료된 방입니다."),
+    NOT_FOUND_INTERVIEWERS(HttpStatus.BAD_REQUEST, "143", "방에 면접관이 존재하지 않습니다."),
 
     OPENVIDU_JAVA_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "150", "openVidu 작업 중에 Spring Server Error 발생"),
     OPENVIDU_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "151", "openVidu 작업 중에 openVidu Server Error 발생"),
 
+    CONTENTS_IS_EMPTY_ERROR(HttpStatus.BAD_REQUEST, "161", "내용이 존재하지 않습니다."),
+
     NULL_INPUT_REDIRECT_URL(HttpStatus.BAD_REQUEST, "300", "리다이렉트 주소가 존재하지 않습니다."),
 
     NULL_INPUT_ERROR(HttpStatus.NOT_FOUND, "990", "Null 값이 들어왔습니다"),
+    FILE_BUFFER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "991", "파일을 읽을 수 없습니다."),
     NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT(HttpStatus.INTERNAL_SERVER_ERROR, "998", "Security Context에 인증 정보가 없습니다."),
     INTERNAL_SERVER_ERROR_PLZ_CHECK(HttpStatus.INTERNAL_SERVER_ERROR, "999", "알수없는 서버 내부 에러 발생. 서버 담당자에게 알려주세요.");
 

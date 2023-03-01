@@ -4,6 +4,7 @@ import jungle.krafton.AIInterviewMate.domain.InterviewRoom;
 import jungle.krafton.AIInterviewMate.domain.Member;
 import jungle.krafton.AIInterviewMate.domain.RoomStatus;
 import jungle.krafton.AIInterviewMate.domain.RoomType;
+import jungle.krafton.AIInterviewMate.dto.questionbox.QuestionInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class InterviewRoomCreateResponseDto {
     private LocalDateTime createdAt;
     private RoomStatus roomStatus;
     private String connectionToken;
-    private List<InterviewQuestionDto> questionList;
+    private List<QuestionInfoDto> questionList;
 
     public InterviewRoomCreateResponseDto(InterviewRoom interviewRoom, Member member) {
         this.roomIdx = interviewRoom.getIdx();
@@ -45,7 +46,7 @@ public class InterviewRoomCreateResponseDto {
         this.roomStatus = interviewRoom.getRoomStatus();
     }
 
-    public void setQuestionList(List<InterviewQuestionDto> questionList) {
+    public void setQuestionList(List<QuestionInfoDto> questionList) {
         this.questionList = questionList;
     }
 
