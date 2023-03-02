@@ -87,7 +87,26 @@ public class ResultService {
         } else {
             if (resultInterviewDto.getScripts() != null) {
                 for (ResultInterviewScriptDto resultInterviewScriptDto : resultInterviewDto.getScripts()) {
-                    scriptRepository.save(convertDtoToScript(interviewRoom, resultInterviewScriptDto));
+                    List<String> keywords = new ArrayList<>();
+                    Question question = questionRepository.findByIdx(resultInterviewScriptDto.getQuestionIdx())
+                            .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_QUESTION));
+                    keywords.add(question.getKeyword1());
+                    keywords.add(question.getKeyword2());
+                    keywords.add(question.getKeyword3());
+                    keywords.add(question.getKeyword4());
+                    keywords.add(question.getKeyword5());
+
+                    String script = resultInterviewScriptDto.getScript();
+                    int matchCnt = 1;
+                    for (String keyword : keywords) {
+                        if (keyword == null) {
+                            continue;
+                        }
+                        script = script.replace(keyword, "<" + matchCnt + ">" + keyword + "</" + matchCnt + ">");
+                        matchCnt++;
+                    }
+
+                    scriptRepository.save(convertDtoToScript(interviewRoom, resultInterviewScriptDto, script));
                 }
             }
         }
@@ -123,11 +142,11 @@ public class ResultService {
                 .build();
     }
 
-    private Script convertDtoToScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto) {
+    private Script convertDtoToScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto, String string) {
         return Script.builder()
                 .interviewRoom(interviewRoom)
                 .questionIdx(resultInterviewScriptDto.getQuestionIdx())
-                .script(resultInterviewScriptDto.getScript())
+                .script(string)
                 .build();
     }
 
