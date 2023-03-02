@@ -1,21 +1,19 @@
 package jungle.krafton.AIInterviewMate.service;
 
-import io.openvidu.java.client.OpenVidu;
 import jungle.krafton.AIInterviewMate.domain.*;
 import jungle.krafton.AIInterviewMate.dto.result.*;
 import jungle.krafton.AIInterviewMate.exception.PrivateException;
 import jungle.krafton.AIInterviewMate.exception.StatusCode;
 import jungle.krafton.AIInterviewMate.jwt.JwtTokenProvider;
 import jungle.krafton.AIInterviewMate.repository.*;
+import jungle.krafton.AIInterviewMate.util.OpenViduCustomWrapper;
+import jungle.krafton.AIInterviewMate.util.TimelineComparator;
 import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -28,11 +26,7 @@ public class ResultService {
     private final MemberRepository memberRepository;
     private final Validator validator;
     private final JwtTokenProvider jwtTokenProvider;
-    @Value("${OPENVIDU_URL}")
-    private String OPENVIDU_URL;
-    @Value("${OPENVIDU_SECRET}")
-    private String OPENVIDU_SECRET;
-    private OpenVidu openVidu;
+    private final OpenViduCustomWrapper openViduCustomWrapper;
 
 
     @Autowired
@@ -43,7 +37,8 @@ public class ResultService {
                          QuestionRepository questionRepository,
                          MemberRepository memberRepository,
                          Validator validator,
-                         JwtTokenProvider jwtTokenProvider) {
+                         JwtTokenProvider jwtTokenProvider,
+                         OpenViduCustomWrapper openViduCustomWrapper) {
         this.interviewRoomRepository = interviewRoomRepository;
         this.commentRepository = commentRepository;
         this.scriptRepository = scriptRepository;
@@ -52,11 +47,7 @@ public class ResultService {
         this.memberRepository = memberRepository;
         this.validator = validator;
         this.jwtTokenProvider = jwtTokenProvider;
-    }
-
-    @PostConstruct
-    public void init() {
-        this.openVidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+        this.openViduCustomWrapper = openViduCustomWrapper;
     }
 
     public List<ResultHistoryDto> getResultHistory() {
@@ -79,6 +70,8 @@ public class ResultService {
         InterviewRoom interviewRoom = interviewRoomRepository.findById(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_ROOM));
 
+        validator.validateAccessMember(interviewRoom.getMember(), jwtTokenProvider);
+
         String eyeTimelines = convertTimelinesToString(resultInterviewDto.getEyeTimelines());
         String attitudeTimelines = convertTimelinesToString(resultInterviewDto.getAttitudeTimelines());
         String questionTimelines = convertTimelinesToString(resultInterviewDto.getQuestionTimelines());
@@ -86,17 +79,21 @@ public class ResultService {
         resultRepository.save(convertDtoToResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
 
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
-            for (ResultInterviewCommentDto resultInterviewCommentDto : resultInterviewDto.getComments()) {
-                commentRepository.save(convertDtoToComment(interviewRoom, resultInterviewCommentDto));
+            if (resultInterviewDto.getComments() != null) {
+                for (ResultInterviewCommentDto resultInterviewCommentDto : resultInterviewDto.getComments()) {
+                    commentRepository.save(convertDtoToComment(interviewRoom, resultInterviewCommentDto));
+                }
             }
         } else {
-            for (ResultInterviewScriptDto resultInterviewScriptDto : resultInterviewDto.getScripts()) {
-                scriptRepository.save(convertDtoToScript(interviewRoom, resultInterviewScriptDto));
+            if (resultInterviewDto.getScripts() != null) {
+                for (ResultInterviewScriptDto resultInterviewScriptDto : resultInterviewDto.getScripts()) {
+                    scriptRepository.save(convertDtoToScript(interviewRoom, resultInterviewScriptDto));
+                }
             }
         }
 
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
-            OpenViduInfo.closeSession(openVidu, interviewRoom.getSessionId());
+            openViduCustomWrapper.closeSession(interviewRoom.getSessionId());
         }
     }
 
@@ -150,11 +147,19 @@ public class ResultService {
             throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
         }
 
+        validator.validateAccessMember(interviewRoom.getMember(), jwtTokenProvider);
+
         Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
-        List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
-        List<String> attitudeTimeline = Arrays.asList(result.getAttitudeTimeline().split(","));
-        List<String> questionTimeline = Arrays.asList(result.getQuestionTimeline().split(","));
+
+        List<ResultTimelineDto> totalTimelines = new ArrayList<>();
+
+        addResultDtoToTimeline(result.getEyeTimeline(), totalTimelines, "eye");
+        addResultDtoToTimeline(result.getAttitudeTimeline(), totalTimelines, "attitude");
+        addResultDtoToTimeline(result.getQuestionTimeline(), totalTimelines, "question");
+
+        totalTimelines.sort(new TimelineComparator());
+
         List<ResultResponseScriptDto> scripts = new ArrayList<>();
 
         for (Script script : scriptRepository.findAllByInterviewRoomIdx(roomIdx)) {
@@ -164,7 +169,7 @@ public class ResultService {
             scripts.add(convertScriptToDto(script, questionTitle));
         }
 
-        return new ResultAiResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, scripts, interviewRoom);
+        return new ResultAiResponseDto(result, totalTimelines, scripts, interviewRoom);
     }
 
     public ResultUserResponseDto getUserResult(Long roomIdx) {
@@ -174,16 +179,24 @@ public class ResultService {
         if (!interviewRoom.getRoomType().equals(RoomType.USER)) {
             throw new PrivateException(StatusCode.NOT_MATCH_QUERY_STRING);
         }
+
+        validator.validateAccessMember(interviewRoom.getMember(), jwtTokenProvider);
+
         Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
-        List<String> eyeTimeline = Arrays.asList(result.getEyeTimeline().split(","));
-        List<String> attitudeTimeline = Arrays.asList(result.getAttitudeTimeline().split(","));
-        List<String> questionTimeline = Arrays.asList(result.getQuestionTimeline().split(","));
+        List<ResultTimelineDto> totalTimelines = new ArrayList<>();
+
+        addResultDtoToTimeline(result.getEyeTimeline(), totalTimelines, "eye");
+        addResultDtoToTimeline(result.getAttitudeTimeline(), totalTimelines, "attitude");
+        addResultDtoToTimeline(result.getQuestionTimeline(), totalTimelines, "question");
+
+        totalTimelines.sort(new TimelineComparator());
+
         List<ResultResponseCommentDto> comments = new ArrayList<>();
         for (Comment comment : commentRepository.findAllByInterviewRoomIdx(roomIdx)) {
             comments.add(convertCommentToDto(comment));
         }
-        return new ResultUserResponseDto(result, eyeTimeline, attitudeTimeline, questionTimeline, comments, interviewRoom);
+        return new ResultUserResponseDto(result, totalTimelines, comments, interviewRoom);
     }
 
     public ResultResponseScriptDto convertScriptToDto(Script script, String questionTitle) {
@@ -220,18 +233,25 @@ public class ResultService {
     }
 
     public void saveMemo(Long roomIdx, ResultMemoDto resultMemoDto) {
-        Long memberIdx = jwtTokenProvider.getUserInfo();
-
-        Member viewer = memberRepository.findByIdx(memberIdx)
-                .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_MEMBER));
-
         Result result = resultRepository.findByInterviewRoomIdx(roomIdx)
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
+
+        InterviewRoom interviewRoom = result.getInterviewRoom();
+        validator.validateAccessMember(interviewRoom.getMember(), jwtTokenProvider);
 
         validator.validateContents(resultMemoDto.getMemo());
 
         result.setMemo(resultMemoDto.getMemo());
 
         resultRepository.save(result);
+    }
+
+    private void addResultDtoToTimeline(String timeline, List<ResultTimelineDto> totalTimelines, String type) {
+        for (String temp : timeline.split(",")) {
+            totalTimelines.add(ResultTimelineDto.builder()
+                    .type(type)
+                    .timestamp(temp)
+                    .build());
+        }
     }
 }

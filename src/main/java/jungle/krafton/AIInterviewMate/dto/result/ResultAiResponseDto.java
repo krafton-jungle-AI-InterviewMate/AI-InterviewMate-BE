@@ -16,9 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ResultAiResponseDto {
     private String videoUrl;
-    private List<String> eyeTimeline;
-    private List<String> attitudeTimeline;
-    private List<String> questionTimeline;
+    private List<ResultTimelineDto> timelines;
     private String memo;
     private List<ResultResponseScriptDto> scripts;
     private LocalDateTime createdAt;
@@ -26,11 +24,9 @@ public class ResultAiResponseDto {
     private Integer roomQuestionNum;
 
 
-    public ResultAiResponseDto(Result result, List<String> eyeTimeline, List<String> attitudeTimeline, List<String> questionTimeline, List<ResultResponseScriptDto> scripts, InterviewRoom interviewRoom) {
+    public ResultAiResponseDto(Result result, List<ResultTimelineDto> timelines, List<ResultResponseScriptDto> scripts, InterviewRoom interviewRoom) {
         this.videoUrl = result.getVideoUrl();
-        this.eyeTimeline = eyeTimeline;
-        this.attitudeTimeline = attitudeTimeline;
-        this.questionTimeline = questionTimeline;
+        this.timelines = timelines;
         this.memo = result.getMemo();
         this.scripts = scripts;
         this.createdAt = interviewRoom.getCreatedAt();

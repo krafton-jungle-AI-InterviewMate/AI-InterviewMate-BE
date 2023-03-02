@@ -16,20 +16,16 @@ import java.util.List;
 @ToString
 public class ResultUserResponseDto {
     private String videoUrl;
-    private List<String> eyeTimeline;
-    private List<String> attitudeTimeline;
-    private List<String> questionTimeline;
+    private List<ResultTimelineDto> timelines;
     private String memo;
     private List<ResultResponseCommentDto> comments;
     private LocalDateTime createdAt;
     private String roomName;
     private Integer roomQuestionNum;
 
-    public ResultUserResponseDto(Result result, List<String> eyeTimeline, List<String> attitudeTimeline, List<String> questionTimeline, List<ResultResponseCommentDto> comments, InterviewRoom interviewRoom) {
+    public ResultUserResponseDto(Result result, List<ResultTimelineDto> timelines, List<ResultResponseCommentDto> comments, InterviewRoom interviewRoom) {
         this.videoUrl = result.getVideoUrl();
-        this.eyeTimeline = eyeTimeline;
-        this.attitudeTimeline = attitudeTimeline;
-        this.questionTimeline = questionTimeline;
+        this.timelines = timelines;
         this.memo = result.getMemo();
         this.comments = comments;
         this.createdAt = interviewRoom.getCreatedAt();
