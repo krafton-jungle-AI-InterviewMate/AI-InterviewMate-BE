@@ -142,11 +142,11 @@ public class ResultService {
                 .build();
     }
 
-    private Script convertDtoToScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto, String string) {
+    private Script convertDtoToScript(InterviewRoom interviewRoom, ResultInterviewScriptDto resultInterviewScriptDto, String script) {
         return Script.builder()
                 .interviewRoom(interviewRoom)
                 .questionIdx(resultInterviewScriptDto.getQuestionIdx())
-                .script(string)
+                .script(script)
                 .build();
     }
 
