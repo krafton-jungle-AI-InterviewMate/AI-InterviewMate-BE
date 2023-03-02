@@ -15,7 +15,7 @@ configurations {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
@@ -39,10 +39,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     compileOnly 'org.springframework.boot:spring-boot-starter-security'
 
-	// openvidu
-	implementation 'io.openvidu:openvidu-java-client:2.25.0'
+    // openvidu
+    implementation 'io.openvidu:openvidu-java-client:2.25.0'
+
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation platform('software.amazon.awssdk:bom:2.17.53')
+    implementation 'software.amazon.awssdk:s3'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

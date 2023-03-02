@@ -40,4 +40,8 @@ public class Result {
     public void setMemo(String memo) {
         this.memo = memo;
     }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
 }
