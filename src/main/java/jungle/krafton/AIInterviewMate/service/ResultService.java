@@ -76,7 +76,7 @@ public class ResultService {
         String attitudeTimelines = convertTimelinesToString(resultInterviewDto.getAttitudeTimelines());
         String questionTimelines = convertTimelinesToString(resultInterviewDto.getQuestionTimelines());
 
-        resultRepository.save(convertDtoToResult(interviewRoom, resultInterviewDto, eyeTimelines, attitudeTimelines, questionTimelines));
+        resultRepository.save(convertDtoToResult(interviewRoom, eyeTimelines, attitudeTimelines, questionTimelines));
 
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {
             if (resultInterviewDto.getComments() != null) {
@@ -132,10 +132,9 @@ public class ResultService {
         return stringBuilder.toString();
     }
 
-    private Result convertDtoToResult(InterviewRoom interviewRoom, ResultInterviewDto resultInterviewDto, String eyeTimelines, String attitudeTimelines, String questionTimelines) {
+    private Result convertDtoToResult(InterviewRoom interviewRoom, String eyeTimelines, String attitudeTimelines, String questionTimelines) {
         return Result.builder()
                 .interviewRoom(interviewRoom)
-                .videoUrl(resultInterviewDto.getVideoUrl())
                 .eyeTimeline(eyeTimelines)
                 .attitudeTimeline(attitudeTimelines)
                 .questionTimeline(questionTimelines)
