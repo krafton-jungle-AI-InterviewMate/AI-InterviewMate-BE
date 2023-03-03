@@ -172,7 +172,8 @@ public class InterviewService {
 
         OpenViduInfoDto openViduInfoDto = openViduCustomWrapper.createOpenViduInfoDto(interviewRoom, memberToEnter);
 
-        InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom);
+        List<Question> questions = questionRepository.findAllByQuestionBoxIdx(interviewRoom.getRoomQuestionBoxIdx());
+        InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom, questions);
         dto.setConnectionToken(openViduInfoDto.getConnectionToken());
         return dto;
     }
