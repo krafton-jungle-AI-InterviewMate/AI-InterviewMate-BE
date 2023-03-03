@@ -172,7 +172,8 @@ public class InterviewService {
 
         OpenViduInfoDto openViduInfoDto = openViduCustomWrapper.createOpenViduInfoDto(interviewRoom, memberToEnter);
 
-        InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom);
+        List<Question> questions = questionRepository.findAllByQuestionBoxIdx(interviewRoom.getRoomQuestionBoxIdx());
+        InterviewRoomInfoUserDto dto = new InterviewRoomInfoUserDto(interviewRoom, questions);
         dto.setConnectionToken(openViduInfoDto.getConnectionToken());
         return dto;
     }
@@ -199,7 +200,7 @@ public class InterviewService {
         List<InterviewRoomListDto> roomList = new ArrayList<>();
 
         List<InterviewRoom> allRoom = interviewRoomRepository
-                .findAllByRoomStatusOrRoomStatusOrderByCreatedAtDescRoomStatus(RoomStatus.CREATE, RoomStatus.PROCEED);
+                .findAllByRoomStatusNotOrderByRoomTypeDescRoomStatusAscCreatedAtDesc(RoomStatus.EXIT);
         for (InterviewRoom room : allRoom) {
             roomList.add(convertCreateAndProceedRoom(room));
         }
