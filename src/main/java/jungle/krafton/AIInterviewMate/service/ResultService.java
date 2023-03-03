@@ -76,6 +76,10 @@ public class ResultService {
         String attitudeTimelines = convertTimelinesToString(resultInterviewDto.getAttitudeTimelines());
         String questionTimelines = convertTimelinesToString(resultInterviewDto.getQuestionTimelines());
 
+        if (resultRepository.findByInterviewRoomIdx(roomIdx).isPresent()) {
+            throw new PrivateException(StatusCode.NOT_ACCESS_DATA_DUPLICATE);
+        }
+
         resultRepository.save(convertDtoToResult(interviewRoom, eyeTimelines, attitudeTimelines, questionTimelines));
 
         if (interviewRoom.getRoomType().equals(RoomType.USER)) {

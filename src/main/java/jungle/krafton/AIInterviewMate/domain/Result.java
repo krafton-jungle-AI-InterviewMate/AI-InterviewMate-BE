@@ -19,7 +19,7 @@ public class Result {
     private Long idx;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interviewRoom_idx", nullable = false)
+    @JoinColumn(name = "interviewRoom_idx", nullable = false, unique = true)
     private InterviewRoom interviewRoom;
 
     @Column(length = 1000)
