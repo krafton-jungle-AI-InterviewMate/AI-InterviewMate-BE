@@ -77,19 +77,19 @@ public class Validator {
         }
     }
 
-    public boolean isMaxInterviewerNum(int size) {
-        return size >= 3;
+    public boolean isMaxInterviewerNum(int curSize, int maxSize) {
+        return curSize >= maxSize;
     }
 
     public boolean hasSameInterviewer(List<String> idxes, String memberToEnterIdx) {
         return idxes.contains(memberToEnterIdx);
     }
 
-    public void validateMemberToEnterInterviewerRole(List<String> idxes, String memberToEnterIdx) {
+    public void validateMemberToEnterInterviewerRole(List<String> idxes, Integer maxPeopleNum, String memberToEnterIdx) {
         //TODO: 실 서비스 사용시에 해당 부분 확인을 해야함.
 
         if (
-                isMaxInterviewerNum(idxes.size())
+                isMaxInterviewerNum(idxes.size(), maxPeopleNum)
 //                        || hasSameInterviewer(idxes, memberToEnterIdx)
         ) {
             throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
