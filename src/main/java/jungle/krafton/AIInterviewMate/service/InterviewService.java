@@ -187,7 +187,7 @@ public class InterviewService {
             String[] viewerStrIdxArr = interviewerIdxes.split(",");
             idxes = new ArrayList<>(List.of(viewerStrIdxArr));
 
-            validator.validateMemberToEnterInterviewerRole(idxes, memberToEnterIdx);
+            validator.validateMemberToEnterInterviewerRole(idxes, interviewRoom.getRoomPeopleNum(), memberToEnterIdx);
         }
 
         idxes.add(memberToEnterIdx);
