@@ -99,6 +99,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public List<Question> getQuestionList(QuestionBox questionBox) throws IOException {
         BufferedReader reader = new BufferedReader(
                 new FileReader("./src/main/resources/InitQuestion.txt") // TODO: EC2 서버에 배포 시 파일 경로 변경
+//                new FileReader("./InitQuestion.txt") // TODO: EC2 서버에 배포 시 파일 경로 변경
         );
 
         List<Question> questions = new ArrayList<>();

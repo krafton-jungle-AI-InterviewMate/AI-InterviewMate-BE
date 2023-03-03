@@ -117,7 +117,7 @@ public class ResultService {
     }
 
     private String convertTimelinesToString(List<String> timelines) {
-        if (timelines == null) {
+        if (timelines == null || timelines.isEmpty()) {
             return null;
         }
 
