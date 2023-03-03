@@ -11,6 +11,7 @@ public interface InterviewRoomRepository extends JpaRepository<InterviewRoom, Lo
     List<InterviewRoom> findAllByMemberIdxOrderByCreatedAtDesc(Long memberIdx);
 
     Optional<InterviewRoom> findByIdx(Long roomIdx);
-
-    List<InterviewRoom> findAllByRoomStatusOrRoomStatusOrderByCreatedAtDescRoomStatus(RoomStatus status1, RoomStatus status2);
+    
+    //Sort by [타입 - 상태 - 시간]
+    List<InterviewRoom> findAllByRoomStatusNotOrderByRoomTypeDescRoomStatusAscCreatedAtDesc(RoomStatus status1);
 }
