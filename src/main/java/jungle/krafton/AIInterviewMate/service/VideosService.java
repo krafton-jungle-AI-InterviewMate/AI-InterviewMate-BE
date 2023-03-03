@@ -108,6 +108,7 @@ public class VideosService {
         // 영상 도메인 저장
         Result result = resultRepository.findByInterviewRoomIdx(s3UploadCompleteDto.getRoomIdx())
                 .orElseThrow(() -> new PrivateException(StatusCode.NOT_FOUND_RESULT));
+        fileName = fileName.split("\\.")[0];
         String videoUrl = "https://d2i0597ukjxpay.cloudfront.net/output/" + fileName + "/Default/HLS/" + fileName + ".m3u8";
         result.setVideoUrl(videoUrl);
         resultRepository.save(result);
