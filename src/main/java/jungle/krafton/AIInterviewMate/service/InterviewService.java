@@ -286,6 +286,12 @@ public class InterviewService {
     }
 
     private InterviewRoomListDto convertCreateAndProceedRoom(InterviewRoom interviewRoom) {
+        String interviewerIdxes = interviewRoom.getInterviewerIdxes();
+        List<String> idxes = null;
+        if (interviewerIdxes != null) {
+            idxes = List.of(interviewerIdxes.split(","));
+        }
+
         return InterviewRoomListDto.builder()
                 .idx(interviewRoom.getIdx())
                 .roomStatus(interviewRoom.getRoomStatus())
@@ -296,6 +302,7 @@ public class InterviewService {
                 .roomTime(interviewRoom.getRoomTime())
                 .roomIsPrivate(interviewRoom.getIsPrivate())
                 .createdAt(interviewRoom.getCreatedAt())
+                .interviewerIdxes(idxes)
                 .build();
     }
 

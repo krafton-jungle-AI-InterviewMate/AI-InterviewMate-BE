@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -24,5 +25,5 @@ public class InterviewRoomListDto {
     private RoomType roomType;
     private RoomStatus roomStatus;
     private LocalDateTime createdAt;
-
+    private List<String> interviewerIdxes;
 }
