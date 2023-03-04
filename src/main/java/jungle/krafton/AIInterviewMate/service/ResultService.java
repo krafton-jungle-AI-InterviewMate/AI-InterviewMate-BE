@@ -269,6 +269,9 @@ public class ResultService {
     }
 
     private void addResultDtoToTimeline(String timeline, List<ResultTimelineDto> totalTimelines, String type) {
+        if (timeline == null) {
+            return;
+        }
         for (String temp : timeline.split(",")) {
             totalTimelines.add(ResultTimelineDto.builder()
                     .type(type)
