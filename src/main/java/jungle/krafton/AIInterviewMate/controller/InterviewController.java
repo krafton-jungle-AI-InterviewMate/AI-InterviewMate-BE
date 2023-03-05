@@ -83,6 +83,12 @@ public class InterviewController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, roomList), HttpStatus.OK);
     }
 
+    @Operation(summary = "방 리스트 페이지로 가져오기")
+    @GetMapping("/rooms/page")
+    public ResponseEntity<PrivateResponseBody> getRoomListByPage(@RequestParam("idx") long memberIdx, @RequestParam("page") int page) {
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, interviewService.getRoomListByPage(memberIdx, page)), HttpStatus.OK);
+    }
+
     @Operation(summary = "방 생성하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InterviewRoomCreateResponseDto.class)))

@@ -14,6 +14,10 @@ import jungle.krafton.AIInterviewMate.repository.QuestionRepository;
 import jungle.krafton.AIInterviewMate.util.OpenViduCustomWrapper;
 import jungle.krafton.AIInterviewMate.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -321,6 +325,30 @@ public class InterviewService {
                 .roomQuestionBoxIdx(requestDto.getRoomQuestionBoxIdx())
                 .roomPeopleNum(requestDto.getRoomPeopleNum())
                 .build();
+    }
+
+    public Page<InterviewRoomListDto> getRoomListByPage(long memberIdx, int page) {
+        page = page - 1; // page 기준은 0부터 시작함
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, 20, sort);
+
+        Page<InterviewRoom> pages = interviewRoomRepository.findAllByMemberIdx(memberIdx, pageable);
+
+        Page<InterviewRoomListDto> rtDto = pages.map(data -> InterviewRoomListDto.builder()
+                .idx(data.getIdx())
+                .roomName(data.getRoomName())
+                .nickname("Tester")
+                .roomPeopleNum(data.getRoomPeopleNum())
+                .roomTime(data.getRoomTime())
+                .roomIsPrivate(data.getIsPrivate())
+                .roomType(data.getRoomType())
+                .roomStatus(data.getRoomStatus())
+                .createdAt(data.getCreatedAt())
+                .interviewerIdxes(null)
+                .build());
+
+        return rtDto;
     }
 }
 
