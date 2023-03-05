@@ -83,10 +83,16 @@ public class InterviewController {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, roomList), HttpStatus.OK);
     }
 
-    @Operation(summary = "방 리스트 페이지로 가져오기")
+    @Operation(summary = "방 리스트 페이지로 가져오기 [Pageable]")
     @GetMapping("/rooms/page")
-    public ResponseEntity<PrivateResponseBody> getRoomListByPage(@RequestParam("idx") long memberIdx, @RequestParam("page") int page) {
+    public ResponseEntity<PrivateResponseBody> getRoomListByPage(@RequestParam("memIdx") long memberIdx, @RequestParam("page") int page) {
         return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, interviewService.getRoomListByPage(memberIdx, page)), HttpStatus.OK);
+    }
+
+    @Operation(summary = "방 리스트 페이지로 가져오기 [No Offset]")
+    @GetMapping("/rooms/page/no")
+    public ResponseEntity<PrivateResponseBody> getRoomListByNoOffset(@RequestParam("memIdx") long memberIdx, @RequestParam("stanIdx") int stanIdx) {
+        return new ResponseEntity<>(new PrivateResponseBody(StatusCode.OK, interviewService.getRoomListByNoOffset(memberIdx, stanIdx)), HttpStatus.OK);
     }
 
     @Operation(summary = "방 생성하기")

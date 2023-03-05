@@ -350,6 +350,28 @@ public class InterviewService {
 
         return rtDto;
     }
+
+    public List<InterviewRoomListDto> getRoomListByNoOffset(long memberIdx, int stanIdx) {
+        List<InterviewRoom> pages = interviewRoomRepository.findAllByMemberIdxGraterThanStanIdx(memberIdx, stanIdx);
+
+        List<InterviewRoomListDto> rtDto = new ArrayList<>();
+        for (InterviewRoom page : pages) {
+            rtDto.add(InterviewRoomListDto.builder()
+                    .idx(page.getIdx())
+                    .roomName(page.getRoomName())
+                    .nickname("Tester")
+                    .roomPeopleNum(page.getRoomPeopleNum())
+                    .roomTime(page.getRoomTime())
+                    .roomIsPrivate(page.getIsPrivate())
+                    .roomType(page.getRoomType())
+                    .roomStatus(page.getRoomStatus())
+                    .createdAt(page.getCreatedAt())
+                    .interviewerIdxes(null)
+                    .build());
+        }
+
+        return rtDto;
+    }
 }
 
 
