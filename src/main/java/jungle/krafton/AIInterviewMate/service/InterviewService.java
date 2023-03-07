@@ -112,6 +112,8 @@ public class InterviewService {
         if (hasHostLeftRoom(interviewRoom.getMember()) || isAllViewersOut(interviewRoom)) {
             openViduCustomWrapper.closeSession(interviewRoom.getSessionId());
 
+            interviewRoom.setRoomStatus(RoomStatus.EXIT);
+            
             if (viewerCommentsEmpty(interviewRoom)) {
                 interviewRoomRepository.delete(interviewRoom);
             }
