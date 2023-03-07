@@ -27,4 +27,8 @@ public class Comment {
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String comment;
+
+    public void update(String comment) {
+        this.comment = comment;
+    }
 }

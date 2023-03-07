@@ -245,11 +245,17 @@ public class ResultService {
 
         validator.validateContents(resultRequestComment.getComment());
 
-        Comment comment = Comment.builder()
-                .interviewRoom(interviewRoom)
-                .viewerIdx(viewer.getIdx())
-                .comment(resultRequestComment.getComment())
-                .build();
+        Comment comment = commentRepository.findByInterviewRoomIdxAndViewerIdx(roomIdx, memberIdx);
+
+        if (comment == null) {
+            comment = Comment.builder()
+                    .interviewRoom(interviewRoom)
+                    .viewerIdx(viewer.getIdx())
+                    .comment(resultRequestComment.getComment())
+                    .build();
+        } else {
+            comment.update(resultRequestComment.getComment());
+        }
 
         commentRepository.save(comment);
     }
