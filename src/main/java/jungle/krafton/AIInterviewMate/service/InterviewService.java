@@ -113,7 +113,7 @@ public class InterviewService {
             openViduCustomWrapper.closeSession(interviewRoom.getSessionId());
 
             interviewRoom.setRoomStatus(RoomStatus.EXIT);
-            
+
             if (viewerCommentsEmpty(interviewRoom)) {
                 interviewRoomRepository.delete(interviewRoom);
             }
@@ -189,7 +189,9 @@ public class InterviewService {
             String[] viewerStrIdxArr = interviewerIdxes.split(",");
             idxes = new ArrayList<>(List.of(viewerStrIdxArr));
 
-            validator.validateMemberToEnterInterviewerRole(idxes, interviewRoom.getRoomPeopleNum(), memberToEnterIdx);
+            int enterPeopleLimit = interviewRoom.getRoomPeopleNum() - 1;
+
+            validator.validateMemberToEnterInterviewerRole(idxes, enterPeopleLimit, memberToEnterIdx);
         }
 
         idxes.add(memberToEnterIdx);
