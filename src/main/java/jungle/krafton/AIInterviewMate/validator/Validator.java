@@ -85,11 +85,11 @@ public class Validator {
         return idxes.contains(memberToEnterIdx);
     }
 
-    public void validateMemberToEnterInterviewerRole(List<String> idxes, Integer maxPeopleNum, String memberToEnterIdx) {
+    public void validateMemberToEnterInterviewerRole(List<String> idxes, Integer enterPeopleLimit, String memberToEnterIdx) {
         //TODO: 실 서비스 사용시에 해당 부분 확인을 해야함.
 
         if (
-                isMaxInterviewerNum(idxes.size(), maxPeopleNum)
+                isMaxInterviewerNum(idxes.size(), enterPeopleLimit)
 //                        || hasSameInterviewer(idxes, memberToEnterIdx)
         ) {
             throw new PrivateException(StatusCode.ROOM_VIEWER_ERROR);
