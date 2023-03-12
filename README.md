@@ -81,7 +81,7 @@
 
 ## 프로젝트 소개 영상 (유튜브)
 
-[![유튜브]()](https://youtu.be/BgKaJtJb6T4)
+[![유튜브](http://img.youtube.com/vi/BgKaJtJb6T4/0.jpg)](https://youtu.be/BgKaJtJb6T4)
 
 ## 프로젝트 포스터
 
